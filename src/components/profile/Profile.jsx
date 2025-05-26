@@ -94,6 +94,10 @@ import serr from '../../assets/images/serr.png';
 
 import utils from '../utils';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
+import SimilarUsersSection from "./SimilarUsersSection/SimilarUsersSection";
+import OnlineUsers from "./OnlineUsers/OnlineUsers";
+import OnlineStatusUpdater from "./OnlineUsers/OnlineStatusUpdater";
+import axios from "axios";
 
 const Profile = () => {
 const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
@@ -310,19 +314,7 @@ return (
                <Row className="m0-all">
                   <Col md={3}>
                   <div className="left-panel-allpages mar-top-left">
-                     <div className="top-user-id text-center">
-                        <div className="online-user-all">
-                           <h5 className="border-h5">Users Online Now</h5>
-                           <div className="online-user-status border-right-online">
-                              <h6>Women</h6>
-                              <h4>1234</h4>
-                           </div>
-                           <div className="online-user-status">
-                              <h6>men</h6>
-                              <h4>1565</h4>
-                           </div>
-                        </div>
-                     </div>
+                      <OnlineUsers />
                      <div className="user-type-left">
                         <ul className="list-user-type left-nav">
                            <li>
@@ -392,7 +384,12 @@ return (
                            <div className="last-online"> <img src={calendar} alt="calendar" />Last online 1 Day 14 Hours</div>
                         </div>
                         <div className="profile-pic-user">
-                           <div className="profile-pic-avater"> <img onClick={viewProfileImg} src={profile} alt="profile" /> 
+                           <div className="profile-pic-avater">  <img
+                        onClick={viewProfileImg}
+                        src={profileDetails?.profilephoto || profile}
+                        alt="profile"
+                        className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
+                      /> 
                            </div>
                            <div className="profile-next-prev">
                               {/* <Button className="btn-next-prev me-2"><img src={previcon} alt="prev" /></Button>
@@ -557,31 +554,63 @@ return (
                      </div>
                      <Row className="flex-direction-custom">
                         <Col md={12} className="text-start ps-5 profile-all-info mt-4">
-                        <h2>
-                           Headline:
-                        </h2>
-                        <p>
-                           Lorem ipsum dolor sit amet, consectetuer adipuiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
-                        </p>
-                        <h2 className="mt-4">
-                           Best compliment you've ever received:
-                        </h2>
-                        <p>
-                           Lorem ipsum dolor sit amet, consectetuer adipuiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet
-                        </p>
-                        <h2 className="mt-4">
-                        What are your dealbreakers?
-                        </h2>
-                        <p className="mt-2">
-                        <span className="span-style">We're not a match if...</span> Lorem ipsum dolor sit amet, consectetuer adipuiscing elit, sed diam nonummy 
-                        </p>
+                        <div className="text-start position-relative">
+  <div className="d-flex justify-content-between align-items-start mb-2">
+    <h2 className="h5 mb-0">Headline:</h2>
+    <NavLink
+      to="/headline"
+      className="btn btn-sm d-flex align-items-center rounded-pill text-white"
+      style={{ backgroundColor: '#9B72FE', opacity: 0.9 }}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16" height="16"
+        fill="currentColor"
+        className="bi bi-pencil-fill me-1"
+        viewBox="0 0 16 16"
+      >
+        <path d="M12.854.146a.5.5 0 0 1 .638.057l2.5 2.5a.5.5 0 0 1-.057.638l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2L3 10.207V13h2.793L14 4.793 11.207 2z"/>
+      </svg>
+      Edit Profile Info
+    </NavLink>
+  </div>
+  <p className="text-muted">
+    {profileDetails?.headline || "Not specified"}
+  </p>
+</div>
 
-                        <p>
-                        <span className="span-style">We're not a match if...</span> Lorem ipsum dolor sit amet, consectetuer adipuiscing elit, sed diam nonummy 
-                        </p>
-                        <p>
-                        <span className="span-style">We're not a match if...</span> Lorem ipsum dolor sit amet, consectetuer adipuiscing elit, sed diam nonummy 
-                        </p>
+                        {/* Compliment */}
+                    <div className="text-left">
+                      <h2 className="mb-2">
+                        Best compliment you've ever received:
+                      </h2>
+                      <p className="text-gray-700">
+                        {profileDetails?.compliment || "Not specified"}
+                      </p>
+                    </div>
+                       
+                         {/* Dealbreakers */}
+                    <div className="text-left">
+                      <h2 className="text-xl font-semibold mb-2">
+                        What are your dealbreakers?
+                      </h2>
+                      <div className="space-y-2">
+                        {profileDetails?.dealbreakers?.length > 0 ? (
+                          profileDetails.dealbreakers.map(
+                            (dealbreaker, index) => (
+                              <p key={index} className="text-gray-700">
+                                <span className="font-medium">
+                                  We're not a match if...
+                                </span>{" "}
+                                {dealbreaker}
+                              </p>
+                            )
+                          )
+                        ) : (
+                          <p className="text-gray-700">Not specified</p>
+                        )}
+                      </div>
+                    </div>
                         </Col>
                         <Col md={12} className="mt-4">
                         <ul className="search-user-list search-user-list2 mt-0 mb-all">
@@ -615,10 +644,15 @@ return (
                                     </li>
                                  </ul>
                               </div>
-                              <h3 className="text-start h3-all-title mb-3 mt-3">About Me</h3>
-                              <p className="text-start p-details-profile"> Lorem ipsum dolor sit amet, consectetuer adipuiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
-                                 Lorem ipsum dolor sit amet, cons ectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet  Lorem ipsum dolor sit amet, cons ectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet 
-                              </p>
+                              {/* About Me */}
+<div className="mt-3">
+  <h3 className="text-start h3-all-title mb-3">About Me</h3>
+  <p className="text-start p-details-profile">
+    {profileDetails?.about ||
+      "Not specified. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet."}
+  </p>
+</div>
+
                               <h3 className="text-start h3-all-title mb-3 mt-2">I’m looking for…</h3>
                               <Row>
                                  <Col md={8}>
@@ -659,58 +693,9 @@ return (
                   </Col>
                </Row>
                <div className="similar-user">
-                  <h5>Similar Users</h5>
-                  <Row>
-                     <Col md={3}>
-                     <div className="similar-user-block">
-                        <NavLink exact to="">
-                           <img className="sm-user-profile" src={sm1} alt="sm1" />
-                           <div className="simler-user-details">
-                              <h6> Mary123</h6>
-                              <p> 31, Female, Single</p>
-                              <p> Lomita, CA</p>
-                           </div>
-                        </NavLink>
-                     </div>
-                     </Col>
-                     <Col md={3}>
-                     <div className="similar-user-block">
-                        <NavLink exact to="">
-                           <img className="sm-user-profile" src={sm2} alt="sm2" />
-                           <div className="simler-user-details">
-                              <h6> Suzy</h6>
-                              <p> Mary123</p>
-                              <p> Lomita, CA</p>
-                           </div>
-                        </NavLink>
-                     </div>
-                     </Col>
-                     <Col md={3}>
-                     <div className="similar-user-block">
-                        <NavLink exact to="">
-                           <img className="sm-user-profile" src={sm3} alt="sm3" />
-                           <div className="simler-user-details">
-                              <h6> Mary123</h6>
-                              <p> 31, Female, Single</p>
-                              <p> Lomita, CA</p>
-                           </div>
-                        </NavLink>
-                     </div>
-                     </Col>
-                     <Col md={3}>
-                     <div className="similar-user-block">
-                        <NavLink exact to="">
-                           <img className="sm-user-profile" src={sm4} alt="sm4" />
-                           <div className="simler-user-details">
-                              <h6> Suzy</h6>
-                              <p> 31, Female, Single</p>
-                              <p> Lomita, CA</p>
-                           </div>
-                        </NavLink>
-                     </div>
-                     </Col>
-                  </Row>
+                  <SimilarUsersSection />
                </div>
+                <OnlineStatusUpdater userId={localStorage.getItem("userId")} />
             </Container>
          </div>
       </div>

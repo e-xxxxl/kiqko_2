@@ -64,7 +64,7 @@ const VerifyEmail = () => {
       const data = await response.json();
       if (data.success) {
         alert('Email verified successfully!');
-        history.push('/login'); // redirect after success
+        history.push('/email-verified'); // redirect after success
       } else {
         alert(data.message || 'Invalid or expired code');
       }
@@ -118,13 +118,23 @@ const VerifyEmail = () => {
                     </Form.Group>
 
                     <div className="text-center mb-3">
-                      <Button
-                        type="submit"
-                        className="full-width btn-all-landing margin-all-modal-btn btn"
-                        disabled={verifying}
-                      >
-                        {verifying ? 'Verifying...' : 'Verify Email'}
-                      </Button>
+                    <Button
+  type="submit"
+  disabled={verifying}
+  style={{
+    backgroundColor: '#9B72FE',
+    border: 'none',
+    borderRadius: '8px',
+    color: '#fff',
+    textAlign: 'center',
+    width: '100%',
+    padding: '12px',
+    fontWeight: 'bold'
+  }}
+>
+  {verifying ? 'Verifying...' : 'Verify Email'}
+</Button>
+
                     </div>
 
                     <p className="text-center p-verufy-all-small color-blue-link">
