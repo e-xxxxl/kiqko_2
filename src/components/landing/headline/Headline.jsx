@@ -12,26 +12,38 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import axios from 'axios';
 
 const Headline = () => {
-     const history = useHistory();
-  const [headline, setHeadline] = useState('');
+    const [headline, setHeadline] = useState('');
+  const history = useHistory();
+  const userId = localStorage.getItem('userId');
 
   const handleChange = (e) => {
     setHeadline(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Save headline to localStorage
-    localStorage.setItem('tempHeadlineData', JSON.stringify({ headline }));
-
-    // Navigate to next page
-    history.push('/compliment');
-  };
+    
+    if (userId) {
+      // If user is logged in (has userId), save to database
+      try {
+        await axios.post(`https://kiqko-backend.onrender.com/api/users/headline/${userId}`, {
+          headline
+        });
+        history.push('/compliment');
+      } catch (error) {
+        console.error('Failed to update headline:', error);
+      }
+    } else {
+      // If user is not logged in, save to localStorage
+      localStorage.setItem('tempHeadlineData', JSON.stringify({ headline }));
+      history.push('/compliment');
+    }
+  }
     return (
-       <section>
+      <section>
       <section className="all-top-shape all-shape-inner">
         <img src={shape} alt="shape" />
       </section>
@@ -57,6 +69,7 @@ const Headline = () => {
                             placeholder="e.g (Quirky woman looking for mashed to my potatoes.)"
                             value={headline}
                             onChange={handleChange}
+                            maxLength={100}
                           />
                           <span className="char-span">{100 - headline.length}</span>
                         </Form.Group>

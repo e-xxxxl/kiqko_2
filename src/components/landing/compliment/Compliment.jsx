@@ -12,23 +12,35 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import axios from 'axios';
 
 const Compliment = () => {
-            const history = useHistory();
-        const [compliment, setCompliment] = useState('');
+      const [compliment, setCompliment] = useState('');
+  const history = useHistory();
+  const userId = localStorage.getItem('userId');
 
-        const handleChange = (e) => {
-            setCompliment(e.target.value);
-        };
+  const handleChange = (e) => {
+    setCompliment(e.target.value);
+  };
 
-        const handleSubmit = (e) => {
-            e.preventDefault();
-
-            // Save compliment to localStorage
-            localStorage.setItem('tempComplimentData', JSON.stringify({ compliment }));
-
-            // Navigate to next page
-            history.push('/dealbreaker');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (userId) {
+      // If user is logged in (has userId), save to database
+      try {
+        await axios.post(`https://kiqko-backend.onrender.com/api/users/compliment/${userId}`, {
+          compliment
+        });
+        history.push('/dealbreaker');
+      } catch (error) {
+        console.error('Failed to update compliment:', error);
+      }
+    } else {
+      // If user is not logged in, save to localStorage
+      localStorage.setItem('tempComplimentData', JSON.stringify({ compliment }));
+      history.push('/dealbreaker');
+    }
   };
 
     return (
@@ -58,6 +70,7 @@ const Compliment = () => {
                             placeholder="e.g. (I bet you do the crossword puzzle in ink.)"
                             value={compliment}
                             onChange={handleChange}
+                            maxLength={100}
                           />
                           <span className="char-span">{100 - compliment.length}</span>
                         </Form.Group>

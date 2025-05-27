@@ -13,22 +13,40 @@ import { NavLink } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
 import './About.css';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import axios from 'axios';
 
 const AboutYou = () => {
-     const history = useHistory();
-  const [essay, setEssay] = useState('');
+    const [essay, setEssay] = useState('');
+  const history = useHistory();
+  const userId = localStorage.getItem('userId');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (essay.trim() === '') {
+      alert('Please write something about yourself');
+      return;
+    }
 
-    // Save to localStorage under its own key
-    localStorage.setItem('tempaboutYouEssay',  JSON.stringify({ essay }));
-
-    // Navigate to /basics
-    history.push('/upload-photo');
+    if (userId) {
+      // If user is logged in, save to database
+      try {
+        await axios.post(`https://kiqko-backend.onrender.com/api/users/about/${userId}`, { 
+          about: essay 
+        });
+        history.push('/upload-photo');
+      } catch (error) {
+        console.error('Failed to update about info:', error);
+      }
+    } else {
+      // If user is not logged in, save to localStorage
+      localStorage.setItem('tempAboutYouEssay', JSON.stringify({ essay }));
+      history.push('/upload-photo');
+    }
   };
+
     return (
-   <section>
+<section>
       <section className="all-top-shape all-shape-inner">
         <img src={shape} alt="shape" />
       </section>
@@ -55,6 +73,7 @@ const AboutYou = () => {
                             placeholder="To continue you need to add an essay."
                             value={essay}
                             onChange={(e) => setEssay(e.target.value)}
+                            maxLength={1000}
                           />
                           <span className="char-span">{1000 - essay.length}</span>
                         </Form.Group>
@@ -62,7 +81,12 @@ const AboutYou = () => {
 
                       <Row className="m-0-responsive">
                         <Col md={6} className="text-center offset-md-3 btn-modal-round mt-4">
-                          <Button type="submit" className="full-width btn-all-landing margin-all-modal-btn btn" variant="link">
+                          <Button 
+                            type="submit" 
+                            className="full-width btn-all-landing margin-all-modal-btn btn" 
+                            variant="link"
+                            disabled={!essay.trim()}
+                          >
                             Continue <MdOutlineArrowForward className="arrow-sign" />
                           </Button>
                         </Col>
@@ -91,7 +115,6 @@ const AboutYou = () => {
         </div>
       </div>
     </section>
-           
     );
 };
 

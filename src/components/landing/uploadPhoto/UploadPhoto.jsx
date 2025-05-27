@@ -16,31 +16,72 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 
 const UploadPhoto = (props) => {
-    const [photoData, setPhotoData] = useState(null);
+      const [file, setFile] = useState(null);
+  const [photoData, setPhotoData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
+  const userId = localStorage.getItem('userId');
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
 
+    setFile(selectedFile);
+
+    // Create preview for UI
     const reader = new FileReader();
     reader.onloadend = () => {
       const base64String = reader.result;
       setPhotoData(base64String);
-      localStorage.setItem('profilePhoto', base64String);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(selectedFile);
   };
 
-  const handleContinue = () => {
-    if (photoData) {
-      history.push('/login');
-    } else {
-      alert("Please upload a profile photo before continuing.");
+  const handleSubmit = async () => {
+    if (!file) {
+      alert('Please select a photo to upload');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      if (userId) {
+        // If user is logged in, upload to server
+        const formData = new FormData();
+        formData.append('profilePhoto', file);
+        
+        const response = await fetch(
+          `https://kiqko-backend.onrender.com/api/users/upload-photo/${userId}`,
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Upload failed');
+        }
+
+        // Save URL to localStorage for immediate access
+        localStorage.setItem('profilePhoto', data.photoUrl);
+        history.push('/manage-media');
+      } else {
+        // If user is not logged in, save to localStorage as base64
+        localStorage.setItem('profilePhoto', photoData);
+        history.push('/login');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert(error.message || 'An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
     return (
- <section>
+  <section>
       <section className="all-top-shape all-shape-inner">
         <img src={shape} alt="shape" />
       </section>
@@ -60,7 +101,13 @@ const UploadPhoto = (props) => {
                   <Row>
                     <Col className="text-center" md={12}>
                       <div className="add-photo-upload mb-3">
-                        <input type="file" required accept="image/*" onChange={handleFileChange} />
+                        <input 
+                          type="file" 
+                          required 
+                          accept="image/*" 
+                          onChange={handleFileChange} 
+                          disabled={isLoading}
+                        />
                       </div>
 
                       {photoData && (
@@ -77,8 +124,14 @@ const UploadPhoto = (props) => {
 
                   <Row className="mt-5">
                     <Col className="mt-12" md={12}>
-                      <Button className="all-btn-round mt-4" variant="primary" onClick={handleContinue}>
-                        Continue<MdOutlineArrowForward className="arrow-sign arrowba" />
+                      <Button 
+                        className="all-btn-round mt-4" 
+                        variant="primary" 
+                        onClick={handleSubmit}
+                        disabled={!photoData || isLoading}
+                      >
+                        {isLoading ? 'Uploading...' : 'Continue'}
+                        {!isLoading && <MdOutlineArrowForward className="arrow-sign arrowba" />}
                       </Button>
                     </Col>
                   </Row>

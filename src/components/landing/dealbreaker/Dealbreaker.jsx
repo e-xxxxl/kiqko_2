@@ -12,10 +12,12 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import axios from 'axios';
 
 const Dealbreaker = () => {
-      const history = useHistory();
-  const [dealbreakers, setDealbreakers] = useState(["", "", ""]);
+  const [dealbreakers, setDealbreakers] = useState(['', '', '']);
+  const history = useHistory();
+  const userId = localStorage.getItem('userId');
 
   const handleChange = (index, value) => {
     const newDealbreakers = [...dealbreakers];
@@ -23,18 +25,32 @@ const Dealbreaker = () => {
     setDealbreakers(newDealbreakers);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!dealbreakers.every(breaker => breaker.trim() !== '')) {
+      alert('Please fill in all dealbreaker fields');
+      return;
+    }
 
-    // Save to localStorage
-    localStorage.setItem('tempDealbreakerData', JSON.stringify({ dealbreakers }));
-
-    // Navigate to next page
-    history.push('/about-you');
+    if (userId) {
+      // If user is logged in, save to database
+      try {
+        await axios.post(`https://kiqko-backend.onrender.com/api/users/dealbreaker/${userId}`, {
+          dealbreakers,
+        });
+        history.push('/about-you');
+      } catch (error) {
+        console.error('Failed to update dealbreakers:', error);
+      }
+    } else {
+      // If user is not logged in, save to localStorage
+      localStorage.setItem('tempDealbreakerData', JSON.stringify({ dealbreakers }));
+      history.push('/about-you');
+    }
   };
-
     return (
-      <section>
+       <section>
       <section className="all-top-shape all-shape-inner">
         <img src={shape} alt="shape" />
       </section>
@@ -62,6 +78,7 @@ const Dealbreaker = () => {
                               placeholder="e.g. (you're a gamer.)"
                               value={value}
                               onChange={(e) => handleChange(index, e.target.value)}
+                              maxLength={100}
                             />
                             <span className="char-span">{100 - value.length}</span>
                           </Form.Group>
@@ -70,7 +87,12 @@ const Dealbreaker = () => {
 
                       <Row className="m-0-responsive">
                         <Col md={6} className="text-center offset-md-3 btn-modal-round mt-5 pt-4">
-                          <Button type="submit" className="full-width btn-all-landing margin-all-modal-btn btn" variant="link">
+                          <Button 
+                            type="submit" 
+                            className="full-width btn-all-landing margin-all-modal-btn btn" 
+                            variant="link"
+                            disabled={!dealbreakers.every(breaker => breaker.trim() !== '')}
+                          >
                             Continue <MdOutlineArrowForward className="arrow-sign" />
                           </Button>
                         </Col>

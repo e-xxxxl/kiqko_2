@@ -106,7 +106,7 @@ const handleLogin = async (e) => {
 
       // 🔹 Send Headline
       const headlineData = localStorage.getItem('tempHeadlineData');
-      if (headline) {
+      if (headlineData) {
         const { headline } = JSON.parse(headlineData);
         await fetch(`https://kiqko-backend.onrender.com/api/users/headline/${userId}`, {
           method: 'POST',
