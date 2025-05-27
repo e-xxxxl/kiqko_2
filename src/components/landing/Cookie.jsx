@@ -1,48 +1,56 @@
-import { React, useState } from "react";
-import Col from 'react-bootstrap/esm/Col';
-import Row from 'react-bootstrap/esm/Row';
-import { Button } from 'react-bootstrap';
-import Modal from 'react-bootstrap/Modal'
+import React, { useEffect, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import './Cookies.css';
 
-const Cookie = (props) => {
+const Cookie = () => {
+    const [showBanner, setShowBanner] = useState(false);
 
-    const [isOpen, setIsOpen] = useState(props.isOpen);
-    const handleClose = () => setIsOpen(false);
+    useEffect(() => {
+        const consent = localStorage.getItem('cookieConsent');
+        if (!consent) {
+            setShowBanner(true);
+            // Optional: Prevent scrolling too
+            document.body.style.overflow = 'hidden';
+        }
+    }, []);
+
+    const handleConsent = (value) => {
+        localStorage.setItem('cookieConsent', value);
+        setShowBanner(false);
+        document.body.style.overflow = ''; // Restore scrolling
+    };
+
+    if (!showBanner) return null;
 
     return (
-        <>
-
-            <Modal dialogClassName="cookie-modal" backdrop="static" show={isOpen}>
-                
-                
-                <Modal.Body className="p-0">
-                    
-
-                    <Row className="m-0">
-                        <Col lg={6}>
-                        <p className="p-cookie-footer">
-                    This website uses cookies to offer you a better browsing experience. <br/>
-By using our site you agree to our use of cookies.
+        <div className="cookie-overlay">
+            <div className="cookie-consent-banner">
+                <div className="cookie-content">
+                    <p>
+                        We use cookies to enhance your experience on our platform. 
+                        By continuing to browse, you agree to our use of cookies.
+                        <a href="/privacy-policy" className="cookie-policy-link"> Learn more</a>
                     </p>
-                        </Col>
-                        <Col className="cookie-bitn-footer" lg={5}>
-                            <Button>
-                                Decline
-                            </Button>
-                            <Button>
-                                Accept
-                            </Button>
-                            <Modal.Header className="border-0 cookie-noti-header" onClick={handleClose} closeButton>
-                    
-                </Modal.Header>
-                        </Col>
-                       
-                    </Row>
-                </Modal.Body>
-           
-            </Modal>
-        </>
+                    <div className="cookie-buttons">
+                        <Button 
+                            variant="primary" 
+                            onClick={() => handleConsent('accepted')}
+                            className="cookie-accept-btn"
+                        >
+                            Accept
+                        </Button>
+                        <Button 
+                            variant="outline-secondary" 
+                            onClick={() => handleConsent('declined')}
+                            className="cookie-decline-btn"
+                        >
+                            Decline
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
-}
+};
 
 export default Cookie;
