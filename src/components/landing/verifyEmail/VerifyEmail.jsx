@@ -49,32 +49,32 @@ const VerifyEmail = () => {
     }
   };
 
-  const handleVerify = async (e) => {
-    e.preventDefault();
-    if (!otp) return alert('Please enter the verification code');
+const handleVerify = async (e) => {
+  e.preventDefault();
+  if (!otp) return alert('Please enter the verification code');
 
-    setVerifying(true);
-    try {
-      const response = await fetch('https://kiqko-backend.onrender.com/api/auth/verify-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp }),
-      });
+  setVerifying(true);
+  try {
+    const response = await fetch('https://kiqko-backend.onrender.com/api/auth/verify-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, otp }),
+    });
 
-      const data = await response.json();
-      if (data.success) {
-        alert('Email verified successfully!');
-        history.push('/email-verified'); // redirect after success
-      } else {
-        alert(data.message || 'Invalid or expired code');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Verification failed');
-    } finally {
-      setVerifying(false);
+    const data = await response.json();
+    if (data.success) {
+      alert('Email verified successfully!');
+      history.push('/email-verified'); // redirect after success
+    } else {
+      alert(data.message || 'Invalid or expired code');
     }
-  };
+  } catch (err) {
+    console.error(err);
+    alert('Verification failed');
+  } finally {
+    setVerifying(false);
+  }
+};
 
   return (
    <section>

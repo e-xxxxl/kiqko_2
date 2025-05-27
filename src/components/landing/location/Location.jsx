@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/esm/Row';
@@ -11,42 +11,117 @@ import apps from '../../../assets/images/apps.png';
 import appg from '../../../assets/images/appg.png';
 import { Button, Dropdown } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const Location = () => {
-    return (
-        <section>
-        <section className="all-top-shape all-shape-inner">
-            <img src={shape} alt="shape" />
-        </section>
-        <div className="all-container margin-bottom-step">
-        <div className="all-container-inner setting-area position-top-all">
-                <Container>
-                <div className="all-seting-area">
-                    <Row className="m-0-responsive">
-                    <Col md={12} className="all-title-top mb-1 text-center">
-                            <h4>Location</h4>
-                        </Col>
-                        <Col md={12}>
-                         <p className="p-up-loc text-center mt-1">Please complete this form to create an account.
-                        </p>
-                        </Col>
-                    </Row>
-                    <Form>
-                    <Row className="m-0-responsive">
-                    <Col md={6}>
-                        <Form.Group className="mb-2">
-                        <Form.Control className="form-custom" type="text" placeholder="City / Town" />
-                        </Form.Group>
-                    </Col>
-                    <Col md={6}>
-                        <Form.Group className="mb-2">
-                        <Form.Control className="form-custom" type="text" placeholder="State / Province" />
-                    </Form.Group>
-                    </Col>
+    const history = useHistory();
+  const [formData, setFormData] = useState({
+    city: '',
+    state: '',
+    country: '',
+    zipCode: '',
+    enableLocation: false
+  });
 
-                    <Col md={6} className="mb-2">
-                        <Form.Select className="form-custom" size="lg">
-                        <option>Country</option>
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // Store location data in localStorage
+    localStorage.setItem('tempLocationData', JSON.stringify(formData));
+    
+    // Navigate to next page
+    history.push('/headline');
+  };
+
+  // Function to send location to database (to be called after login)
+  const sendLocationToDatabase = async (userId) => {
+    const locationData = localStorage.getItem('tempLocationData');
+    if (!locationData) return;
+
+    try {
+      const response = await fetch(`https://kiqko-backend.onrender.com/api/users/${userId}/location`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: locationData
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        // Remove temp location data after successful save
+        localStorage.removeItem('tempLocationData');
+      }
+    } catch (error) {
+      console.error('Error saving location:', error);
+    }
+  };
+
+    return (
+       <section>
+      <section className="all-top-shape all-shape-inner">
+        <img src={shape} alt="shape" />
+      </section>
+      <div className="all-container margin-bottom-step">
+        <div className="all-container-inner setting-area position-top-all">
+          <Container>
+            <div className="all-seting-area">
+              <Row className="m-0-responsive">
+                <Col md={12} className="all-title-top mb-1 text-center">
+                  <h4>Location</h4>
+                </Col>
+                <Col md={12}>
+                  <p className="p-up-loc text-center mt-1">
+                    Please complete this form to create an account.
+                  </p>
+                </Col>
+              </Row>
+              
+              <Form onSubmit={handleSubmit}>
+                <Row className="m-0-responsive">
+                  <Col md={6}>
+                    <Form.Group className="mb-2">
+                      <Form.Control
+                        className="form-custom"
+                        type="text"
+                        name="city"
+                        placeholder="City / Town"
+                        value={formData.city}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  
+                  <Col md={6}>
+                    <Form.Group className="mb-2">
+                      <Form.Control
+                        className="form-custom"
+                        type="text"
+                        name="state"
+                        placeholder="State / Province"
+                        value={formData.state}
+                        onChange={handleChange}
+                      />
+                    </Form.Group>
+                  </Col>
+
+                  <Col md={6} className="mb-2">
+                    <Form.Select
+                      className="form-custom"
+                      size="lg"
+                      name="country"
+                      value={formData.country}
+                      onChange={handleChange}
+                      required
+                    >
+                            <option>Country</option>
                         <option value="Cambodia">Cambodia</option>
                     <option value="China">China</option>
                     <option value="Hong Kong">Hong Kong</option>
@@ -293,62 +368,69 @@ const Location = () => {
                     <option value="Yemen">Yemen</option>
                     <option value="Zambia">Zambia</option>
                     <option value="Zimbabwe">Zimbabwe</option>
-                        </Form.Select>
-                    </Col>
+                    </Form.Select>
+                  </Col>
 
-                    <Col md={6}>
-                        <Form.Group className="mb-2">
-                        <Form.Control className="form-custom" type="text" placeholder="Zip / Postal Code" />
-                        </Form.Group>
-                    </Col>
-                    <Col lg={12}>
-                                <div className="radio-list radio-list-location">
-                                <label>
-                                        Enable your location to
-                                        refine search
-                                    </label>
-                                    <Form.Check
-                                        type="switch" 
-                                        id="custom-switch"
-                                    />
-                                    
-                                </div>
-                            </Col>
-
-                 
-                        <Col md={6} className="text-center offset-md-3 btn-modal-round">
-                        <NavLink exact to="/headline">
-                            <Button className="full-width btn-all-landing margin-all-modal-btn btn" variant="link">
-                        Save<MdOutlineArrowForward className="arrow-sign" />
-                        </Button>
-                        </NavLink>
-                    </Col>
-
-                    </Row>
-                    <Row className="m-0-responsive">
-                        <hr className="hr-color mt-66"></hr>
-
-                        <p className="text-center app-p mb-0"><span><img src={downloadApp} alt="downloadApp" /></span>Download our app for:</p>
-
-                       <div className="col-md-12 text-center">
-                       <NavLink exact to="bout"><Button className="btn-app-link"> <img src={apps} alt="apps" /></Button></NavLink>
-                       <NavLink exact to="bout"><Button className="btn-app-link"> <img src={appg} alt="appg" /></Button></NavLink>
-                       </div>
-                    </Row>
-                    
-                    </Form>
+                  <Col md={6}>
+                    <Form.Group className="mb-2">
+                      <Form.Control
+                        className="form-custom"
+                        type="text"
+                        name="zipCode"
+                        placeholder="Zip / Postal Code"
+                        value={formData.zipCode}
+                        onChange={handleChange}
+                      />
+                    </Form.Group>
+                  </Col>
+                  
+                  <Col lg={12}>
+                    <div className="radio-list radio-list-location">
+                      <label>
+                        Enable your location to refine search
+                      </label>
+                      <Form.Check
+                        type="switch"
+                        id="custom-switch"
+                        name="enableLocation"
+                        checked={formData.enableLocation}
+                        onChange={handleChange}
+                      />
                     </div>
-                </Container>
-           
+                  </Col>
+
+                  <Col md={6} className="text-center offset-md-3 btn-modal-round">
+                    <Button
+                      type="submit"
+                      className="full-width btn-all-landing margin-all-modal-btn btn"
+                      variant="link"
+                    >
+                      Save<MdOutlineArrowForward className="arrow-sign" />
+                    </Button>
+                  </Col>
+                </Row>
+                
+                <Row className="m-0-responsive">
+                  <hr className="hr-color mt-66"></hr>
+                  <p className="text-center app-p mb-0">
+                    <span><img src={downloadApp} alt="downloadApp" /></span>
+                    Download our app for:
+                  </p>
+                  <div className="col-md-12 text-center">
+                    <NavLink exact to="bout"><Button className="btn-app-link"> <img src={apps} alt="apps" /></Button></NavLink>
+                    <NavLink exact to="bout"><Button className="btn-app-link"> <img src={appg} alt="appg" /></Button></NavLink>
+                  </div>
+                </Row>
+              </Form>
             </div>
-            {/* shape-footer-all */}
-            <div className="shape-footer-all">
-            <img src={bgweball} alt="bgweball" />
-            </div>
-            {/* shape-footer-all */}
+          </Container>
         </div>
-       
-        </section>
+        
+        <div className="shape-footer-all">
+          <img src={bgweball} alt="bgweball" />
+        </div>
+      </div>
+    </section>
     );
 };
 

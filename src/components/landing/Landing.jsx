@@ -44,7 +44,7 @@ const Landing = () => {
                     <Row>
                         <Col lg={6}>
 
-                        <NavLink exact to="/sign-up"><Button className="btn btn-landing-all bg-white-create" variant="light">
+                        <NavLink exact to="/disclaimer"><Button className="btn btn-landing-all bg-white-create" variant="light">
                                 <span className="create-icon-btn">
                                     <img src={craeicon} className="logo-image" alt="craeicon" />
                                 </span>

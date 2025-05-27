@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/esm/Col';
@@ -14,171 +13,188 @@ import { Button, Dropdown } from 'react-bootstrap';
 import './login.css';
 import { NavLink, useHistory } from 'react-router-dom';
 import CommonLayout from '../../../layouts/Common';
+import Swal from 'sweetalert2';
 
 const Login = () => {
-
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   setIsLoading(true);
 
-    try {
-      const response = await fetch('https://kiqko-backend.onrender.com/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usernameOrEmail, password }),
+  //   try {
+  //     const response = await fetch('https://kiqko-backend.onrender.com/api/auth/login', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ usernameOrEmail, password }),
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (data.success) {
+  //       Swal.fire({
+  //         icon: 'success',
+  //         title: 'Success!',
+  //         text: 'Login successful!',
+  //         timer: 2000,
+  //         showConfirmButton: false
+  //       });
+  //       localStorage.setItem('userId', data.user);
+  //       history.push('/profile');
+  //     } else {
+  //       Swal.fire({
+  //         icon: 'error',
+  //         title: 'Error',
+  //         text: data.message || 'Invalid credentials.',
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     Swal.fire({
+  //       icon: 'error',
+  //       title: 'Error',
+  //       text: 'Login failed. Please try again.',
+  //     });
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+const handleLogin = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+
+  try {
+    const response = await fetch('https://kiqko-backend.onrender.com/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usernameOrEmail, password }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Login successful!',
+        timer: 2000,
+        showConfirmButton: false
       });
 
-      const data = await response.json();
+      const userId = data.user;
+      localStorage.setItem('userId', userId);
 
-      if (data.success) {
-        alert('Login successful!');
-        //    localStorage.setItem('userId', data.user.id);
-
-    // Optionally save more user info
-    localStorage.setItem('userId', data.user);
-
-        history.push('/profile'); // or dashboard
-      } else {
-        alert(data.message || 'Invalid credentials.');
+      // 🔹 Send Location
+      const tempLocation = localStorage.getItem('tempLocationData');
+      if (tempLocation) {
+        const locationData = JSON.parse(tempLocation);
+        await fetch(`https://kiqko-backend.onrender.com/api/users/update-location/${userId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            city: locationData.city,
+            state: locationData.state,
+            country: locationData.country,
+          }),
+        });
+        localStorage.removeItem('tempLocationData');
       }
-    } catch (error) {
-      console.error(error);
-      alert('Login failed. Try again.');
+
+      // 🔹 Send Headline
+      const headlineData = localStorage.getItem('tempHeadlineData');
+      if (headline) {
+        const { headline } = JSON.parse(headlineData);
+        await fetch(`https://kiqko-backend.onrender.com/api/users/headline/${userId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ headline }),
+        });
+        localStorage.removeItem('headline');
+      }
+
+      // 🔹 Send Compliment
+      const complimentData = localStorage.getItem('tempComplimentData');
+      if (complimentData) {
+        const { compliment } = JSON.parse(complimentData);
+        await fetch(`https://kiqko-backend.onrender.com/api/users/compliment/${userId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ compliment }),
+        });
+        localStorage.removeItem('tempComplimentData');
+      }
+
+      // 🔹 Send Dealbreakers
+      const dealbreakerData = localStorage.getItem('tempDealbreakerData');
+      if (dealbreakerData) {
+        const { dealbreakers } = JSON.parse(dealbreakerData);
+        await fetch(`https://kiqko-backend.onrender.com/api/users/dealbreaker/${userId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dealbreakers }),
+        });
+        localStorage.removeItem('tempDealbreakerData');
+      }
+
+      // 🔹 Send About Essay
+      const aboutEssayData = localStorage.getItem('tempaboutYouEssay');
+      if (aboutEssayData) {
+        const { essay } = JSON.parse(aboutEssayData);
+        await fetch(`https://kiqko-backend.onrender.com/api/users/about/${userId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ about: essay }),
+        });
+        localStorage.removeItem('tempaboutYouEssay');
+      }
+
+      // 🔹 Send Photo
+      const profilePhoto = localStorage.getItem('profilePhoto');
+      if (profilePhoto) {
+        const formData = new FormData();
+        const blob = await (await fetch(profilePhoto)).blob();
+        formData.append('profilePhoto', blob, 'profile.jpg');
+
+        const uploadRes = await fetch(`https://kiqko-backend.onrender.com/api/users/upload-photo/${userId}`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          console.error('Photo upload failed');
+        } else {
+          localStorage.removeItem('profilePhoto');
+        }
+      }
+
+      // ✅ Done, go to profile
+      history.push('/profile');
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: data.message || 'Invalid credentials.',
+      });
     }
-  };
+  } catch (error) {
+    console.error(error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Login failed. Please try again.',
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
-    // <section className="login-page">
-    //   {/* Background Elements */}
-    //   <div className="login-background">
-    //     <div className="top-decoration">
-    //       <img src={shape} alt="decorative shape" className="floating-shape" />
-    //     </div>
-    //     <div className="bottom-decoration">
-    //       <img src={bgweball} alt="wave pattern" className="wave-pattern" />
-    //     </div>
-    //   </div>
-
-    //   {/* Main Content */}
-    //   <div className="login-container">
-    //     <Container>
-    //       <Row className="justify-content-center">
-    //         <Col lg={6} md={8}>
-    //           <div className="login-card">
-    //             {/* Header Section */}
-    //             <div className="login-header text-center mb-4">
-    //               <h2 className="welcome-text">Welcome Back</h2>
-    //               <p className="login-subtext">Sign in to access your account</p>
-    //             </div>
-
-    //             {/* Login Form */}
-    //             <Form onSubmit={handleLogin} className="auth-form">
-    //               <Row>
-    //                 {/* Username/Email Field */}
-    //                 <Col md={12} className="mb-3">
-    //                   <Form.Group controlId="usernameOrEmail">
-    //                     <Form.Label className="input-label">Username or Email</Form.Label>
-    //                     <div className="input-with-icon">
-    //                       <i className="bi bi-person input-icon"></i>
-    //                       <Form.Control
-    //                         type="text"
-    //                         placeholder="Enter your username or email"
-    //                         value={usernameOrEmail}
-    //                         onChange={(e) => setUsernameOrEmail(e.target.value)}
-    //                         className="modern-input"
-    //                         required
-    //                       />
-    //                     </div>
-    //                   </Form.Group>
-    //                 </Col>
-
-    //                 {/* Password Field */}
-    //                 <Col md={12} className="mb-3">
-    //                   <Form.Group controlId="password">
-    //                     <Form.Label className="input-label">Password</Form.Label>
-    //                     <div className="input-with-icon">
-    //                       <i className="bi bi-lock input-icon"></i>
-    //                       <Form.Control
-    //                         type="password"
-    //                         placeholder="Enter your password"
-    //                         value={password}
-    //                         onChange={(e) => setPassword(e.target.value)}
-    //                         className="modern-input"
-    //                         required
-    //                       />
-    //                       <i className="bi bi-eye-slash password-toggle"></i>
-    //                     </div>
-    //                   </Form.Group>
-    //                 </Col>
-
-    //                 {/* Remember Me & Forgot Password */}
-    //                 <Col md={12} className="mb-4">
-    //                   <div className="d-flex justify-content-between align-items-center">
-    //                     <Form.Check
-    //                       type="checkbox"
-    //                       id="rememberMe"
-    //                       label="Remember me"
-    //                       className="remember-check"
-    //                     />
-    //                     <NavLink to="/forgot-password" className="forgot-password">
-    //                       Forgot Password?
-    //                     </NavLink>
-    //                   </div>
-    //                 </Col>
-
-    //                 {/* Submit Button */}
-    //                 <Col md={12} className="mb-4">
-    //                   <Button type="submit" className="login-button w-100">
-    //                     Log In <MdOutlineArrowForward className="button-arrow" />
-    //                   </Button>
-    //                 </Col>
-
-    //                 {/* Sign Up Link */}
-    //                 <Col md={12} className="text-center mb-4">
-    //                   <p className="signup-prompt">
-    //                     Not a member yet? <NavLink to="/sign-up" className="signup-link">Create an account</NavLink>
-    //                   </p>
-    //                 </Col>
-
-    //                 {/* Divider */}
-    //                 <Col md={12} className="mb-4">
-    //                   <div className="divider-with-text">
-    //                     <span className="divider-line"></span>
-    //                     <span className="divider-text">or</span>
-    //                     <span className="divider-line"></span>
-    //                   </div>
-    //                 </Col>
-
-    //                 {/* App Download Section */}
-    //                 <Col md={12} className="text-center">
-    //                   <div className="app-download-section">
-    //                     <p className="download-text mb-3">
-    //                       <img src={downloadApp} alt="download" className="download-icon" />
-    //                       Get our mobile app for better experience
-    //                     </p>
-    //                     <div className="app-buttons">
-    //                       <Button variant="link" className="app-download-btn">
-    //                         <img src={apps} alt="App Store" />
-    //                       </Button>
-    //                       <Button variant="link" className="app-download-btn">
-    //                         <img src={appg} alt="Google Play" />
-    //                       </Button>
-    //                     </div>
-    //                   </div>
-    //                 </Col>
-    //               </Row>
-    //             </Form>
-    //           </div>
-    //         </Col>
-    //       </Row>
-    //     </Container>
-    //   </div>
-    // </section>
-
-   <CommonLayout>
+    <CommonLayout>
       <section className="all-top-shape">
         <img src={shape} alt="shape" />
         <h1>Sign In</h1>
@@ -231,8 +247,8 @@ const Login = () => {
                 </Row>
 
                 <Col md={6} className="text-center offset-md-3">
-                  <Button className="settings-btn mt-4" variant="primary" type="submit">
-                    Sign in
+                  <Button className="settings-btn mt-4" variant="primary" type="submit" disabled={isLoading}>
+                    {isLoading ? 'Signing in...' : 'Sign in'}
                   </Button>
                 </Col>
               </Form>
@@ -241,7 +257,7 @@ const Login = () => {
         </div>
       </div>
     </CommonLayout>
- );
+  );
 };
 
 export default Login;

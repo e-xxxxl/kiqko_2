@@ -41,9 +41,9 @@ const EmailVerified = () => {
                   
                     <Row className="m-0-responsive">
                         <Col md={6} className="text-center offset-md-3 btn-modal-round mt-4 pt-3 mb-4">
-                        <NavLink exact to="/login">
+                        <NavLink exact to="/location">
                             <Button className="full-width btn-all-landing margin-all-modal-btn btn" variant="link">
-                            Login<MdOutlineArrowForward className="arrow-sign" />
+                            Complete Account Creation<MdOutlineArrowForward className="arrow-sign" />
                         </Button>
                         </NavLink>
                     </Col>
