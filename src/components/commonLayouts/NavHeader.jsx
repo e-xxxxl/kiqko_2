@@ -1,110 +1,102 @@
 import React from 'react';
 import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar'
-import Col from 'react-bootstrap/esm/Col';
-import Row from 'react-bootstrap/esm/Row';
-import Container from 'react-bootstrap/esm/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import Container from 'react-bootstrap/Container';
 import { NavLink } from 'react-router-dom';
+import Dropdown from 'react-bootstrap/Dropdown';
 import './NavHeader.css';
-import useravatar from '../../assets/images/fev1.jpg';
 
+// Import your images
+import useravatar from '../../assets/images/fev1.jpg';
 import searchnav from '../../assets/images/searchnav.png';
 import golive from '../../assets/images/golive.png';
 import postvodeo from '../../assets/images/postvodeo.png';
 import uploadimage from '../../assets/images/uploadimage.png';
 import chat from '../../assets/images/chat.png';
 import notification from '../../assets/images/notification.png';
-
 import logoi from '../../assets/images/logo-inner.png';
-// import { NavDropdown } from 'react-bootstrap';
-// import settingView from '../../assets/images/myProfile.png';
-// import settingEdit from '../../assets/images/editPofile.png';
-// import settingUpload from '../../assets/images/updateLocation.png';
-// import settingReset from '../../assets/images/resetPassword.png';
-// import settingHide from '../../assets/images/hideProfile.png';
-// import settingDelete from '../../assets/images/deleteAccount.png';
-// import settingLogout from '../../assets/images/logout.png';
-// import manageMedia from '../../assets/images/manageMedia.png';
-// import viewedMe from '../../assets/images/viewedMe.png';
-// import myLikes from '../../assets/images/myLikes.png';
-// import likesMe from '../../assets/images/likesMe.png';
-// import yourm from '../../assets/images/yourm.png';
-// import blockedUsers from '../../assets/images/blockedUsers.png';
-
-
-import Dropdown from 'react-bootstrap/Dropdown'
 
 const NavHeader = () => {
     return (
-        <div>
-            <Navbar className="customHeader" bg="light" expand="lg">
-                <Container>
-                    <Row>
-                        <Col md={2} className="nav-grid-cutom">
-                            <h2 className="navLogo"> <NavLink exact to="/"><img src={logoi} alt="logoi" /></NavLink></h2>
-                        </Col>
-                        <Col md={9} className="nav-grid-cutom">
+        <Navbar expand="lg" className="customHeader" collapseOnSelect>
+            <Container fluid> {/* Use fluid for full width */}
+                {/* Logo - Always on the left */}
+                <Navbar.Brand as={NavLink} to="/">
+                    <img src={logoi} alt="logo" className="logo-img" />
+                </Navbar.Brand>
 
-                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                            <Navbar.Collapse id="basic-navbar-nav">
-                                <Nav className="m-auto custom-navbar">
-                                <NavLink exact to="/search-filters" activeClassName="active"><span><img src={searchnav} alt="searchnav" /></span>SEARCH</NavLink>
-                                    <NavLink exact to="" activeClassName="active"><span><img src={golive} alt="golive" /></span>Go Live</NavLink>
-                                    <NavLink exact to="/" activeClassName="active"><span><img src={postvodeo} alt="postvodeo" /></span>Post video</NavLink>
-                                    <NavLink exact to="/" activeClassName="active"><span><img src={uploadimage} alt="uploadimage" /></span>Upload Image</NavLink>
-                                    <NavLink exact to="/" activeClassName="active"><span><img src={chat} alt="chat" /></span>Chat</NavLink>
-                                    <NavLink exact to="/Notifications" activeClassName="active"><span><img src={notification} alt="notification" /></span>Notifications</NavLink>
-                                  
-                                </Nav>
-                            </Navbar.Collapse>
+                {/* Wrapper for Toggler and Mobile User Avatar, aligned to the right on small screens */}
+                <div className="d-flex align-items-center ms-auto">
+                    {/* Mobile User Avatar (visible only on small screens) */}
+                    <Nav className="d-lg-none me-3"> {/* d-lg-none hides it on 'lg' and up, me-3 adds space */}
+                        <Dropdown align="end" className="useravatar-dropdown-mobile">
+                            <Dropdown.Toggle id="dropdown-user-mobile" className="user-toggle">
+                                <div className="user-avatar-small">
+                                    <img src={useravatar} alt="user avatar" />
+                                </div>
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu className="dropdown-menu-custom">
+                                {/* Add your mobile dropdown items here */}
+                                <Dropdown.Item as={NavLink} to="/profile">Profile</Dropdown.Item>
+                                <Dropdown.Item as={NavLink} to="/settings">Settings</Dropdown.Item>
+                                <Dropdown.Item onClick={() => console.log('Logout')}>Logout</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </Nav>
 
-                            {/* <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                            <Navbar.Collapse id="basic-navbar-nav">
-                                <Nav className="m-auto custom-navbar">
-                                    <NavLink exact to="/profile" activeClassName="active">HOME</NavLink>
-                                    <NavLink exact to="/search-filters" activeClassName="active">SEARCH</NavLink>
-                                    <NavDropdown title="CONNECTIONS" id="basic-nav-dropdown" className="all-drop-down">
-                                        <NavDropdown.Item><NavLink exact to="/who-viewed-you" activeClassName="active"><img src={viewedMe} alt="viewedMe" />Who Viewed Me</NavLink></NavDropdown.Item>
-                                        <NavDropdown.Item><NavLink exact to="/who-likes-you" activeClassName="active"><img src={myLikes} alt="myLikes" />Who Likes Me</NavLink></NavDropdown.Item>
-                                        <NavDropdown.Item><NavLink exact to="/my-likes" activeClassName="active"><img src={likesMe} alt="likesMe" />My Likes</NavLink></NavDropdown.Item>
-                                        <NavDropdown.Item><NavLink exact to="/your-matches" activeClassName="active"><img src={yourm} alt="likesMe" />Your Matches</NavLink></NavDropdown.Item>
-                                        <NavDropdown.Item><NavLink exact to="/blocked-users" activeClassName="active"><img src={blockedUsers} alt="blockedUsers" />Blocked Users</NavLink></NavDropdown.Item>
-                                    </NavDropdown>
-                                    
+                    {/* Navbar Toggler (Hamburger Icon) */}
+                    <Navbar.Toggle aria-controls="responsive-navbar-nav" className="navbar-toggler-custom" />
+                </div>
 
-                                    <NavLink exact to="/notifications" activeClassName="active">NOTIFICATIONS</NavLink>
-                                    <NavLink exact to="/mailbox" activeClassName="active">MESSAGES</NavLink>
-                                   <NavDropdown title="SETTINGS" id="basic-nav-dropdown" className="all-drop-down setting-nav">
-                                    <Dropdown.Item><NavLink exact to="/profile" activeClassName="active"> <img src={settingView} alt="settingView" />View Profile</NavLink></Dropdown.Item>
-                                    <Dropdown.Item><NavLink exact to="/edit-basics" activeClassName="active"> <img src={settingEdit} alt="settingEdit" />Edit Profile </NavLink></Dropdown.Item>
-                                    <Dropdown.Item><NavLink exact to="/manage-media" activeClassName="active"><img src={manageMedia} alt="manageMedia" />Manage Media</NavLink></Dropdown.Item>
-                                    <Dropdown.Item><NavLink exact to="/reset-password"><img src={settingReset} alt="settingReset" />Reset Password</NavLink></Dropdown.Item>
-                                        <Dropdown.Item><NavLink exact to="/update-location"><img src={settingUpload} alt="settingUpload" />Update Location</NavLink></Dropdown.Item>
-                                        <Dropdown.Item> <NavLink exact to="/hide-profile"><img src={settingHide} alt="settingHide" />Hide Profile</NavLink></Dropdown.Item>
-                                        <Dropdown.Item><NavLink exact to="/delete-account"><img src={settingDelete} alt="settingDelete" />Delete Account</NavLink></Dropdown.Item>
-                                        <Dropdown.Item> <NavLink exact to="/logout"><img src={settingLogout} alt="settingLogout" />Logout</NavLink></Dropdown.Item>
-                                    </NavDropdown>
-                                </Nav>
-                            </Navbar.Collapse> */}
-                        </Col>
-                        <Col md={1}  className="nav-grid-cutom">
-                            <Dropdown className="useravatar-dropdown setting-drop-down">
-                                <Dropdown.Toggle id="dropdown-basic">
-                                    <div className="useravatar">
-                                        <img src={useravatar} alt="useravatar" />
-                                    </div>
-                                </Dropdown.Toggle>
-                                
-                            </Dropdown>
-                            
+                {/* Collapsible content (main nav links and desktop user avatar) */}
+                <Navbar.Collapse id="responsive-navbar-nav">
+                    {/* Main Navigation Links - Centered on desktop, full width vertical on mobile */}
+                    <Nav className="main-nav mx-auto my-3 my-lg-0">
+                        <NavLink to="/search-filters" className="nav-link-item" activeClassName="active">
+                            <span className="nav-icon"><img src={searchnav} alt="search" /></span>
+                            <span className="nav-text">SEARCH</span>
+                        </NavLink>
+                        <NavLink to="" className="nav-link-item" activeClassName="active">
+                            <span className="nav-icon"><img src={golive} alt="go live" /></span>
+                            <span className="nav-text">Go Live</span>
+                        </NavLink>
+                        <NavLink to="/" className="nav-link-item" activeClassName="active">
+                            <span className="nav-icon"><img src={postvodeo} alt="post video" /></span>
+                            <span className="nav-text">Post video</span>
+                        </NavLink>
+                        <NavLink to="/" className="nav-link-item" activeClassName="active">
+                            <span className="nav-icon"><img src={uploadimage} alt="upload" /></span>
+                            <span className="nav-text">Upload Image</span>
+                        </NavLink>
+                        <NavLink to="/chat" className="nav-link-item" activeClassName="active">
+                            <span className="nav-icon"><img src={chat} alt="chat" /></span>
+                            <span className="nav-text">Chat</span>
+                        </NavLink>
+                        <NavLink to="/Notifications" className="nav-link-item" activeClassName="active">
+                            <span className="nav-icon"><img src={notification} alt="notification" /></span>
+                            <span className="nav-text">Notifications</span>
+                        </NavLink>
+                    </Nav>
 
-                        </Col>
-                    </Row>
-
-
-                </Container>
-            </Navbar>
-        </div>
+                    {/* Desktop User Avatar (visible only on large screens and up) */}
+                    <Nav className="d-none d-lg-block ms-auto"> {/* d-none hides on small, d-lg-block shows on 'lg' and up */}
+                        <Dropdown align="end" className="useravatar-dropdown-desktop">
+                            <Dropdown.Toggle id="dropdown-user-desktop" className="user-toggle">
+                                <div className="user-avatar-desktop">
+                                    <img src={useravatar} alt="user avatar" />
+                                </div>
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu className="dropdown-menu-custom">
+                                {/* Add your desktop dropdown items here */}
+                                <Dropdown.Item as={NavLink} to="/profile">Profile</Dropdown.Item>
+                                <Dropdown.Item as={NavLink} to="/settings">Settings</Dropdown.Item>
+                                <Dropdown.Item onClick={() => console.log('Logout')}>Logout</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </Nav>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar>
     );
 };
 

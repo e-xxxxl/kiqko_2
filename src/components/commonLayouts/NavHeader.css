@@ -1,252 +1,238 @@
-.customHeader{
+/* NavHeader.css */
+
+.customHeader {
     background: #fff !important;
     padding-top: 11px;
     padding-bottom: 11px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); /* Added a subtle shadow */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
-h2.navLogo{
+
+.logo-img {
+    height: 40px; /* Adjust as needed */
+    width: auto;
+}
+
+h2.navLogo { /* This rule is now redundant as logo is an img within Navbar.Brand */
     color: #9272fd;
-    margin: 0px;font-size: 38px;
+    margin: 0px;
+    font-size: 38px;
 }
-h2.navLogo a{
-    color: #9272fd; 
+h2.navLogo a { /* This rule is now redundant */
+    color: #9272fd;
 }
-.customHeader #basic-navbar-nav {
-    margin-top: 10px;
-}
-.customHeader #basic-navbar-nav a {
+
+/* Styling for the main nav links inside the collapsed menu and on desktop */
+.customHeader .main-nav .nav-link-item { /* Targeted more specifically */
     padding: 2px 13px;
     font-size: 16px;
-    /* font-family: GothamRounded !important; */
     font-family: segoeui;
     text-decoration: none;
     color: #888084;
+    display: flex; /* Make it a flex container */
+    align-items: center; /* Vertically align icon and text */
+    white-space: nowrap; /* Prevent text wrapping */
+    flex-direction: row; /* Default to row for larger screens */
 }
-.customHeader #basic-navbar-nav a:hover {
+
+.customHeader .main-nav .nav-link-item:hover {
     color: #9272fd;
 }
-.useravatar{
-    width: 44px;
-    height: 44px;  
+
+.nav-icon img {
+    width: 22px;
+    height: 22px; /* Ensure height matches width */
+    margin-right: 5px; /* Space between icon and text */
+    position: static; /* Reset original positioning */
+    top: auto; /* Reset original positioning */
 }
-.useravatar img{
+
+
+/* Shared dropdown toggle styles for both avatar and hamburger */
+.useravatar-dropdown-mobile .user-toggle, /* Target mobile avatar toggle */
+.useravatar-dropdown-desktop .user-toggle, /* Target desktop avatar toggle */
+.navbar-toggler-custom { /* Target hamburger */
+    padding: 0px !important;
+    background: transparent !important;
+    border: 0px !important;
+    height: 44px; /* Maintain consistent height */
+    display: flex; /* Use flex to align icon/avatar vertically */
+    align-items: center;
+    justify-content: center; /* Center content within button */
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Hide default Bootstrap arrow on dropdown toggles */
+.useravatar-dropdown-mobile .user-toggle::after,
+.useravatar-dropdown-desktop .user-toggle::after {
+    display: none !important;
+}
+
+
+/* Avatar specific styling */
+.user-avatar-small img { /* Mobile avatar */
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.user-avatar-desktop img { /* Desktop avatar */
     width: 44px;
     height: 44px;
-    object-fit: contain;
+    object-fit: cover;
     border-radius: 8px;
 }
-.useravatar-dropdown .dropdown-toggle {
-    padding: 0px;
-    background: transparent !important;
-    border: 0px;
-    margin: 0px;
-    height: 44px;
-}
-.useravatar-dropdown .dropdown-toggle::after{
-display: none;
-}
-.custom-navbar {
-    right: 38px;
-    position: relative;
-}
-.custom-navbar .dropdown-toggle::after{
-    display: none;
-}
-.setting-drop-down .dropdown-menu{
-    left: -92px;
+
+
+/* General Dropdown Menu styles (applies to both mobile and desktop avatar dropdowns) */
+.dropdown-menu-custom {
+    left: auto !important; /* Allow Bootstrap to control horizontal position by default */
+    right: 0 !important; /* Align dropdown to the right of its toggle */
     margin-top: 12px;
-    box-shadow: 0 6px 12px rgb(0 0 0 / 23%);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.23); /* Original shadow */
     font-family: segoeui;
     font-size: 17px;
     border: 0px;
+    border-radius: 5px; /* Added for consistency */
 }
-.setting-drop-down .dropdown-menu .dropdown-item{
+
+.dropdown-menu-custom .dropdown-item {
     border-bottom: solid 1px #f1f1f1;
+    color: #212529; /* Original color */
+    padding: 0.75rem 1.25rem; /* Consistent padding */
 }
-.setting-drop-down .dropdown-menu .dropdown-item a{
+.dropdown-menu-custom .dropdown-item:last-child {
+    border-bottom: 0px;
+}
+.dropdown-menu-custom .dropdown-item a { /* Target NavLink inside dropdown item */
     color: #212529;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
 }
-div.all-drop-down a.dropdown-item {
-    color: #212529 !important;
+.dropdown-menu-custom .dropdown-item:hover,
+.dropdown-menu-custom .dropdown-item a:hover {
+    color: #9272fd !important;
+    background-color: #f8f9fa; /* Subtle hover background */
 }
-div.all-drop-down a.dropdown-item:hover{
-    color: #9272fd !important;  
-}
-.setting-drop-down .dropdown-menu .dropdown-item:last-child{
-    border-bottom: 0px;
-}
-.setting-drop-down .dropdown-menu .dropdown-item img{
+.dropdown-menu-custom .dropdown-item img {
     width: 40px;
-    height: 40px; margin-right: 7px;
+    height: 40px;
+    margin-right: 7px;
 }
-.setting-drop-down .dropdown-menu:before {
+.dropdown-menu-custom:before {
     width: 20px;
-    left: 0px;
-    right: 0px;
-    margin: auto;
+    left: auto; /* Reset left/right */
+    right: 15px; /* Position arrow consistently to the right */
+    margin: 0; /* Remove auto margin */
     position: absolute;
     display: table;
     content: url(../../assets/images/i_arr.png);
     top: -25px !important;
-
-}
-.setting-drop-down .dropdown-menu .dropdown-item:hover {
-    color: #9272fd;
 }
 
-.setting-drop-down .dropdown-menu .dropdown-item a:hover {
-    color: #9272fd;
-}
-.setting-drop-down .dropdown-menu{
-    left: -92px;
-    margin-top: 12px;
-    box-shadow: 0 6px 12px rgb(0 0 0 / 23%);
-    font-family: segoeui;
-    font-size: 17px;
-    border: 0px;
-}
-.setting-drop-down .dropdown-menu .dropdown-item{
-    border-bottom: solid 1px #f1f1f1;
-}
-.setting-drop-down .dropdown-menu .dropdown-item:last-child{
-    border-bottom: 0px;
-}
-.setting-drop-down .dropdown-menu .dropdown-item img{
-    width: 40px;
-    height: 40px; margin-right: 7px;
-}
-.setting-drop-down .dropdown-menu:before {
-    width: 20px;
-    left: 0px;
-    right: 0px;
-    margin: auto;
-    position: absolute;
-    display: table;
-    content: url(../../assets/images/i_arr.png);
-    top: -25px !important;
-
-}
-.setting-drop-down .dropdown-menu .dropdown-item:hover {
-    color: #9272fd;
-}
-
-.all-drop-down .dropdown-menu a{
-    color: #212529 !important; padding-left: 5px !important;
-}
-.all-drop-down .dropdown-menu a:hover{
-    color: #9272fd !important; 
-}
-.all-drop-down .dropdown-menu{
-    left: -27px;
-    margin-top: 18px;
-    box-shadow: 0 6px 12px rgb(0 0 0 / 23%);
-    font-family: segoeui;
-    font-size: 17px;
-    border: 0px;
-}
-.all-drop-down .dropdown-menu .dropdown-item{
-    border-bottom: solid 1px #f1f1f1;
-}
-.all-drop-down .dropdown-menu .dropdown-item:last-child{
-    border-bottom: 0px;
-}
-.all-drop-down .dropdown-menu .dropdown-item img{
-    width: 40px;
-    height: 40px; margin-right: 7px;
-}
-.all-drop-down .dropdown-menu:before {
-    width: 20px;
-    left: 0px;
-    right: 0px;
-    margin: auto;
-    position: absolute;
-    display: table;
-    content: url(../../assets/images/i_arr.png);
-    top: -25px !important;
-
-}
-.all-ting-drop-down .dropdown-menu .dropdown-item:hover {
-    color: #9272fd;
-}
-.setting-nav .dropdown-menu {
-    left: -70px;
-    margin-top: 18px;
-    box-shadow: 0 6px 12px rgb(0 0 0 / 23%);
-    font-family: segoeui;
-    font-size: 17px;
-    border: 0px;
-}
-.active{
+/* Active link styling */
+.active {
     color: #9272fd !important;
 }
-.all-drop-down .dropdown-menu a.active{
-    color: #9272fd !important;
-}
-.custom-navbar span img {
-    width: 22px;
-    top: -2px;
-    position: relative;
-    margin-right: 1px;
-}
-
-@media (min-width:200px) and (max-width:1080px) {
-.customHeader #basic-navbar-nav a {
-    padding: 2px 5px;
-}
-}
-@media (min-width:200px) and (max-width:900px) {
-h2.navLogo {
-    font-size: 30px;
-}
-}
 
 
-@media (min-width:200px) and (max-width:767px) {
-.nav-grid-cutom {
-    max-width: 33%;
+/* --- Media Queries for Mobile/Small Screens --- */
+
+@media (max-width: 991.98px) { /* Targets 'lg' breakpoint and below */
+
+    .customHeader .container-fluid {
+        /* Ensure logo is on left, and hamburger/avatar are on right */
+        display: flex;
+        flex-wrap: nowrap; /* Prevent elements from wrapping to next line */
+        justify-content: space-between; /* Pushes logo to left, other items to right */
+        align-items: center; /* Vertically centers content in the header row */
+    }
+
+    .customHeader .navbar-brand {
+        margin-right: auto !important; /* Ensures the logo stays on the far left */
+    }
+
+    /* Adjust the main navigation links when collapsed */
+    .customHeader #responsive-navbar-nav { /* ID from your NavHeader.js */
+        width: 100%;
+        position: absolute;
+        left: 0;
+        top: 100%; /* Positions the menu directly below the header */
+        z-index: 999; /* Ensure it's above other content */
+        background: #fff; /* Your original background color */
+        text-align: center;
+        padding: 20px 0; /* Vertical padding, no horizontal */
+        box-shadow: 3px 2px 2px #cecada; /* Your original shadow */
+    }
+
+    .customHeader .main-nav { /* Your main navigation container */
+        flex-direction: column; /* Stack items vertically */
+        width: 100%;
+        margin: 0 !important; /* Remove any Bootstrap auto margins */
+        padding: 0;
+    }
+
+    .customHeader .main-nav .nav-link-item {
+        padding: 12px 0; /* More vertical padding for clickable area */
+        width: 100%; /* Make each link take full width */
+        justify-content: center; /* Center content (icon + text) within each link */
+    }
+
+    /* Reposition dropdown menus to be centered on mobile */
+    .dropdown-menu-custom {
+        left: 50% !important; /* Center horizontally */
+        transform: translateX(-50%); /* Adjust for true centering */
+        right: auto !important; /* Reset right property */
+        width: 240px; /* Keep fixed width for mobile dropdowns */
+    }
+
+    .dropdown-menu-custom:before {
+        left: 50% !important; /* Center the arrow */
+        transform: translateX(-50%);
+        right: auto !important; /* Reset right property */
+    }
+
+    /* Hide the desktop avatar on small screens */
+    .useravatar-dropdown-desktop {
+        display: none !important;
+    }
+
+    /* Ensure mobile avatar is visible (this is handled by d-lg-none in JSX, but for explicit CSS control) */
+    .useravatar-dropdown-mobile {
+        display: block !important; /* Override Bootstrap's d-none if necessary */
+    }
 }
-.useravatar-dropdown.setting-drop-down.dropdown {
-    float: right;
+
+/* Original media queries from your CSS, adjusted for consistency */
+@media (min-width: 200px) and (max-width: 1080px) {
+    /* This range is quite broad, consider if this is truly needed or if default Bootstrap handles it */
+    .customHeader .main-nav .nav-link-item { /* Changed from #basic-navbar-nav a */
+        padding: 2px 5px;
+    }
 }
-button.navbar-toggler {
-    margin: auto;
-    display: table;
+
+@media (min-width: 200px) and (max-width: 900px) {
+    h2.navLogo {
+        font-size: 30px;
+    }
+    .logo-img { /* Ensure logo scales down with font size */
+        height: 30px;
+    }
 }
-.navbar-light .navbar-toggler {
- 
-    border-color: rgb(45 133 139);
-}
-div#basic-navbar-nav {
-    width: 100%;
-    position: absolute;
-    left: 0px;
-    z-index: 999;
-    background: #fff;
-    text-align: center;
-    padding-left: 5%;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    box-shadow: 3px 2px 2px #cecada;
-}
-.customHeader #basic-navbar-nav a {
-    color: #489298;
-}
-.setting-nav .dropdown-menu {
-    width: 240px;
-    margin: auto; left: inherit;
-}
-.all-drop-down .dropdown-menu{
-    width: 240px;
-    margin: auto; left: inherit; 
-}
-.all-drop-down .dropdown-menu:before {
-    top: 14px !important;
-}
-.all-drop-down .dropdown-menu {
-    margin-top: 12px !important;
-}
-}
-@media (min-width:200px) and (max-width:550px) {
-.custom-navbar {
-    right: 22px;
-}
+
+/* This media query range is redundant with (max-width: 991.98px) if 'lg' is your mobile breakpoint.
+   It's better to stick to standard Bootstrap breakpoints for clarity. I've mostly moved its rules to the
+   (max-width: 991.98px) block for simplicity. */
+/* @media (min-width:200px) and (max-width:767px) { ... } */
+
+@media (min-width: 200px) and (max-width: 550px) {
+    .custom-navbar { /* This rule is likely for desktop, so needs adjustment or removal */
+        right: auto; /* Remove relative positioning if not needed on mobile */
+        position: static;
+    }
 }
