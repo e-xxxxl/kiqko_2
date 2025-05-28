@@ -59,6 +59,7 @@ import ManageMedia from './components/settings/ManageMedia';
 import Report from './components/profile/Report';
 import Liveusers from './components/live-users/Liveusers';
 import Loginr from './components/landing/loginr/Loginr';
+import UserProfile from './components/profile/UserProfile';
 
 
 
@@ -112,6 +113,10 @@ function App() {
             <Route path="/dealbreaker">
               <Dealbreaker/>
             </Route>
+
+            <Route path="/userprofile/:userId">
+  <UserProfile/>
+</Route>     
             
 
             <Route path="/about-you">

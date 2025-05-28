@@ -1,4 +1,255 @@
-import React, { useEffect, useState } from "react";
+// import React, { useState, useEffect } from 'react';
+// import { useParams, NavLink } from 'react-router-dom';
+// import { MdNearMe, MdVerified, MdLocationOn, MdCalendarToday } from 'react-icons/md';
+// import { FaHeart, FaComment, FaVideo, FaEllipsisH } from 'react-icons/fa';
+// import { IoMdSend } from 'react-icons/io';
+// import { BsGenderAmbiguous, BsPerson, BsPeople, BsHeartFill } from 'react-icons/bs';
+// import { RiVipCrownLine } from 'react-icons/ri';
+// import { GiBodyHeight, GiFamilyHouse } from 'react-icons/gi';
+// import { HiOutlineEmojiHappy } from 'react-icons/hi';
+// import { BiBlock, BiHide } from 'react-icons/bi';
+// import { FiFlag } from 'react-icons/fi';
+
+// import shape from '../../assets/images/shape2.png';
+// import bgweball from '../../assets/images/bgweball.png';
+// import profile from '../../assets/images/profilep.jpg';
+// import verifiedBadge from '../../assets/images/verified-vac.png';
+// import vaccineIcon from '../../assets/images/vaccineIcon.png';
+// import { useHistory } from 'react-router-dom';
+// import ImageGallary from '../imageGallary/ImageGallary';
+// import SimilarUsersSection from './SimilarUsersSection/SimilarUsersSection';
+// import axios from 'axios';
+// import OnlineStatusUpdater from './OnlineUsers/OnlineStatusUpdater';
+
+// const UserProfile = () => {
+//        const currentUserId = localStorage.getItem('userId');
+//   const { userId } = useParams();
+//   const [user, setUser] = useState(null);
+//   const [profileDetails, setProfileDetails] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+//   const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
+//   const [isShowBlockUser, setIsBlockUser] = useState(false);
+//   const [message, setMessage] = useState('');
+
+//   useEffect(() => {
+//     const fetchUserProfile = async () => {
+//       try {
+//         setLoading(true);
+        
+//         const [userResponse, profileResponse] = await Promise.all([
+//           fetch(`https://kiqko-backend.onrender.com/api/users/profile/${userId}`),
+//           fetch(`https://kiqko-backend.onrender.com/api/users/profilee/${userId}`)
+//         ]);
+
+//         if (!userResponse.ok || !profileResponse.ok) {
+//           throw new Error('Failed to fetch user data');
+//         }
+
+//         const userData = await userResponse.json();
+//         const profileData = await profileResponse.json();
+
+//         setUser(userData);
+//         setProfileDetails(profileData);
+
+//       } catch (err) {
+//         setError(err.message);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchUserProfile();
+//   }, [userId]);
+
+//   const viewProfileImg = () => {
+//     // Implement image viewer modal
+//   };
+
+//   const handleSendMessage = async () => {
+//     if (!message.trim()) return;
+    
+//     try {
+//       // Implement send message API call
+//       setMessage('');
+//     } catch (err) {
+//       console.error('Failed to send message:', err);
+//     }
+//   };
+
+//   if (loading) return (
+//     <div className="flex justify-center items-center min-h-screen">
+//       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+//     </div>
+//   );
+
+//   if (error) return (
+//     <div className="text-center py-8 text-red-500">
+//       <p>Error loading profile: {error}</p>
+//       <button 
+//         onClick={() => window.location.reload()}
+//         className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+//       >
+//         Try Again
+//       </button>
+//     </div>
+//   );
+
+//   if (!user) return <div className="text-center py-8">User not found</div>;
+
+
+
+// const handleLike = async () => {
+//   try {
+//     const res = await axios.post('https://kiqko-backend.onrender.com/api/users/' + userId + '/like', {
+//       userId: currentUserId,
+//     });
+//     alert(res.data.message);
+//   } catch (err) {
+//     console.error('Like error:', err.response?.data || err.message);
+//     alert(err.response?.data?.message || 'Error');
+//   }
+
+//   console.log('currentUserId:', currentUserId);
+//   console.log('targetUserId:', userId);
+// };
+
+
+//   return (
+//     <>
+    
+//     <div className="container py-5">
+//   <div className="card shadow overflow-hidden">
+    
+//     {/* Cover Photo */}
+//     <div className="position-relative" style={{ height: "12rem", background: "linear-gradient(to right, #a855f7, #ec4899)" }}></div>
+
+//     {/* Profile Picture */}
+//     <div className="position-absolute top-100 start-50 translate-middle">
+//       <div className="position-relative">
+//         <img
+//           src={profileDetails?.profilephoto || profile}
+//           alt="profile"
+//           className="rounded-circle border border-white shadow"
+//           style={{ width: "8rem", height: "8rem", objectFit: "cover", cursor: "pointer" }}
+//           onClick={viewProfileImg}
+//         />
+//         {user.isVerified && (
+//           <div className="position-absolute bottom-0 end-0 bg-white p-1 rounded-circle shadow">
+//             <MdVerified className="text-primary fs-5" />
+//           </div>
+//         )}
+//       </div>
+//     </div>
+
+//     {/* Profile Info */}
+//     <div className="text-center mt-5 pt-5 px-3">
+//       <div className="d-flex justify-content-center align-items-center gap-2 mb-2">
+//         <h1 className="h4 fw-bold text-dark mb-0">{user.username}</h1>
+//         {user.isVaccinated && (
+//           <div className="position-relative">
+//             <img src={vaccineIcon} alt="vaccinated" className="img-fluid" style={{ width: "20px", height: "20px" }} />
+//             <div className="position-absolute start-50 translate-middle-x bg-white text-dark small p-2 rounded shadow d-none">
+//               Vaccinated <BsHeartFill className="text-danger" />
+//             </div>
+//           </div>
+//         )}
+//       </div>
+
+//       <div className="d-flex justify-content-center gap-4 text-muted mb-3">
+//         <div className="d-flex align-items-center">
+//           <MdLocationOn className="me-1" />
+//           <span>
+//             {profileDetails?.city && profileDetails?.country
+//               ? `${profileDetails.city}, ${profileDetails.country}`
+//               : 'Location not set'}
+//           </span>
+//         </div>
+//         <div className="d-flex align-items-center">
+//           <MdCalendarToday className="me-1" />
+//           <span>
+//             Member since {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+//           </span>
+//         </div>
+//       </div>
+
+//       {/* Action Buttons */}
+//       <div className="d-flex flex-wrap justify-content-center gap-2 mb-4">
+//         <button className="btn btn-outline-primary d-flex align-items-center gap-1">
+//           <IoMdSend />
+//           Message
+//         </button>
+//         <button onClick={handleLike} className="btn btn-outline-danger d-flex align-items-center gap-1">
+//           <FaHeart />
+//           Like
+//         </button>
+//         <NavLink to={`/chat/${userId}`} className="btn btn-outline-success d-flex align-items-center gap-1">
+//           <FaComment />
+//           Chat
+//         </NavLink>
+//         <button className="btn btn-outline-secondary d-flex align-items-center gap-1">
+//           <FaVideo />
+//           Video
+//         </button>
+
+//         {/* Dropdown */}
+//         <div className="dropdown">
+//           <button
+//             className="btn btn-outline-dark dropdown-toggle"
+//             type="button"
+//             data-bs-toggle="dropdown"
+//           >
+//             <FaEllipsisH />
+//           </button>
+//           <ul className="dropdown-menu">
+//             <li>
+//               <button
+//                 className="dropdown-item d-flex align-items-center gap-2"
+//                 onClick={() => setIsShowHideFormSearch(true)}
+//               >
+//                 <BiHide /> Hide from search
+//               </button>
+//             </li>
+//             <li>
+//               <button
+//                 className="dropdown-item d-flex align-items-center gap-2"
+//                 onClick={() => setIsBlockUser(true)}
+//               >
+//                 <BiBlock /> Block user
+//               </button>
+//             </li>
+//             <li>
+//               <NavLink
+//                 to={`/report/${userId}`}
+//                 className="dropdown-item d-flex align-items-center gap-2"
+//               >
+//                 <FiFlag /> Report
+//               </NavLink>
+//             </li>
+//           </ul>
+//         </div>
+//       </div>
+
+//       {/* Continue converting other sections like Bio Info, Headline, etc. */}
+//     </div>
+//   </div>
+
+//   {/* Modals and Additional Sections */}
+//   <SimilarUsersSection />
+//   {isShowHideFormSearch && <HideFormSearchModal onClose={() => setIsShowHideFormSearch(false)} userId={userId} />}
+//   {isShowBlockUser && <BlockUserModal onClose={() => setIsBlockUser(false)} userId={userId} />}
+// </div>
+
+    
+//     </>
+//   )
+// }
+
+// export default UserProfile
+
+
+import React, { useState, useEffect } from 'react';
+import { useParams, NavLink } from 'react-router-dom';
 import CommonLayout from "../../layouts/Common";
 import Col from "react-bootstrap/esm/Col";
 import Row from "react-bootstrap/esm/Row";
@@ -6,7 +257,7 @@ import Container from "react-bootstrap/esm/Container";
 import Form from "react-bootstrap/Form";
 // import { NavLink } from 'react-router-dom';
 //import Button from 'react-bootstrap/Button';
-import { NavLink } from "react-router-dom";
+
 import "./profile.css";
 import shape from "../../assets/images/shape2.png";
 import proficon from "../../assets/images/prof-icon.jpg";
@@ -95,64 +346,26 @@ import OnlineUsers from "./OnlineUsers/OnlineUsers";
 import OnlineStatusUpdater from "./OnlineUsers/OnlineStatusUpdater";
 import axios from "axios";
 
-const Profile = () => {
-  const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
-  const [isShowBlockUser, setIsBlockUser] = useState(false);
+const UserProfile = () => {
+  const currentUserId = localStorage.getItem('userId');
+  const { userId } = useParams();
   const [user, setUser] = useState(null);
   const [profileDetails, setProfileDetails] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [userLocation, setUserLocation] = useState(null);
-  const [media, setMedia] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
+  const [isShowBlockUser, setIsBlockUser] = useState(false);
+  const [message, setMessage] = useState('');
+  const [media, setMedia] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-  
+ const [userLocation, setUserLocation] = useState(null);
 
-  //    useEffect(() => {
-  //     const userId = localStorage.getItem('userId');
-  //     if (!userId) return;
-
-  //     const fetchUser = async () => {
-  //       try {
-  //         const res = await fetch(`https://kiqko-backend.onrender.com/api/users/profile/${userId}`);
-  //         const data = await res.json();
-
-  //         if (res.ok) {
-  //           setUser(data);
-  //         } else {
-  //           console.error(data.message);
-  //         }
-  //       } catch (err) {
-  //         console.error('Error fetching user profile:', err);
-  //       }
-  //     };
-
-  //     fetchUser();
-  //   }, []);
-  //   useEffect(() => {
-  //     const fetchOnlineCounts = async () => {
-  //       try {
-  //         const res = await fetch('/api/users/online-counts');
-  //         const data = await res.json();
-  //         setCounts(data);
-  //       } catch (err) {
-  //         console.error("Failed to fetch online counts:", err);
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     };
-
-  //     fetchOnlineCounts();
-
-  //     // Refresh every 30 seconds
-  //     const interval = setInterval(fetchOnlineCounts, 30000);
-  //     return () => clearInterval(interval);
-  //   }, []);
 
   useEffect(() => {
     const fetchLocation = async () => {
       try {
-        const userId = localStorage.getItem("userId");
+       
         const res = await fetch(
           `https://kiqko-backend.onrender.com/api/users/location/${userId}`
         );
@@ -167,173 +380,66 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (!userId) return;
-
-    const fetchProfileDetails = async () => {
-      const userId = localStorage.getItem("userId");
-
+    const fetchUserProfile = async () => {
       try {
-        const detailsRes = await fetch(
-          `https://kiqko-backend.onrender.com/api/users/profilee/${userId}`
-        );
-        const detailsData = await detailsRes.json();
-        console.log(detailsData);
+        setLoading(true);
+        
+        const [userResponse, profileResponse] = await Promise.all([
+          fetch(`https://kiqko-backend.onrender.com/api/users/profile/${userId}`),
+          fetch(`https://kiqko-backend.onrender.com/api/users/profilee/${userId}`)
+        ]);
 
-        if (detailsRes.ok) {
-          setProfileDetails(detailsData); // this will be the user's profile
-          // setDe(detailsData);
-        } else {
-          console.error("Error fetching profile:", detailsData.message);
+        if (!userResponse.ok || !profileResponse.ok) {
+          throw new Error('Failed to fetch user data');
         }
+
+        const userData = await userResponse.json();
+        const profileData = await profileResponse.json();
+
+        setUser(userData);
+        setProfileDetails(profileData);
+
+        // Mock media data - replace with actual API call
+        setMedia([
+          { _id: '1', url: profile },
+          { _id: '2', url: profile },
+          { _id: '3', url: profile },
+          { _id: '4', url: profile }
+        ]);
+
       } catch (err) {
-        console.error("Error:", err);
-      }
-    };
-
-    const fetchData = async () => {
-      try {
-        // Fetch basic user data
-        const userRes = await fetch(
-          `https://kiqko-backend.onrender.com/api/users/profile/${userId}`
-        );
-        const userData = await userRes.json();
-        console.log(userData);
-
-        if (userRes.ok) {
-          setUser(userData);
-
-          //  // Fetch additional profile details
-          //  const detailsRes = await fetch(`https://kiqko-backend.onrender.com/api/users/${userId}`);
-          //  const detailsData = await detailsRes.json();
-
-          //  if (detailsRes.ok) {
-          //    setProfileDetails(detailsData);
-          //  }
-        } else {
-          console.error(userData.message);
-        }
-      } catch (err) {
-        console.error("Error fetching data:", err);
+        setError(err.message);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
-    fetchData();
-    fetchProfileDetails();
-  }, []);
-  const userId = localStorage.getItem("userId");
-  useEffect(() => {
-    const fetchUserMedia = async () => {
-      if (!userId) {
-        setError("User not authenticated");
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        setIsLoading(true);
-        const response = await axios.get(
-          `https://kiqko-backend.onrender.com/api/users/${userId}/media`,
-          { withCredentials: true } // Add this to include cookies
-        );
-
-        console.log("API Response:", response.data); // Debug log
-
-        // Check response structure
-        if (response.data && Array.isArray(response.data)) {
-          // If the API returns an array directly
-          const normalizedMedia = response.data.map((item) => ({
-            _id: item._id || item.id,
-            url: item.url,
-          }));
-          setMedia(normalizedMedia);
-        } else if (response.data && Array.isArray(response.data.media)) {
-          // If the API returns an object with media array
-          const normalizedMedia = response.data.media.map((item) => ({
-            _id: item._id || item.id,
-            url: item.url,
-          }));
-          setMedia(normalizedMedia);
-        } else if (
-          response.data &&
-          response.data.profile &&
-          Array.isArray(response.data.profile.media)
-        ) {
-          // If the API returns a nested structure
-          const normalizedMedia = response.data.profile.media.map((item) => ({
-            _id: item._id || item.id,
-            url: item.url,
-          }));
-          setMedia(normalizedMedia);
-        } else {
-          // Fallback for empty state
-          setMedia([]);
-        }
-
-        setError(null);
-      } catch (err) {
-        console.error("Failed to fetch media:", err);
-        setError("Failed to load media. Please refresh the page.");
-        setMedia([]); // Reset to empty array on error
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserMedia();
+    fetchUserProfile();
   }, [userId]);
-  
- const openModal = (index) => {
-    setCurrentPhotoIndex(index);
+
+    const [Modal, open, close] = useModal("root", {
+      preventScroll: true,
+      closeOnOverlayClick: false,
+    });
+
+    const [imgObj, setImgObj] = useState({});
+      const [imgIndex, setImgIndex] = useState(0);
+      const [isDisabled, setIsDisabled] = useState(false);
+      const profileImgList = [
+        { imgUrl: profile, caption: "BeBold 2022 BeBless" },
+        // { imgUrl: img3, caption: 'Profile Picture -02' }
+      ];
+
+  const viewProfileImg = () => {
     setIsModalOpen(true);
+    setCurrentPhotoIndex(0);
   };
 
-  const closeModal = () => setIsModalOpen(false);
+  const openModal = (index) => {
+    setIsModalOpen(true);
+    setCurrentPhotoIndex(index);
+  };
 
-  const goToPrev = () =>
-    setCurrentPhotoIndex((prev) => (prev > 0 ? prev - 1 : media.length - 1));
-
-  const goToNext = () =>
-    setCurrentPhotoIndex((prev) => (prev < media.length - 1 ? prev + 1 : 0));
-
-
-  //   if (!user) return <p>Loading...</p>;
-
-  // Gallary Image View Start
-  const gallaryImgList = [
-    { imgUrl: profile, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile2, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile3, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile4, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile5, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile6, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile7, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile8, caption: "BeBold 2022 BeBless" },
-    // { imgUrl: img8, caption: 'BeBold 2022 BeBless' }
-  ];
-  // Gallary Image View End
-  // Profile Image View Start
-  const [Modal, open, close] = useModal("root", {
-    preventScroll: true,
-    closeOnOverlayClick: false,
-  });
-  const [imgObj, setImgObj] = useState({});
-  const [imgIndex, setImgIndex] = useState(0);
-  const [isDisabled, setIsDisabled] = useState(false);
-  const profileImgList = [
-    { imgUrl: profile, caption: "BeBold 2022 BeBless" },
-    // { imgUrl: img3, caption: 'Profile Picture -02' }
-  ];
-  function viewProfileImg() {
-    setImgObj(profileImgList[0]);
-    setImgIndex(0);
-    if (profileImgList.length <= 1) {
-      setIsDisabled(true);
-    }
-    open();
-  }
   const ImgViewer = () => (
     <Modal>
       <div className="popup-modal-viewer">
@@ -385,14 +491,81 @@ const Profile = () => {
         </button>
       </div>
     </Modal>
+
+    
   );
-  function previous() {
+
+   function previous() {
     utils.prevImg(profileImgList, setImgObj, setImgIndex, imgIndex);
   }
   function next() {
     utils.nextImg(profileImgList, setImgObj, setImgIndex, imgIndex);
   }
-  // Profile Image View End
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const goToPrev = () => {
+    setCurrentPhotoIndex((prevIndex) => 
+      prevIndex === 0 ? media.length - 1 : prevIndex - 1
+    );
+  };
+
+  const goToNext = () => {
+    setCurrentPhotoIndex((prevIndex) => 
+      prevIndex === media.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const handleSendMessage = async () => {
+    if (!message.trim()) return;
+    
+    try {
+      // Implement send message API call
+      setMessage('');
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    }
+  };
+
+  const handleLike = async () => {
+    try {
+      const res = await axios.post('https://kiqko-backend.onrender.com/api/users/' + userId + '/like', {
+        userId: currentUserId,
+      });
+      alert(res.data.message);
+    } catch (err) {
+      console.error('Like error:', err.response?.data || err.message);
+      alert(err.response?.data?.message || 'Error');
+    }
+  };
+
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="text-center py-8 text-red-500">
+      <p>Error loading profile: {error}</p>
+      <button 
+        onClick={() => window.location.reload()}
+        className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+      >
+        Try Again
+      </button>
+    </div>
+  );
+
+  if (!user) return <div className="text-center py-8">User not found</div>;
+
+//   const userLocation = {
+//     city: profileDetails?.city,
+//     country: profileDetails?.country
+//   };
+
   return (
     <CommonLayout>
       <ImgViewer />
@@ -435,7 +608,6 @@ const Profile = () => {
                             Live Users
                           </NavLink>
                         </li>
-
                         <li>
                           <NavLink
                             exact
@@ -558,7 +730,7 @@ const Profile = () => {
                   <div className="profile-main-part-area-inner mt-profile">
                     <div className="profile-details-area">
                       <div className="date-profile-top">
-                        <p className="member-p">Member since May 29, 2021</p>
+                        <p className="member-p">Member since {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                         <div className="last-online">
                           {" "}
                           <img src={calendar} alt="calendar" />
@@ -576,8 +748,6 @@ const Profile = () => {
                           />
                         </div>
                         <div className="profile-next-prev">
-                          {/* <Button className="btn-next-prev me-2"><img src={previcon} alt="prev" /></Button>
-                              <Button className="btn-next-prev ms-2"><img src={nexticon} alt="next" /></Button> */}
                           <span className="span-icon">
                             <img src={profilicon1} alt="profilicon1" />
                           </span>
@@ -596,14 +766,16 @@ const Profile = () => {
                       <div className="profile-user-details text-start">
                         <h1>
                           {user?.username}
-                          <span className="icon-profile">
-                            <img src={proficon} alt="proficon" />
-                            <span className="span-tooltip-profile">
-                              Verified!{" "}
-                              <img src={verifiedvac} alt="verifiedvac" />
+                          {user.isVerified && (
+                            <span className="icon-profile">
+                              <img src={proficon} alt="proficon" />
+                              <span className="span-tooltip-profile">
+                                Verified!{" "}
+                                <img src={verifiedvac} alt="verifiedvac" />
+                              </span>
                             </span>
-                          </span>
-{(profileDetails?.vaccinationStatus === 'vaccinated' ||
+                          )}
+     {(profileDetails?.vaccinationStatus === 'vaccinated' ||
   profileDetails?.vaccinationStatus === 'vaccinated_and_boosted') && (
   <span className="span-vac-icon">
     <NavLink exact to="">
@@ -618,14 +790,14 @@ const Profile = () => {
                         </h1>
 
                         <p className="address-p">
-                          {userLocation?.city && userLocation?.country ? (
-                            <span className="location-icon">
-                              <img src={location} alt="location" />{" "}
-                              {userLocation.city}, {userLocation.country}
-                            </span>
-                          ) : (
-                            <span>No location set</span>
-                          )}
+                                                 {userLocation?.city && userLocation?.country ? (
+                                                   <span className="location-icon">
+                                                     <img src={location} alt="location" />{" "}
+                                                     {userLocation.city}, {userLocation.country}
+                                                   </span>
+                                                 ) : (
+                                                   <span>No location set</span>
+                                                 )}
 
                           <Accordion
                             className="acc-wrapper-custom"
@@ -676,7 +848,7 @@ const Profile = () => {
                                     />
                                   )}
                                   <Dropdown.Item>
-                                    <NavLink exact to="/report">
+                                    <NavLink exact to={`/report/${userId}`}>
                                       <img src={reporticon} alt="reporticon" />{" "}
                                       Report
                                     </NavLink>
@@ -685,29 +857,6 @@ const Profile = () => {
                               </Accordion.Body>
                             </Accordion.Item>
                           </Accordion>
-                          {/* 
-                           <Dropdown className="dotted-drop">
-                              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                 <img src={threedots} alt="threedots" />
-                              </Dropdown.Toggle>
-                              <Dropdown.Menu>
-                                 <Dropdown.Item onClick={() => setIsShowHideFormSearch(true)}><img src={hideicona} alt="hideicona" /> Hide from search
-                                 </Dropdown.Item>
-                                 {isShowHideFormSearch && 
-                                 <HideFormSearch isShowHideFormSearch={isShowHideFormSearch} handleHideFormSearch={setIsShowHideFormSearch} />
-                                 }
-                                 <Dropdown.Item onClick={() => setIsBlockUser(true)}><img src={blockusericon} alt="blockusericon" /> Block user</Dropdown.Item>
-                                 {isShowBlockUser && 
-                                 <BlockUserPro isShowBlockUser={isShowBlockUser} handleBlockUser={setIsBlockUser} />
-                                 }
-                                 <Dropdown.Item>
-                                    <NavLink exact to="/report">
-                                       <img src={reporticon} alt="reporticon" /> Report
-                                    </NavLink>
-                                 </Dropdown.Item>
-                              </Dropdown.Menu>
-                           </Dropdown>
-                           */}
                         </p>
                         <div className="profile-user-details-inner">
                           {profileDetails ? (
@@ -758,50 +907,39 @@ const Profile = () => {
                                 </span>
                                 {profileDetails.hereFor || "Not specified"}
                               </h3>
-                              {/* Edit button for existing info */}
-                              <Link
-                                to="/edit-basics"
-                                className="btn btn-outline-primary mt-3"
-                              >
-                                Edit Information
-                              </Link>
                             </>
                           ) : (
-                            <Link
+                            <NavLink
                               to="/edit-profile"
                               className="btn btn-primary"
                             >
                               Add Your Information
-                            </Link>
+                            </NavLink>
                           )}
                         </div>
                       </div>
                       <div className="all-user-btn">
-                        <button className="btn mes-btn">
+                        <button className="btn mes-btn" onClick={handleSendMessage}>
                           <img src={icon1profile} alt="icon1profile" />
                           <span>Send Message</span>{" "}
                         </button>
-                        <NavLink exact to="">
-                          <button className="btn like-btn">
-                            {" "}
-                            <img src={icon2profile} alt="icon2profile" />{" "}
-                            <span>Like</span>{" "}
-                          </button>{" "}
-                        </NavLink>
-                        <NavLink exact to="">
+                        <button className="btn like-btn" onClick={handleLike}>
+                          {" "}
+                          <img src={icon2profile} alt="icon2profile" />{" "}
+                          <span>Like</span>{" "}
+                        </button>
+                        <NavLink exact to={`/chat/${userId}`}>
                           <button className="btn block-btn">
                             {" "}
                             <img src={icon3profile} alt="icon3profile" />{" "}
                             <span>Chat</span>{" "}
                           </button>{" "}
                         </NavLink>
-                        <NavLink exact to="">
-                          <button className="btn online-btn">
-                            {" "}
-                            <img src={icon4profile} alt="icon4profile" />{" "}
-                            <span>Video Call</span>{" "}
-                          </button>{" "}
-                        </NavLink>
+                        <button className="btn online-btn">
+                          {" "}
+                          <img src={icon4profile} alt="icon4profile" />{" "}
+                          <span>Video Call</span>{" "}
+                        </button>
                       </div>
                     </div>
                     <Row className="flex-direction-custom">
@@ -838,7 +976,6 @@ const Profile = () => {
                           </p>
                         </div>
 
-                        {/* Compliment */}
                         <div className="text-left">
                           <h2 className="mb-2">
                             Best compliment you've ever received:
@@ -848,7 +985,6 @@ const Profile = () => {
                           </p>
                         </div>
 
-                        {/* Dealbreakers */}
                         <div className="text-left">
                           <h2 className="text-xl font-semibold mb-2">
                             What are your dealbreakers?
@@ -891,140 +1027,129 @@ const Profile = () => {
                       <Col md={12} className="ps-4 pe-0">
                         <div className="middile-part-profile">
                           <div className="profile-detaild-middle pt-0">
-                           {/* Photos Section */}
-      <div className="mt-5">
-        <h3 className="text-start h3-all-title">
-          My Photos
-          <span className="details-count ps-2">{media.length}</span>
-        </h3>
+                            {/* Photos Section */}
+                            <div className="mt-5">
+                              <h3 className="text-start h3-all-title">
+                                My Photos
+                                <span className="details-count ps-2">{media.length}</span>
+                              </h3>
 
-        <div className="row g-3 mt-3">
-          {media.map((item, index) => (
-            <div
-              key={item._id}
-              className="col-6 col-md-4 col-lg-3 position-relative"
-              style={{ cursor: "pointer" }}
-              onClick={() => openModal(index)}
-            >
-              <div className="position-relative overflow-hidden border rounded">
-                {/* Hover Overlay */}
-                <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25 d-flex justify-content-center align-items-center opacity-0 hover-opacity-100 transition">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                     
-                    }}
-                    className="btn btn-light btn-sm rounded-circle"
-                    disabled={isLoading}
-                    aria-label="Delete photo"
-                  >
-                    <MdClear className="text-danger" />
-                  </button>
-                </div>
+                              <div className="row g-3 mt-3">
+                                {media.map((item, index) => (
+                                  <div
+                                    key={item._id}
+                                    className="col-6 col-md-4 col-lg-3 position-relative"
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => openModal(index)}
+                                  >
+                                    <div className="position-relative overflow-hidden border rounded">
+                                      <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25 d-flex justify-content-center align-items-center opacity-0 hover-opacity-100 transition">
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                          }}
+                                          className="btn btn-light btn-sm rounded-circle"
+                                          aria-label="Delete photo"
+                                        >
+                                          <MdClear className="text-danger" />
+                                        </button>
+                                      </div>
 
-                {/* Image */}
-                <img
-                  src={item.url}
-                  alt={`media-${item._id}`}
-                  className="img-fluid w-100 object-fit-cover"
-                  style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "https://via.placeholder.com/300";
-                  }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+                                      <img
+                                        src={item.url}
+                                        alt={`media-${item._id}`}
+                                        className="img-fluid w-100 object-fit-cover"
+                                        style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
+                                        onError={(e) => {
+                                          e.target.onerror = null;
+                                          e.target.src = "https://via.placeholder.com/300";
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
 
-      {/* Modal for Enlarged Photo View */}
-      {isModalOpen && (
-        <div
-          className="modal fade show d-block"
-          tabIndex="-1"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.9)" }}
-          onClick={closeModal}
-        >
-          <div
-            className="modal-dialog modal-dialog-centered modal-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-content bg-transparent border-0">
-              {/* Close Button */}
-              <button
-                type="button"
-                className="btn-close btn-close-white position-absolute top-0 end-0 m-3"
-                aria-label="Close"
-                onClick={closeModal}
-              ></button>
+                            {/* Modal for Enlarged Photo View */}
+                            {isModalOpen && (
+                              <div
+                                className="modal fade show d-block"
+                                tabIndex="-1"
+                                style={{ backgroundColor: "rgba(0, 0, 0, 0.9)" }}
+                                onClick={closeModal}
+                              >
+                                <div
+                                  className="modal-dialog modal-dialog-centered modal-xl"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <div className="modal-content bg-transparent border-0">
+                                    <button
+                                      type="button"
+                                      className="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                                      aria-label="Close"
+                                      onClick={closeModal}
+                                    ></button>
 
-              {/* Arrows */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToPrev();
-                }}
-                className="btn btn-dark position-absolute top-50 start-0 translate-middle-y"
-                aria-label="Prev"
-              >
-                <MdChevronLeft size={32} />
-              </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        goToPrev();
+                                      }}
+                                      className="btn btn-dark position-absolute top-50 start-0 translate-middle-y"
+                                      aria-label="Prev"
+                                    >
+                                      &lt;
+                                    </button>
 
-              {/* Image */}
-              <img
-                src={media[currentPhotoIndex]?.url}
-                alt={`Gallery ${currentPhotoIndex + 1}`}
-                className="img-fluid rounded mx-auto d-block"
-                style={{ maxHeight: "85vh", objectFit: "contain" }}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "https://via.placeholder.com/800?text=Not+Available";
-                }}
-              />
+                                    <img
+                                      src={media[currentPhotoIndex]?.url}
+                                      alt={`Gallery ${currentPhotoIndex + 1}`}
+                                      className="img-fluid rounded mx-auto d-block"
+                                      style={{ maxHeight: "85vh", objectFit: "contain" }}
+                                      onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = "https://via.placeholder.com/800?text=Not+Available";
+                                      }}
+                                    />
 
-              {/* Next */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToNext();
-                }}
-                className="btn btn-dark position-absolute top-50 end-0 translate-middle-y"
-                aria-label="Next"
-              >
-                <MdChevronRight size={32} />
-              </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        goToNext();
+                                      }}
+                                      className="btn btn-dark position-absolute top-50 end-0 translate-middle-y"
+                                      aria-label="Next"
+                                    >
+                                      &gt;
+                                    </button>
 
-              {/* Counter */}
-              <div className="text-white position-absolute bottom-0 start-50 translate-middle-x mb-3 bg-dark px-3 py-1 rounded-pill small">
-                {currentPhotoIndex + 1} / {media.length}
-              </div>
-            </div>
-          </div>
-        </div>
+                                    <div className="text-white position-absolute bottom-0 start-50 translate-middle-x mb-3 bg-dark px-3 py-1 rounded-pill small">
+                                      {currentPhotoIndex + 1} / {media.length}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
 
-)}
-
-{/* Video Section */}
-<div className="mt-5">
-  <h3 className="text-start h3-all-title">
-    Video<span className="details-count ps-2">1</span>
-  </h3>
-  <div className="row mt-3">
-    <div className="col-12 col-md-6 col-lg-4">
-      <div className="border rounded overflow-hidden">
-        <img
-          src={profilevid}
-          alt="profilevid"
-          className="img-fluid w-100"
-          style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
-        />
-      </div>
-    </div>
-  </div>
-</div>
-
+                            {/* Video Section */}
+                            <div className="mt-5">
+                              <h3 className="text-start h3-all-title">
+                                Video<span className="details-count ps-2">1</span>
+                              </h3>
+                              <div className="row mt-3">
+                                <div className="col-12 col-md-6 col-lg-4">
+                                  <div className="border rounded overflow-hidden">
+                                    <img
+                                      src={profilevid}
+                                      alt="profilevid"
+                                      className="img-fluid w-100"
+                                      style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
 
                             {/* About Me */}
                             <div className="mt-3">
@@ -1038,7 +1163,7 @@ const Profile = () => {
                             </div>
 
                             <h3 className="text-start h3-all-title mb-3 mt-2">
-                              I’m looking for…
+                              I'm looking for…
                             </h3>
                             <Row>
                               <Col md={8}>
@@ -1101,8 +1226,10 @@ const Profile = () => {
                                     className="form-custom"
                                     type="text"
                                     placeholder="Type your message here"
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
                                   />
-                                  <span className="send-span">
+                                  <span className="send-span" onClick={handleSendMessage}>
                                     <MdNearMe className="arrow-sign" />
                                   </span>
                                 </Form.Group>
@@ -1111,7 +1238,6 @@ const Profile = () => {
                           </div>
                         </div>
                       </Col>
-                      {/* md-9 */}
                     </Row>
                   </div>
                 </Col>
@@ -1127,4 +1253,5 @@ const Profile = () => {
     </CommonLayout>
   );
 };
-export default Profile;
+
+export default UserProfile;
