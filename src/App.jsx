@@ -60,6 +60,7 @@ import Report from './components/profile/Report';
 import Liveusers from './components/live-users/Liveusers';
 import Loginr from './components/landing/loginr/Loginr';
 import UserProfile from './components/profile/UserProfile';
+import Chat from './components/profile/Chat';
 
 
 
@@ -114,9 +115,15 @@ function App() {
               <Dealbreaker/>
             </Route>
 
+            <Route  path="/chat/:userId">
+  <Chat/>
+</Route> 
+
             <Route path="/userprofile/:userId">
   <UserProfile/>
-</Route>     
+</Route>   
+
+
             
 
             <Route path="/about-you">

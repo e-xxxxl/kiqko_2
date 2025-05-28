@@ -262,7 +262,7 @@ import "./profile.css";
 import shape from "../../assets/images/shape2.png";
 import proficon from "../../assets/images/prof-icon.jpg";
 import vaccineIcon from "../../assets/images/vaccineIcon.png";
-import profile from "../../assets/images/profilep.jpg";
+import profile from "../../assets/images/pfp.png";
 import profile2 from "../../assets/images/photo3.jpg";
 import profile3 from "../../assets/images/photo7.jpg";
 import profile4 from "../../assets/images/prs.png";
@@ -361,6 +361,8 @@ const UserProfile = () => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
  const [userLocation, setUserLocation] = useState(null);
 
+  const [isLoading, setIsLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -417,11 +419,90 @@ const UserProfile = () => {
     fetchUserProfile();
   }, [userId]);
 
-    const [Modal, open, close] = useModal("root", {
-      preventScroll: true,
-      closeOnOverlayClick: false,
-    });
+  const [Modal, open, close] = useModal("root", {
+  preventScroll: true,
+  closeOnOverlayClick: true,
+});
 
+
+
+     useEffect(() => {
+      const fetchUserMedia = async () => {
+        if (!userId) {
+          setError("User not authenticated");
+          setIsLoading(false);
+          return;
+        }
+  
+        try {
+          setIsLoading(true);
+          const response = await axios.get(
+            `https://kiqko-backend.onrender.com/api/users/${userId}/media`,
+            { withCredentials: true } // Add this to include cookies
+          );
+  
+          console.log("API Response:", response.data); // Debug log
+  
+          // Check response structure
+          if (response.data && Array.isArray(response.data)) {
+            // If the API returns an array directly
+            const normalizedMedia = response.data.map((item) => ({
+              _id: item._id || item.id,
+              url: item.url,
+            }));
+            setMedia(normalizedMedia);
+          } else if (response.data && Array.isArray(response.data.media)) {
+            // If the API returns an object with media array
+            const normalizedMedia = response.data.media.map((item) => ({
+              _id: item._id || item.id,
+              url: item.url,
+            }));
+            setMedia(normalizedMedia);
+          } else if (
+            response.data &&
+            response.data.profile &&
+            Array.isArray(response.data.profile.media)
+          ) {
+            // If the API returns a nested structure
+            const normalizedMedia = response.data.profile.media.map((item) => ({
+              _id: item._id || item.id,
+              url: item.url,
+            }));
+            setMedia(normalizedMedia);
+          } else {
+            // Fallback for empty state
+            setMedia([]);
+          }
+  
+          setError(null);
+        } catch (err) {
+          console.error("Failed to fetch media:", err);
+          setError("Failed to load media. Please refresh the page.");
+          setMedia([]); // Reset to empty array on error
+        } finally {
+          setIsLoading(false);
+        }
+      };
+  
+      fetchUserMedia();
+    }, [userId]);
+    
+   const openModal = (index) => {
+      setCurrentPhotoIndex(index);
+      setIsModalOpen(true);
+    };
+  
+    const closeModal = () => setIsModalOpen(false);
+  
+    const goToPrev = () =>
+      setCurrentPhotoIndex((prev) => (prev > 0 ? prev - 1 : media.length - 1));
+  
+    const goToNext = () =>
+      setCurrentPhotoIndex((prev) => (prev < media.length - 1 ? prev + 1 : 0));
+  
+  
+
+ 
     const [imgObj, setImgObj] = useState({});
       const [imgIndex, setImgIndex] = useState(0);
       const [isDisabled, setIsDisabled] = useState(false);
@@ -435,11 +516,7 @@ const UserProfile = () => {
     setCurrentPhotoIndex(0);
   };
 
-  const openModal = (index) => {
-    setIsModalOpen(true);
-    setCurrentPhotoIndex(index);
-  };
-
+ 
   const ImgViewer = () => (
     <Modal>
       <div className="popup-modal-viewer">
@@ -502,22 +579,7 @@ const UserProfile = () => {
     utils.nextImg(profileImgList, setImgObj, setImgIndex, imgIndex);
   }
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const goToPrev = () => {
-    setCurrentPhotoIndex((prevIndex) => 
-      prevIndex === 0 ? media.length - 1 : prevIndex - 1
-    );
-  };
-
-  const goToNext = () => {
-    setCurrentPhotoIndex((prevIndex) => 
-      prevIndex === media.length - 1 ? 0 : prevIndex + 1
-    );
-  };
-
+  
   const handleSendMessage = async () => {
     if (!message.trim()) return;
     
@@ -561,10 +623,9 @@ const UserProfile = () => {
 
   if (!user) return <div className="text-center py-8">User not found</div>;
 
-//   const userLocation = {
-//     city: profileDetails?.city,
-//     country: profileDetails?.country
-//   };
+
+
+
 
   return (
     <CommonLayout>
@@ -1027,13 +1088,13 @@ const UserProfile = () => {
                       <Col md={12} className="ps-4 pe-0">
                         <div className="middile-part-profile">
                           <div className="profile-detaild-middle pt-0">
-                            {/* Photos Section */}
+                                           {/* Photos Section */}
                             <div className="mt-5">
                               <h3 className="text-start h3-all-title">
                                 My Photos
                                 <span className="details-count ps-2">{media.length}</span>
                               </h3>
-
+                      
                               <div className="row g-3 mt-3">
                                 {media.map((item, index) => (
                                   <div
@@ -1043,18 +1104,22 @@ const UserProfile = () => {
                                     onClick={() => openModal(index)}
                                   >
                                     <div className="position-relative overflow-hidden border rounded">
+                                      {/* Hover Overlay */}
                                       <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25 d-flex justify-content-center align-items-center opacity-0 hover-opacity-100 transition">
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation();
+                                           
                                           }}
                                           className="btn btn-light btn-sm rounded-circle"
+                                          disabled={isLoading}
                                           aria-label="Delete photo"
                                         >
                                           <MdClear className="text-danger" />
                                         </button>
                                       </div>
-
+                      
+                                      {/* Image */}
                                       <img
                                         src={item.url}
                                         alt={`media-${item._id}`}
@@ -1070,7 +1135,7 @@ const UserProfile = () => {
                                 ))}
                               </div>
                             </div>
-
+                      
                             {/* Modal for Enlarged Photo View */}
                             {isModalOpen && (
                               <div
@@ -1084,13 +1149,15 @@ const UserProfile = () => {
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   <div className="modal-content bg-transparent border-0">
+                                    {/* Close Button */}
                                     <button
                                       type="button"
                                       className="btn-close btn-close-white position-absolute top-0 end-0 m-3"
                                       aria-label="Close"
                                       onClick={closeModal}
                                     ></button>
-
+                      
+                                    {/* Arrows */}
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -1099,9 +1166,10 @@ const UserProfile = () => {
                                       className="btn btn-dark position-absolute top-50 start-0 translate-middle-y"
                                       aria-label="Prev"
                                     >
-                                      &lt;
+                                      <MdChevronLeft size={32} />
                                     </button>
-
+                      
+                                    {/* Image */}
                                     <img
                                       src={media[currentPhotoIndex]?.url}
                                       alt={`Gallery ${currentPhotoIndex + 1}`}
@@ -1112,7 +1180,8 @@ const UserProfile = () => {
                                         e.target.src = "https://via.placeholder.com/800?text=Not+Available";
                                       }}
                                     />
-
+                      
+                                    {/* Next */}
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -1121,16 +1190,19 @@ const UserProfile = () => {
                                       className="btn btn-dark position-absolute top-50 end-0 translate-middle-y"
                                       aria-label="Next"
                                     >
-                                      &gt;
+                                      <MdChevronRight size={32} />
                                     </button>
-
+                      
+                                    {/* Counter */}
                                     <div className="text-white position-absolute bottom-0 start-50 translate-middle-x mb-3 bg-dark px-3 py-1 rounded-pill small">
                                       {currentPhotoIndex + 1} / {media.length}
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            )}
+                      
+                      )}
+                      
 
                             {/* Video Section */}
                             <div className="mt-5">

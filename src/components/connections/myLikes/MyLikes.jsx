@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CommonLayout from "../../../layouts/Common";
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/esm/Row';
@@ -29,7 +29,37 @@ import liveicon from '../../../assets/images/liveicon.png';
 import yourm from '../../../assets/images/yourm.png';
 import blockedUsers from '../../../assets/images/blockedUsers.png';
 import serr from '../../../assets/images/serr.png';
+import axios from 'axios';
 const MyLikes = () => {
+    const [likedUsers, setLikedUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const currentUserId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    const fetchLikedUsers = async () => {
+      try {
+        const res = await axios.get(
+          `https://kiqko-backend.onrender.com/api/users/likes/${currentUserId}`
+        );
+        setLikedUsers(res.data); // adjust if response shape is different
+      } catch (err) {
+        console.error("Failed to fetch liked users:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (currentUserId) fetchLikedUsers();
+  }, [currentUserId]);
+
+  const toggleFavorite = (id) => {
+    console.log(`Toggled favorite for user ${id}`);
+    // Implement unlike/like functionality here if needed
+  };
+
+  if (loading) return <div>Loading likes...</div>;
+
     return (
         <CommonLayout>
         <section className="all-top-shape"> 
@@ -91,65 +121,52 @@ const MyLikes = () => {
                     
                 </div>
             </Col>
-            <Col md={9}>
-                <div className="profile-main-part-area-inner bg-all-pages">
-                    <Col md={12} className="all-title-top mb-4 text-center">
-                        <h4>My Likes</h4>
-                    </Col>
-                    <Col className="photo-list-all all-margin-connection all-user-pic width-cons" md={12}>
-                                        <ul>
-                                        <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={myphoto} alt="myphoto" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={fev1} alt="fev1" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo2} alt="photo2" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo3} alt="photo3" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo4} alt="photo4" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo5} alt="photo5" />
-                                                </div>
-                                            </li>
-        
-        
-                                        </ul>
-                                    </Col>
-                </div>
-            </Col>
+
+
+<Col md={9}>
+  <div className="profile-main-part-area-inner bg-all-pages">
+    <Col md={12} className="all-title-top mb-4 text-center">
+      <h4>My Likes</h4>
+    </Col>
+    <Col
+      className="photo-list-all all-margin-connection all-user-pic width-cons"
+      md={12}
+    >
+      <ul>
+        {likedUsers.length === 0 && <li>No liked users found.</li>}
+
+        {likedUsers.map((user) => (
+          <li key={user._id || user.id}>
+            <div className="photo-list">
+              <span
+                className="close-photo"
+                onClick={() => toggleFavorite(user._id || user.id)}
+                style={{ cursor: "pointer" }}
+                title="Remove from likes"
+              >
+                <MdClear />
+              </span>
+              <NavLink to={`/userprofile/${user._id || user.id}`}>
+                <img
+                  src={
+                    user.profile?.profilephoto?.trim() ||
+                    "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                  }
+                  alt={user.username || "Liked user"}
+                  onError={(e) => {
+                    e.target.src =
+                      "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+                  }}
+                />
+              </NavLink>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </Col>
+  </div>
+</Col>;
+
             </Row>
             </Container>
             </div>

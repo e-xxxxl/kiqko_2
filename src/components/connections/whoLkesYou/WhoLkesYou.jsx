@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CommonLayout from "../../../layouts/Common";
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/esm/Row';
@@ -32,7 +32,31 @@ import yourm from '../../../assets/images/yourm.png';
 import blockedUsers from '../../../assets/images/blockedUsers.png';
 
 import serr from '../../../assets/images/serr.png';
+import axios from 'axios';
 const WhoLkesYou = () => {
+    const [whoLikedMe, setWhoLikedMe] = useState([]);
+  const [loading, setIsLoading] = useState(true);
+  const currentUserId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    const fetchWhoLikedMe = async () => {
+      try {
+        const res = await axios.get(
+          `https://kiqko-backend.onrender.com/api/users/liked-by/${currentUserId}`
+        );
+        setWhoLikedMe(res.data); // adjust if response structure differs
+      } catch (error) {
+        console.error("Error fetching who liked me:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (currentUserId) fetchWhoLikedMe();
+  }, [currentUserId]);
+
+  if (loading) return <div>Loading...</div>;
+
     return (
 
 
@@ -95,76 +119,49 @@ const WhoLkesYou = () => {
                     
                 </div>
             </Col>
-    <Col md={9}>
-        <div className="profile-main-part-area-inner bg-all-pages">
-            <Col md={12} className="all-title-top mb-4 text-center">
-                <h4>Who Likes You</h4>
-            </Col>
-            <Col className="photo-list-all all-margin-connection all-user-pic width-cons" md={12}>
-                                <ul>
-                                <li>
-                                        <div className="photo-list">
-                                            <span className="close-photo"><MdClear /></span>
-                                            <img src={myphoto} alt="myphoto" />
-                                        </div>
-                                    </li>
+   <Col md={9}>
+      <div className="profile-main-part-area-inner bg-all-pages">
+        <Col md={12} className="all-title-top mb-4 text-center">
+          <h4>Who Likes You</h4>
+        </Col>
+        <Col
+          className="photo-list-all all-margin-connection all-user-pic width-cons"
+          md={12}
+        >
+          <ul>
+            {whoLikedMe.length === 0 && <li>No users have liked you yet.</li>}
 
-
-                                    <li>
-                                        <div className="photo-list">
-                                            <span className="close-photo"><MdClear /></span>
-                                            <img src={fev1} alt="fev1" />
-                                        </div>
-                                    </li>
-
-
-                                    <li>
-                                        <div className="photo-list">
-                                            <span className="close-photo"><MdClear /></span>
-                                            <img src={photo2} alt="photo2" />
-                                        </div>
-                                    </li>
-
-
-                                    <li>
-                                        <div className="photo-list">
-                                            <span className="close-photo"><MdClear /></span>
-                                            <img src={photo3} alt="photo3" />
-                                        </div>
-                                    </li>
-
-
-                                    <li>
-                                        <div className="photo-list">
-                                            <span className="close-photo"><MdClear /></span>
-                                            <img src={photo4} alt="photo4" />
-                                        </div>
-                                    </li>
-
-
-                                    <li>
-                                        <div className="photo-list">
-                                            <span className="close-photo"><MdClear /></span>
-                                            <img src={photo5} alt="photo5" />
-                                        </div>
-                                    </li>
-
-
-                                    <li>
-                                        <div className="photo-list">
-                                            <span className="close-photo"><MdClear /></span>
-                                            <img src={photo6} alt="photo6" />
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className="photo-list">
-                                            <span className="close-photo"><MdClear /></span>
-                                            <img src={photo7} alt="photo7" />
-                                        </div>
-                                    </li>
-                                </ul>
-                            </Col>
-        </div>
+            {whoLikedMe.map((user) => (
+              <li key={user._id || user.id}>
+                <NavLink to={`/userprofile/${user._id || user.id}`}>
+                  <div className="photo-list">
+                    <span
+                      className="close-photo"
+                      title="Remove like"
+                      style={{ cursor: "pointer" }}
+                      // onClick handler for unliking can be added here
+                    >
+                      <MdClear />
+                    </span>
+                    <img
+                      src={
+                        user.profilephoto?.trim() ||
+                        user.profile?.profilephoto?.trim() ||
+                        "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                      }
+                      alt={user.username || "User who liked you"}
+                      onError={(e) => {
+                        e.target.src =
+                          "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+                      }}
+                    />
+                  </div>
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </Col>
+      </div>
     </Col>
     </Row>
     </Container>

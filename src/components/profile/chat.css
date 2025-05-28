@@ -1,0 +1,163 @@
+.table-all-mailbox {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.footer-table {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 5px;
+  border-top: 1px solid #eee;
+  margin-top: 10px;
+}
+
+/* Chat container styles */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 15px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+.chat-header h4 {
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background: #fafafa;
+}
+
+.message {
+  margin-bottom: 15px;
+  max-width: 70%;
+}
+
+.message.sent {
+  margin-left: auto;
+  text-align: right;
+}
+
+.message.received {
+  margin-right: auto;
+  text-align: left;
+}
+
+.message-content {
+  padding: 10px 15px;
+  border-radius: 18px;
+  display: inline-block;
+  position: relative;
+}
+
+.sent .message-content {
+  background: #9B72FE;
+  color: white;
+}
+
+.received .message-content {
+  background: white;
+  border: 1px solid #eee;
+  color: #333;
+}
+
+.message-time {
+  font-size: 11px;
+  color: #999;
+  margin-top: 5px;
+}
+
+.message-status {
+  margin-left: 5px;
+}
+
+/* Attachment preview */
+.attachment-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: #f5f5f5;
+  border-top: 1px solid #eee;
+}
+
+.attachment-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Chat input */
+.chat-input {
+  display: flex;
+  padding: 10px;
+  background: white;
+  border-top: 1px solid #eee;
+  position: relative;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+  margin: 0 10px;
+}
+
+.emoji-button, .attachment-button, .send-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.emoji-button:hover, .attachment-button:hover {
+  background: #f5f5f5;
+}
+
+.send-button {
+  background: #9B72FE;
+  color: white;
+}
+
+.send-button:disabled {
+  background: #ddd;
+  cursor: not-allowed;
+}
+
+.emoji-picker {
+  position: absolute;
+  bottom: 60px;
+  left: 10px;
+  z-index: 10;
+}
