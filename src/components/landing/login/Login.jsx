@@ -153,7 +153,7 @@ if (tempVaccinationStatus) {
       }
 
       // 🔹 Send About Essay
-      const aboutEssayData = localStorage.getItem('tempaboutYouEssay');
+      const aboutEssayData = localStorage.getItem('tempAboutYouEssay');
       if (aboutEssayData) {
         const { essay } = JSON.parse(aboutEssayData);
         await fetch(`https://kiqko-backend.onrender.com/api/users/about/${userId}`, {

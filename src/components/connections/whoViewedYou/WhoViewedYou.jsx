@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CommonLayout from "../../../layouts/Common";
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/esm/Row';
@@ -31,7 +31,49 @@ import liveicon from '../../../assets/images/liveicon.png';
 import yourm from '../../../assets/images/yourm.png';
 import blockedUsers from '../../../assets/images/blockedUsers.png';
 import serr from '../../../assets/images/serr.png';
+import axios from 'axios';
+
 const WhoViewedYou = () => {
+
+// Your existing code with the click handler and navigation added
+const userId = localStorage.getItem('userId');
+const [viewers, setViewers] = useState([]);
+
+useEffect(() => {
+  const userId = localStorage.getItem("userId");
+  if (!userId) return;
+  
+  const fetchViewers = async () => {
+    try {
+      // Step 1: Get the list of viewer IDs
+      const viewerIdsRes = await fetch(`https://kiqko-backend.onrender.com/api/users/${userId}/profile-viewers`);
+      const viewerIds = await viewerIdsRes.json();
+      
+      // Step 2: Fetch data for each viewer (profile + profilephoto)
+      const viewerDataPromises = viewerIds.map(async (viewerId) => {
+        const [basicRes, profileRes] = await Promise.all([
+          fetch(`https://kiqko-backend.onrender.com/api/users/profile/${viewerId}`),
+          fetch(`https://kiqko-backend.onrender.com/api/users/profilee/${viewerId}`)
+        ]);
+        const basicData = await basicRes.json();
+        const profileData = await profileRes.json();
+        
+        return {
+          _id: viewerId,
+          username: basicData.username,
+          profilephoto: profileData.profilephoto || "/default-profile.png"
+        };
+      });
+      
+      const viewerData = await Promise.all(viewerDataPromises);
+      setViewers(viewerData);
+    } catch (err) {
+      console.error("Failed to load viewer data:", err);
+    }
+  };
+  
+  fetchViewers();
+}, []);
     return (
         <CommonLayout>
         <section className="all-top-shape"> 
@@ -92,77 +134,40 @@ const WhoViewedYou = () => {
                     
                 </div>
             </Col>
-            <Col md={9}>
-                <div className="profile-main-part-area-inner bg-all-pages con-width-all">
-                    <Col md={12} className="all-title-top mb-4 text-center">
-                        <h4>Who Viewed You</h4>
-                    </Col>
-                    <Col className="photo-list-all all-margin-connection all-user-pic width-cons" md={12}>
-                                        <ul>
-                                        <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={myphoto} alt="myphoto" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={fev1} alt="fev1" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo2} alt="photo2" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo3} alt="photo3" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo4} alt="photo4" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo5} alt="photo5" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo6} alt="photo6" />
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo7} alt="photo7" />
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </Col>
-                </div>
-            </Col>
+   <Col md={9}>
+  <div className="profile-main-part-area-inner bg-all-pages con-width-all">
+    <Col md={12} className="all-title-top mb-4 text-center">
+      <h4>Who Viewed You</h4>
+    </Col>
+    <Col className="photo-list-all all-margin-connection all-user-pic width-cons" md={12}>
+      <ul>
+        {viewers.map((viewer) => (
+          <li key={viewer._id}>
+            <NavLink to={`/userprofile/${viewer._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <div className="photo-list text-center" style={{ cursor: 'pointer' }}>
+                <span className="close-photo"><MdClear /></span>
+                <img
+                  src={
+                    viewer.profilephoto?.trim() ||
+                    profilephoto?.trim() ||
+                    'https://cdn-icons-png.flaticon.com/512/847/847969.png'
+                  }
+                  alt={viewer.username}
+                  style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                  onError={(e) => {
+                    e.target.src = 'https://cdn-icons-png.flaticon.com/512/847/847969.png';
+                  }}
+                />
+                <p className="text-center mt-2">{viewer.username}</p>
+              </div>
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+    </Col>
+  </div>
+</Col>
+
             </Row>
             </Container>
             </div>

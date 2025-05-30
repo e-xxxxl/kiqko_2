@@ -364,6 +364,29 @@ const UserProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
 
 
+useEffect(() => {
+  const recordProfileView = async () => {
+    if (!currentUserId || !userId || currentUserId === userId) {
+      console.log("Skipping profile view: invalid IDs or self-view", { currentUserId, userId });
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:5000/api/users/profile-view`,
+        {
+          viewerId: currentUserId,
+          viewedUserId: userId,
+        }
+      );
+      console.log(`Profile view recorded for user ${userId} by viewer ${currentUserId}`, response.data);
+    } catch (err) {
+      console.error("Failed to record profile view:", err.response?.data || err.message);
+    }
+  };
+
+  recordProfileView();
+}, [currentUserId, userId]);
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -486,6 +509,10 @@ const UserProfile = () => {
   
       fetchUserMedia();
     }, [userId]);
+
+
+
+    
     
    const openModal = (index) => {
       setCurrentPhotoIndex(index);

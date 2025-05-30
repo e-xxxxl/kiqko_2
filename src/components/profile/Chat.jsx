@@ -97,185 +97,158 @@ import axios from "axios";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
   import io from 'socket.io-client';
   import Picker from 'emoji-picker-react';
-  import { Send, Paperclip, Smile, X, Image, FileText, Check, CheckCheck } from 'lucide-react';
+  import { Send, Paperclip, Smile, X, Image, FileText, Check, CheckCheck, MoreHorizontal } from 'lucide-react';
+import { Tab, Tabs } from "react-bootstrap";
+import Sent from "../mailbox/Sent";
+import Saved from "../mailbox/Saved";
+import EmojiPicker from "emoji-picker-react";
+import Messages from "./Messages";
   const socket = io('https://kiqko-backend.onrender.com');
 const Chat = () => {
-     const { userId } = useParams();
-    const currentUserId = localStorage.getItem('userId');
-
-    const [messages, setMessages] = useState([]);
-    const [input, setInput] = useState('');
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const [typingStatus, setTypingStatus] = useState(false);
-    const [lastSeen, setLastSeen] = useState(null);
-    const [attachment, setAttachment] = useState(null);
+   const { userId } = useParams();
+  const currentUserId = localStorage.getItem('userId');
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [typingStatus, setTypingStatus] = useState(false);
+  const [lastSeen, setLastSeen] = useState(null);
+  const [attachment, setAttachment] = useState(null);
   const [user, setUser] = useState(null);
-    const [profileDetails, setProfileDetails] = useState(null);
-    const chatRef = useRef();
-   
+  const [profileDetails, setProfileDetails] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const chatRef = useRef();
+ 
 
-    useEffect(() => {
-      if (!currentUserId) return;
-
-      socket.emit('register', currentUserId);
-
-      const handleReceiveMessage = (data) => {
-    setMessages((prev) => {
-      const index = prev.findIndex(
-        (msg) =>
-          msg.sender === data.sender &&
-          msg.receiver === data.receiver &&
-          msg.timestamp === data.timestamp
-      );
-
-      if (index !== -1) {
-        const updated = [...prev];
-        updated[index] = { ...data, status: 'delivered' };
-        return updated;
-      }
-
-      if (data.receiver === currentUserId) {
-        socket.emit('message_delivered', data._id);
-        data.status = 'delivered';
-
-        // // 🔊 Play sound only if it's a new incoming message
-        // audio.play().catch((err) => console.error("Audio play error:", err));
-      }
-
-      return [...prev, data];
-    });
-  };
-
-
-      const handleDeliveredConfirm = (msgId) => {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg._id === msgId ? { ...msg, status: 'delivered' } : msg
-          )
-        );
-      };
-
-      // Handle typing status from other user
-      const handleTypingStatus = (typingUserId) => {
-        setTypingStatus(typingUserId === userId);
-      };
-
-      // Handle last seen update
-      const handleLastSeen = (userLastSeen) => {
-        setLastSeen(userLastSeen);
-      };
-
-      socket.on('receive_message', handleReceiveMessage);
-      socket.on('message_delivered_confirm', handleDeliveredConfirm);
-      socket.on('typing', handleTypingStatus);
-      socket.on('user_last_seen', handleLastSeen);
-
-      return () => {
-        socket.off('receive_message', handleReceiveMessage);
-        socket.off('message_delivered_confirm', handleDeliveredConfirm);
-        socket.off('typing', handleTypingStatus);
-        socket.off('user_last_seen', handleLastSeen);
-      };
-    }, [currentUserId, userId]);
-
-    useEffect(() => {
-      const fetchMessages = async () => {
-        try {
-          setMessages([]); // Clear previous chat messages
-
-          const res = await fetch(`https://kiqko-backend.onrender.com/api/messages/${currentUserId}/${userId}`);
-          const data = await res.json();
-          const msgsWithStatus = data.map((msg) => ({
-            ...msg,
-            status: 'delivered',
-          }));
-          setMessages(msgsWithStatus);
-        } catch (err) {
-          console.error(err);
-        }
-      };
-
-      if (userId && currentUserId) fetchMessages();
-    }, [currentUserId, userId]);
-
-
+  // Fetch user and profile details
   useEffect(() => {
-    
-      if (!userId) return;
+    if (!userId) return;
 
-      const fetchProfileDetails = async () => {
-      
+    const fetchData = async () => {
+      try {
+        // Fetch basic user data
+        const userRes = await fetch(`https://kiqko-backend.onrender.com/api/users/profile/${userId}`);
+        const userData = await userRes.json();
+        if (!userRes.ok) throw new Error(userData.message);
+        setUser(userData);
 
-        try {
-          const detailsRes = await fetch(
-            `https://kiqko-backend.onrender.com/api/users/profilee/${userId}`
-          );
-          const detailsData = await detailsRes.json();
-          console.log(detailsData);
-
-          if (detailsRes.ok) {
-            setProfileDetails(detailsData); // this will be the user's profile
-            // setDe(detailsData);
-          } else {
-            console.error("Error fetching profile:", detailsData.message);
-          }
-        } catch (err) {
-          console.error("Error:", err);
-        }
-      };
-
-      const fetchData = async () => {
-        try {
-          // Fetch basic user data
-          const userRes = await fetch(
-            `https://kiqko-backend.onrender.com/api/users/profile/${userId}`
-          );
-          const userData = await userRes.json();
-          console.log(userData);
-
-          if (userRes.ok) {
-            setUser(userData);
-
-            //  // Fetch additional profile details
-            //  const detailsRes = await fetch(`https://kiqko-backend.onrender.com/api/users/${userId}`);
-            //  const detailsData = await detailsRes.json();
-
-            //  if (detailsRes.ok) {
-            //    setProfileDetails(detailsData);
-            //  }
-          } else {
-            console.error(userData.message);
-          }
-        } catch (err) {
-          console.error("Error fetching data:", err);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      fetchData();
-      fetchProfileDetails();
-    }, []);
-    
-
-    useEffect(() => {
-      chatRef.current?.scrollTo(0, chatRef.current.scrollHeight);
-    }, [messages]);
-
-    // Notify typing on input change with debounce
-    useEffect(() => {
-      if (!currentUserId || !userId) return;
-
-      if (input) {
-        socket.emit('typing', { from: currentUserId, to: userId });
-      } else {
-        socket.emit('typing', { from: currentUserId, to: userId, typing: false });
+        // Fetch additional profile details
+        const detailsRes = await fetch(`https://kiqko-backend.onrender.com/api/users/profilee/${userId}`);
+        const detailsData = await detailsRes.json();
+        if (!detailsRes.ok) throw new Error(detailsData.message);
+        setProfileDetails(detailsData);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      } finally {
+        setIsLoading(false);
       }
-    }, [input, currentUserId, userId]);
+    };
 
+    fetchData();
+  }, [userId]);
 
+  // Fetch messages
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        setMessages([]); // Clear previous chat messages
+        const res = await fetch(`https://kiqko-backend.onrender.com/api/messages/${currentUserId}/${userId}`);
+        const data = await res.json();
+        const msgsWithStatus = data.map((msg) => ({
+          ...msg,
+          status: 'delivered',
+        }));
+        setMessages(msgsWithStatus);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-    const dataURLtoFile = (dataurl, filename) => {
+    if (userId && currentUserId) fetchMessages();
+  }, [currentUserId, userId]);
+
+  // Socket.io event handling
+  useEffect(() => {
+    if (!currentUserId || !socket.connected) return;
+
+    socket.emit('register', currentUserId);
+
+    const handleReceiveMessage = (data) => {
+      setMessages((prev) => {
+        const index = prev.findIndex(
+          (msg) =>
+            msg.sender === data.sender &&
+            msg.receiver === data.receiver &&
+            msg.timestamp === data.timestamp
+        );
+
+        if (index !== -1) {
+          const updated = [...prev];
+          updated[index] = { ...data, status: 'delivered' };
+          return updated;
+        }
+
+        if (data.receiver === currentUserId) {
+          socket.emit('message_delivered', data._id);
+          data.status = 'delivered';
+        }
+
+        return [...prev, data];
+      });
+    };
+
+    const handleDeliveredConfirm = (msgId) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg._id === msgId ? { ...msg, status: 'delivered' } : msg
+        )
+      );
+    };
+
+    const handleTypingStatus = (typingUserId) => {
+      setTypingStatus(typingUserId === userId);
+    };
+
+    const handleLastSeen = (userLastSeen) => {
+      setLastSeen(userLastSeen);
+    };
+
+    socket.on('receive_message', handleReceiveMessage);
+    socket.on('message_delivered_confirm', handleDeliveredConfirm);
+    socket.on('typing', handleTypingStatus);
+    socket.on('user_last_seen', handleLastSeen);
+
+    return () => {
+      socket.off('receive_message', handleReceiveMessage);
+      socket.off('message_delivered_confirm', handleDeliveredConfirm);
+      socket.off('typing', handleTypingStatus);
+      socket.off('user_last_seen', handleLastSeen);
+    };
+  }, [currentUserId, userId, socket.connected]);
+
+  // Scroll to bottom of chat
+  useEffect(() => {
+    const chatContainer = chatRef.current;
+    if (chatContainer) {
+      const lastMessage = chatContainer.lastElementChild;
+      if (lastMessage) {
+        lastMessage.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [messages]);
+
+  // Notify typing status
+  useEffect(() => {
+    if (!currentUserId || !userId) return;
+
+    if (input) {
+      socket.emit('typing', { from: currentUserId, to: userId });
+    } else {
+      socket.emit('typing', { from: currentUserId, to: userId, typing: false });
+    }
+  }, [input, currentUserId, userId]);
+
+  // Convert data URL to file
+  const dataURLtoFile = (dataurl, filename) => {
     const arr = dataurl.split(',');
     const mime = arr[0].match(/:(.*?);/)[1];
     const bstr = atob(arr[1]);
@@ -289,12 +262,11 @@ const Chat = () => {
     return new File([u8arr], filename, { type: mime });
   };
 
-
-    const handleSend = async () => {
+  // Handle sending messages
+  const handleSend = async () => {
     if (!input.trim() && !attachment) return;
 
     const timestamp = new Date().toISOString();
-
     let attachmentUrl = null;
 
     if (attachment) {
@@ -308,9 +280,11 @@ const Chat = () => {
         });
 
         const result = await res.json();
+        if (!res.ok) throw new Error(result.message);
         attachmentUrl = result.url;
       } catch (err) {
         console.error('Upload failed:', err);
+        return; // Prevent sending message if upload fails
       }
     }
 
@@ -334,43 +308,50 @@ const Chat = () => {
     setShowEmojiPicker(false);
   };
 
-    const onEmojiClick = (emojiData) => {
-      setInput((prev) => prev + emojiData.emoji);
-    };
+  // Handle emoji selection
+  const onEmojiClick = (emojiData) => {
+    setInput((prev) => prev + emojiData.emoji);
+    setShowEmojiPicker(false);
+  };
 
-    const renderTicks = (msg) => {
-      if (msg.sender !== currentUserId) return null;
-      if (msg.status === 'delivered') {
-        return <span title="Delivered" style={{ color: 'blue', marginLeft: 6 }}>✔✔</span>;
-      }
-      if (msg.status === 'sent') {
-        return <span title="Sent" style={{ color: 'gray', marginLeft: 6 }}>✔</span>;
-      }
-      return null;
-    };
+  // Render message ticks
+  const renderTicks = (msg) => {
+    if (msg.sender !== currentUserId) return null;
+    if (msg.status === 'delivered') {
+      return <span title="Delivered" style={{ color: 'blue', marginLeft: 6 }}>✔✔</span>;
+    }
+    if (msg.status === 'sent') {
+      return <span title="Sent" style={{ color: 'gray', marginLeft: 6 }}>✔</span>;
+    }
+    return null;
+  };
 
-    // Handle file input change
-    const handleFileChange = (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+  // Handle file input change
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAttachment({
-          name: file.name,
-          type: file.type,
-          data: reader.result,
-        });
-      };
-      reader.readAsDataURL(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAttachment({
+        name: file.name,
+        type: file.type,
+        data: reader.result,
+      });
     };
+    reader.readAsDataURL(file);
+  };
 
-    // Format last seen
-    const formatLastSeen = (date) => {
-      if (!date) return 'Offline';
-      const d = new Date(date);
-      return `Last seen: ${d.toLocaleString()}`;
-    };
+  // Format last seen
+  const formatLastSeen = (date) => {
+    if (!date) return 'Offline';
+    const d = new Date(date);
+    return `Last seen: ${d.toLocaleString()}`;
+  };
+
+  // // Placeholder components for Sent and Saved tabs
+  // const Sent = () => <div>Sent Messages (Under Construction)</div>;
+  // const Saved = () => <div>Saved Messages (Under Construction)</div>;
 
 
   return (
@@ -438,252 +419,305 @@ const Chat = () => {
             </Col>
 
 
- <div className="d-flex flex-column h-100 mx-auto bg-white border rounded-3xl overflow-hidden" style={{ maxWidth: '42rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', borderColor: '#eee' }}>
-
-    {/* HEADER */}
-    <div className="d-flex align-items-center gap-3 p-3 border-bottom sticky-top z-10" style={{ 
-      background: 'linear-gradient(to right, #9B72FE, #b89bff)', 
-      color: 'white',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-    }}>
-      <div className="position-relative">
-        <img
-          src={profileDetails?.profilephoto}
-          alt="profile"
-          className="rounded-circle border border-2 border-white"
-          style={{ width: '48px', height: '48px', objectFit: 'cover', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-        />
-        <div className="position-absolute bottom-0 end-0 bg-success rounded-circle border border-2 border-white" style={{ width: '16px', height: '16px' }}></div>
-      </div>
-      <div className="flex-grow-1">
-        <h2 className="h5 mb-0 fw-semibold">{user?.username}</h2>
-        <p className="small mb-0 fw-medium">
-          {typingStatus ? (
-            <span className="d-flex align-items-center gap-1 text-white">
-              <span className="d-flex gap-1">
-                <span className="d-inline-block bg-white rounded-circle" style={{ width: '4px', height: '4px', animation: 'bounce 1s infinite' }}></span>
-                <span className="d-inline-block bg-white rounded-circle" style={{ width: '4px', height: '4px', animation: 'bounce 1s infinite 75ms' }}></span>
-                <span className="d-inline-block bg-white rounded-circle" style={{ width: '4px', height: '4px', animation: 'bounce 1s infinite 150ms' }}></span>
-              </span>
-              Typing...
-            </span>
-          ) : formatLastSeen(lastSeen)}
-        </p>
-      </div>
-      <button className="btn p-2 rounded-circle" style={{ background: 'rgba(255, 255, 255, 0)', border: 'none' }}>
-        <div className="d-flex flex-column">
-          <span className="d-inline-block bg-white rounded-circle mb-1" style={{ width: '4px', height: '4px' }}></span>
-          <span className="d-inline-block bg-white rounded-circle mb-1" style={{ width: '4px', height: '4px' }}></span>
-          <span className="d-inline-block bg-white rounded-circle" style={{ width: '4px', height: '4px' }}></span>
-        </div>
-      </button>
-    </div>
-
-    {/* MESSAGES */}
-    <div
-      ref={chatRef}
-      className="flex-grow-1 overflow-auto p-4"
-      style={{ 
-        backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23d5c7ff\' fill-opacity=\'0.3\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'1\'/%3E%3C/g%3E%3C/svg%3E")',
-        background: 'linear-gradient(to bottom, #f7f4ff, white)'
-      }}
-    >
-      {messages
-        .filter(
-          (msg) =>
-            (msg.sender === currentUserId && msg.receiver === userId) ||
-            (msg.sender === userId && msg.receiver === currentUserId)
-        )
-        .map((msg, index) => (
-          <div
-            key={msg._id}
-            className={`d-flex ${msg.sender === currentUserId ? "justify-content-end" : "justify-content-start"} mb-3`}
-            style={{ 
-              animation: 'slideInUp 0.2s ease-out',
-              animationDelay: `${index * 50}ms`,
-              animationFillMode: 'both'
-            }}
-          >
-            <div
-              className={`position-relative p-3 rounded-3xl shadow-sm ${msg.sender === currentUserId
-                ? "text-white rounded-end-bottom"
-                : "bg-white text-dark border rounded-start-bottom"}`}
-              style={{
-                maxWidth: '18rem',
-                background: msg.sender === currentUserId ? 'linear-gradient(to bottom right, #9B72FE, #b89bff)' : '',
-                borderColor: msg.sender === currentUserId ? '' : '#dee2e6',
-                transition: 'box-shadow 0.3s',
-                boxShadow: msg.sender === currentUserId ? '0 1px 3px rgba(0, 0, 0, 0.1)' : '0 1px 2px rgba(0, 0, 0, 0.05)'
-              }}
-            >
-              {msg.text && <p className="mb-0">{msg.text}</p>}
-              {/* Attachment */}
-              {msg.attachment && (
-                <div className="mt-2">
-                  {typeof msg.attachment === 'string' &&
-                  msg.attachment.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
-                    <img
-                      src={msg.attachment}
-                      alt="Attachment"
-                      className="rounded img-fluid"
-                      style={{ transition: 'transform 0.3s', maxWidth: '100%' }}
-                    />
+<Col md={9}>
+    <div className="profile-main-part-area-inner bg-all-pages plr-16 mrb-mail">
+      <Col md={12} className="all-title-top mb-4 text-center">
+        <h4>Mailbox</h4>
+      </Col>
+      <div className="page-wrapper-all">
+        <Row className="m-0">
+          <Col md={12}>
+            <div className="tab-coustom-list">
+              <Tabs defaultActiveKey="Messages" id="uncontrolled-tab-example" className="mb-2">
+                <Tab eventKey="Messages" title="Chat">
+                  {isLoading ? (
+                    <div className="d-flex justify-content-center align-items-center" style={{ height: '75vh' }}>
+                      <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                    </div>
                   ) : (
-                    <a
-                      href={msg.attachment}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="d-flex align-items-center gap-2 p-2 bg-light rounded text-decoration-none"
+                    <div
+                      className="d-flex flex-column h-100 mx-auto bg-white border rounded-3xl overflow-hidden"
+                      style={{
+                        maxWidth: '100%',
+                        boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.1)',
+                        borderColor: '#eee',
+                        height: '75vh',
+                      }}
                     >
-                      <FileText size={16} />
-                      <span className="small text-truncate" style={{ maxWidth: '150px' }}>Download Attachment</span>
-                    </a>
+                      {/* HEADER */}
+                      <div
+                        className="d-flex align-items-center gap-3 p-3 border-bottom sticky-top z-10"
+                        style={{
+                          background: 'linear-gradient(135deg, #8A63FF 0%, #B18AFF 100%)',
+                          color: 'white',
+                          boxShadow: '0 2px 15px -5px rgba(0, 0, 0, 0.1)',
+                        }}
+                      >
+                        <div className="position-relative">
+                          <img
+                            src={profileDetails?.profilephoto || 'default-profile.png'}
+                            alt="profile"
+                            className="rounded-circle border border-2 border-white shadow-sm"
+                            style={{
+                              width: '42px',
+                              height: '42px',
+                              objectFit: 'cover',
+                            }}
+                          />
+                          <div
+                            className="position-absolute bottom-0 end-0 bg-success rounded-circle border border-2 border-white pulse-animation"
+                            style={{
+                              width: '14px',
+                              height: '14px',
+                            }}
+                          ></div>
+                        </div>
+                        <div className="flex-grow-1">
+                          <h2 className="h5 mb-0 fw-semibold">{user?.username || 'Unknown User'}</h2>
+                          <p className="small mb-0 fw-medium opacity-90">
+                            {typingStatus ? (
+                              <span className="d-flex align-items-center gap-1 text-white">
+                                <span className="typing-indicator">
+                                  <span className="dot"></span>
+                                  <span className="dot"></span>
+                                  <span className="dot"></span>
+                                </span>
+                                Typing...
+                              </span>
+                            ) : (
+                              formatLastSeen(lastSeen)
+                            )}
+                          </p>
+                        </div>
+                        <button
+                          className="btn p-2 rounded-circle"
+                          style={{
+                            background: 'rgba(255, 255, 255, 0.1)',
+                            border: 'none',
+                          }}
+                        >
+                          <MoreHorizontal size={20} />
+                        </button>
+                      </div>
+
+                      {/* MESSAGES */}
+                      <div
+                        ref={chatRef}
+                        className="flex-grow-1 overflow-auto p-3 custom-scrollbar"
+                        style={{
+                          background:
+                            'radial-gradient(circle at 50% 0%, rgba(247, 244, 255, 0.8) 0%, rgba(255, 255, 255, 1) 100%)',
+                          maxHeight: 'calc(75vh - 120px)',
+                        }}
+                      >
+                        {messages.length === 0 ? (
+                          <div className="text-center text-muted mt-5">
+                            No messages yet. Start the conversation!
+                          </div>
+                        ) : (
+                          messages.map((msg) => (
+                            <div
+                              key={msg._id}
+                              className={`d-flex ${msg.sender === currentUserId ? 'justify-content-end' : 'justify-content-start'} mb-2`}
+                            >
+                              <div
+                                className={`position-relative p-3 ${msg.sender === currentUserId ? 'text-white chat-bubble-sent' : 'bg-white text-dark chat-bubble-received'}`}
+                                style={{
+                                  maxWidth: '70%',
+                                  wordBreak: 'break-word',
+                                }}
+                              >
+                                {msg.text && <p className="mb-0">{msg.text}</p>}
+                                {msg.attachment && (
+                                  <div className="mt-2 overflow-hidden rounded-2xl">
+                                    <img
+                                      src={msg.attachment}
+                                      alt="attachment"
+                                      className="img-fluid rounded"
+                                      style={{ maxHeight: '200px' }}
+                                    />
+                                  </div>
+                                )}
+                                <div
+                                  className={`d-flex align-items-center gap-1 mt-2 small ${msg.sender === currentUserId ? 'text-white-70' : 'text-muted'}`}
+                                >
+                                  <span>
+                                    {new Date(msg.timestamp).toLocaleTimeString([], {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })}
+                                  </span>
+                                  {renderTicks(msg)}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+
+                      {/* EMOJI PICKER */}
+                      {showEmojiPicker && (
+                        <div className="position-absolute bottom-100 start-0 mb-2">
+                          <EmojiPicker onEmojiClick={onEmojiClick} width={300} height={350} />
+                        </div>
+                      )}
+
+                      {/* INPUT AREA */}
+                      <div className="border-top p-3 bg-white position-relative" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
+                        {attachment && (
+                          <div className="mb-2">
+                            <img
+                              src={attachment.data}
+                              alt="attachment preview"
+                              className="rounded"
+                              style={{ maxHeight: '100px' }}
+                            />
+                            <button
+                              onClick={() => setAttachment(null)}
+                              className="btn btn-sm btn-danger ms-2"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        )}
+                        <div className="d-flex align-items-center gap-2">
+                          <div className="d-flex">
+                            <button
+                              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                              className="btn p-2 rounded-circle text-muted"
+                              style={{ border: 'none' }}
+                            >
+                              <Smile size={20} />
+                            </button>
+                            <label
+                              htmlFor="file-upload"
+                              className="btn p-2 rounded-circle text-muted"
+                              style={{ border: 'none', cursor: 'pointer' }}
+                            >
+                              <Paperclip size={20} />
+                              <input
+                                id="file-upload"
+                                type="file"
+                                onChange={handleFileChange}
+                                style={{ display: 'none' }}
+                                accept="image/*"
+                              />
+                            </label>
+                          </div>
+                          <div className="flex-grow-1 position-relative">
+                            <input
+                              type="text"
+                              className="form-control rounded-pill border-0 ps-3 pe-3 shadow-sm"
+                              value={input}
+                              onChange={(e) => setInput(e.target.value)}
+                              placeholder="Type a message..."
+                              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                              style={{ height: '40px', background: 'rgba(0,0,0,0.03)' }}
+                            />
+                          </div>
+                          <button
+                            onClick={handleSend}
+                            disabled={!input.trim() && !attachment}
+                            className="btn p-2 rounded-circle text-white"
+                            style={{
+                              background: 'linear-gradient(135deg, #8A63FF 0%, #B18AFF 100%)',
+                              width: '40px',
+                              height: '40px',
+                            }}
+                          >
+                            <Send size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   )}
-                </div>
-              )}
-
-              <div
-                className={`d-flex align-items-center gap-1 mt-2 small ${msg.sender === currentUserId ? "text-white-50" : "text-muted"}`}
-              >
-                <span>
-                  {new Date(msg.timestamp).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
-                {renderTicks(msg)}
-              </div>
+                </Tab>
+                <Tab eventKey="Sent" title="Messages">
+                  <Messages/>
+                </Tab>
+                <Tab eventKey="Saved" title="Saved">
+                  <Saved />
+                </Tab>
+                <Tab eventKey="Deleted" title="Deleted">
+                  <Saved />
+                </Tab>
+              </Tabs>
             </div>
-          </div>
-        ))}
-    </div>
-
-    {/* ATTACHMENT PREVIEW */}
-    {attachment && (
-      <div className="p-3 border-top bg-light" style={{ borderColor: '#ddd' }}>
-        <div className="d-flex align-items-center justify-content-between bg-white rounded p-3 shadow-sm">
-          <div className="d-flex align-items-center gap-3">
-            {attachment.type.startsWith("image/") ? (
-              <div className="position-relative">
-                <img
-                  src={attachment.data}
-                  alt={attachment.name}
-                  className="rounded img-thumbnail"
-                  style={{ width: '48px', height: '48px', objectFit: 'cover' }}
-                />
-                <Image
-                  size={14}
-                  className="position-absolute top-0 end-0 bg-primary text-white rounded-circle"
-                  style={{ transform: 'translate(25%, -25%)', padding: '2px' }}
-                />
-              </div>
-            ) : (
-              <div className="bg-light rounded d-flex align-items-center justify-content-center" style={{ width: '48px', height: '48px' }}>
-                <FileText size={20} className="text-secondary" />
-              </div>
-            )}
-            <div className="overflow-hidden">
-              <p className="small fw-medium text-truncate mb-0" style={{ maxWidth: '18rem' }}>
-                {attachment.name}
-              </p>
-              <p className="small text-muted mb-0">Ready to send</p>
-            </div>
-          </div>
-          <button
-            onClick={() => setAttachment(null)}
-            className="btn p-2 text-danger rounded-circle"
-            aria-label="Remove attachment"
-          >
-            <X size={16} />
-          </button>
-        </div>
-      </div>
-    )}
-
-    {/* INPUT AREA */}
-    <div className="border-top p-3 bg-white position-relative" style={{ borderColor: '#f8f9fa' }}>
-      {showEmojiPicker && (
-        <div className="position-absolute bottom-100 start-0 bg-white rounded shadow-lg border p-3 mb-2" style={{ zIndex: 1050, borderColor: '#dee2e6' }}>
-          <div className="d-flex flex-wrap gap-2" style={{ maxWidth: '16rem' }}>
-            {['😊', '😂', '❤️', '👍', '👎', '😢', '😮', '😡', '🎉', '🔥', '💯', '🤔', '😍', '🥰', '😎', '🤗'].map(
-              (emoji) => (
-                <button
-                  key={emoji}
-                  onClick={() => onEmojiClick({ emoji })}
-                  className="btn p-2 rounded"
-                  style={{ fontSize: '1.25rem' }}
-                >
-                  {emoji}
-                </button>
-              )
-            )}
-          </div>
-        </div>
-      )}
-
-      <div className="d-flex align-items-center gap-2">
-        <button
-          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className={`btn p-2 rounded-circle ${showEmojiPicker ? "bg-purple-100 text-primary" : "text-secondary"}`}
-          type="button"
-          aria-label="Toggle emoji picker"
-          style={{ border: 'none' }}
-        >
-          <Smile size={20} />
-        </button>
-
-        <div className="flex-grow-1 position-relative">
-          <input
-            type="text"
-            className="form-control rounded-pill border ps-3 pe-3"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Send them a lovely message..."
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSend();
-              }
-            }}
-            style={{ height: '42px' }}
-          />
-        </div>
-
-        <label
-          htmlFor="file-upload"
-          className="btn p-2 rounded-circle text-secondary"
-          aria-label="Attach file"
-          style={{ border: 'none' }}
-        >
-          <Paperclip size={20} />
-        </label>
-        <input
-          id="file-upload"
-          type="file"
-          accept="image/*,application/pdf,.doc,.docx"
-          onChange={handleFileChange}
-          className="visually-hidden"
-        />
-
-        <button
-          onClick={handleSend}
-          disabled={!input.trim() && !attachment}
-          className={`btn p-2 rounded-circle ${input.trim() || attachment
-              ? "bg-primary text-white"
-              : "bg-secondary text-white opacity-50"}`}
-          aria-label="Send message"
-          style={{ 
-            background: input.trim() || attachment ? 'linear-gradient(to right, #9B72FE, #b89bff)' : '',
-            width: '42px',
-            height: '42px'
-          }}
-        >
-          <Send size={18} />
-        </button>
+          </Col>
+        </Row>
       </div>
     </div>
-    <OnlineStatusUpdater userId={localStorage.getItem("userId")} />
-  </div>
+
+    <style jsx>{`
+      .chat-bubble-sent {
+        background: linear-gradient(135deg, #8A63FF 0%, #B18AFF 100%);
+        border-radius: 18px 18px 4px 18px;
+        box-shadow: 0 2px 8px rgba(138, 99, 255, 0.2);
+      }
+      
+      .chat-bubble-received {
+        background: white;
+        border-radius: 18px 18px 18px 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      }
+      
+      .pulse-animation {
+        animation: pulse 2s infinite;
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+      }
+      
+      .typing-indicator {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+      
+      .typing-indicator .dot {
+        width: 6px;
+        height: 6px;
+        background: white;
+        border-radius: 50%;
+        opacity: 0.8;
+      }
+      
+      .typing-indicator .dot:nth-child(1) {
+        animation: bounce 1.2s infinite ease-in-out;
+      }
+      
+      .typing-indicator .dot:nth-child(2) {
+        animation: bounce 1.2s infinite ease-in-out 0.15s;
+      }
+      
+      .typing-indicator .dot:nth-child(3) {
+        animation: bounce 1.2s infinite ease-in-out 0.3s;
+      }
+      
+      @keyframes bounce {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-4px); }
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.05);
+      }
+      
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(138, 99, 255, 0.3);
+        border-radius: 10px;
+      }
+    `}</style>
+  </Col>
 
             </Row>
             </Container>
