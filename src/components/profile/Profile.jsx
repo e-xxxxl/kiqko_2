@@ -719,8 +719,8 @@ const Profile = () => {
                                   ? "Man seeking Woman"
                                   : "Not specified"}
 
-                                {profileDetails.age &&
-                                  ` age(${profileDetails.age}) +`}
+                                {/* {profileDetails.age &&
+                                  ` age(${profileDetails.age}) +`} */}
                               </h2>
                               <h3>
                                 <span className="pro-icon-all">
