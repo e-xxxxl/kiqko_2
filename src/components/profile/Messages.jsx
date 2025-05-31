@@ -8,7 +8,7 @@ import checkall from "../../assets/images/checkall.png";
 import deleteall from "../../assets/images/deleteall.png";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5000", { transports: ["websocket"] });
+const socket = io("https://kiqko-backend.onrender.com", { transports: ["websocket"] });
 
 const Messages = () => {
   const currentUserId = localStorage.getItem("userId");

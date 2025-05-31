@@ -373,7 +373,7 @@ useEffect(() => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/users/profile-view`,
+        `https://kiqko-backend.onrender.com/api/users/profile-view`,
         {
           viewerId: currentUserId,
           viewedUserId: userId,
