@@ -254,7 +254,7 @@ if (tempVaccinationStatus) {
                     </Form.Group>
                   </Col>
                   <Col md={6}>
-                    <p className="p-up-loc text-end forget-pss">Forgot your password?</p>
+                    <p  onClick={() => history.push('/forgot-password')} className="p-up-loc text-end forget-pss " style={{cursor: 'pointer'}}>Forgot your password?</p>
                   </Col>
                 </Row>
 

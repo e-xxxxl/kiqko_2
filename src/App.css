@@ -542,6 +542,7 @@ button.settings-btn {
   border-radius: 40px;
   color: #fff;
   border: 0px; font-size: 18px;
+  margin-left: 15px;
   background: linear-gradient(to right, #6d43ff 0%, #8d46ff 100%);
 }
 button.settings-btn:hover{

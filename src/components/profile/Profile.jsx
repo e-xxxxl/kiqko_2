@@ -236,7 +236,7 @@ const Profile = () => {
         setIsLoading(true);
         const response = await axios.get(
           `https://kiqko-backend.onrender.com/api/users/${userId}/media`,
-          { withCredentials: true } // Add this to include cookies
+         
         );
 
         console.log("API Response:", response.data); // Debug log

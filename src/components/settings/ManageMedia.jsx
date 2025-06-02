@@ -58,7 +58,7 @@ const ManageMedia = () => {
         setIsLoading(true);
         const response = await axios.get(
           `https://kiqko-backend.onrender.com/api/users/${userId}/media`,
-          { withCredentials: true } // Add this to include cookies
+          
         );
 
         console.log("API Response:", response.data); // Debug log
@@ -125,8 +125,7 @@ const ManageMedia = () => {
         `https://kiqko-backend.onrender.com/api/users/${userId}/media`,
         {
           method: "POST",
-          body: formData,
-          credentials: "include",
+          body: formData
         }
       );
 
@@ -182,7 +181,7 @@ const ManageMedia = () => {
         setIsLoading(true);
         await axios.delete(
           `https://kiqko-backend.onrender.com/api/users/${userId}/media/${mediaId}`,
-          { withCredentials: true } // Add this to include cookies
+         
         );
 
         setMedia((prev) => prev.filter((item) => item._id !== mediaId));
@@ -205,8 +204,7 @@ const ManageMedia = () => {
         `https://kiqko-backend.onrender.com/api/users/${userId}/media/order`,
         {
           mediaIds: media.map((m) => m._id),
-        },
-        { withCredentials: true } // Add this to include cookies
+        }
       );
 
       setSuccess("Changes saved successfully!");

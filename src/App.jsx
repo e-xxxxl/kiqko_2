@@ -61,6 +61,7 @@ import Liveusers from './components/live-users/Liveusers';
 import Loginr from './components/landing/loginr/Loginr';
 import UserProfile from './components/profile/UserProfile';
 import Chat from './components/profile/Chat';
+import PasswordReset from './components/settings/PasswordReset';
 
 
 
@@ -221,6 +222,9 @@ function App() {
             </Route>
             <Route path="/reset-password">
               <EnterNewPassword/>
+            </Route>
+            <Route path="/password-reset">
+              <PasswordReset/>
             </Route>
             <Route path="/password-changed">
               <PasswordChanged/>

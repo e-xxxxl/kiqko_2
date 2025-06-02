@@ -7,8 +7,10 @@ import Row from 'react-bootstrap/esm/Row';
 import Container from 'react-bootstrap/esm/Container';
 import { Button, Dropdown } from 'react-bootstrap';
 import './Setting.css';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 
 const PasswordChanged = () => {
+     const history = useHistory();
     return (
         <CommonLayout>
         <section className="all-top-shape">
@@ -28,9 +30,15 @@ const PasswordChanged = () => {
                         <img className="change-icon" src={changeicon} alt="changeicon" />
                         </Col>
 
-                        <Col md={6} className="text-center offset-md-3 mt-4">
-                            <Button className="settings-btn mt-4" variant="primary">Return to Sign in</Button>
-                         </Col>
+                         <Col md={6} className="text-center offset-md-3 mt-4">
+                                    <Button 
+                                        className="settings-btn mt-4" 
+                                        variant="primary"
+                                        onClick={() => history.push('/login')}
+                                    >
+                                        Return to Sign in
+                                    </Button>
+                                </Col>
                     </Row>
                     
                     </div>
