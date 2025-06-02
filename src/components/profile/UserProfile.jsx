@@ -354,7 +354,7 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
-  const [isShowBlockUser, setIsBlockUser] = useState(false);
+  // const [isShowBlockUser, setIsBlockUser] = useState(false);
   const [message, setMessage] = useState('');
   const [media, setMedia] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -362,6 +362,24 @@ const UserProfile = () => {
  const [userLocation, setUserLocation] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
+
+   const [userVideos, setUserVideos] = useState([]);
+   const [blockStatus, setBlockStatus] = useState(false);
+   const [isShowBlockUser, setIsShowBlockUser] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const res = await axios.get(`https://kiqko-backend.onrender.com/api/users/${userId}/getVideos`);
+        console.log("Fetched videos:", res.data.videos); // Log the video data
+        setUserVideos(res.data.videos);
+      } catch (err) {
+        console.error("Failed to fetch videos", err);
+      }
+    };
+    fetchVideos();
+  }, [userId]);
 
 
 useEffect(() => {
@@ -920,21 +938,18 @@ useEffect(() => {
                                       }
                                     />
                                   )}
-                                  <Dropdown.Item
-                                    onClick={() => setIsBlockUser(true)}
-                                  >
-                                    <img
-                                      src={blockusericon}
-                                      alt="blockusericon"
-                                    />{" "}
-                                    Block user
-                                  </Dropdown.Item>
-                                  {isShowBlockUser && (
-                                    <BlockUserPro
-                                      isShowBlockUser={isShowBlockUser}
-                                      handleBlockUser={setIsBlockUser}
-                                    />
-                                  )}
+                            <Dropdown.Item onClick={() => setIsShowBlockUser(true)}>
+  <img src={blockusericon} alt="block icon" />
+  {blockStatus ? 'Unblock user' : 'Block user'}
+</Dropdown.Item>
+
+{isShowBlockUser && (
+  <BlockUserPro
+    isShowBlockUser={isShowBlockUser}
+    handleBlockUser={setIsShowBlockUser}
+    onBlockStatusChange={setBlockStatus} // Callback to update parent state
+  />
+)}
                                   <Dropdown.Item>
                                     <NavLink exact to={`/report/${userId}`}>
                                       <img src={reporticon} alt="reporticon" />{" "}
@@ -1233,22 +1248,46 @@ useEffect(() => {
 
                             {/* Video Section */}
                             <div className="mt-5">
-                              <h3 className="text-start h3-all-title">
-                                Video<span className="details-count ps-2">1</span>
-                              </h3>
-                              <div className="row mt-3">
-                                <div className="col-12 col-md-6 col-lg-4">
-                                  <div className="border rounded overflow-hidden">
-                                    <img
-                                      src={profilevid}
-                                      alt="profilevid"
-                                      className="img-fluid w-100"
-                                      style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+  <h3 className="text-start h3-all-title">
+    Videos
+    <span className="details-count ps-2">{userVideos?.length ?? 0}</span>
+  </h3>
+  <div className="row mt-3">
+    {(userVideos ?? []).map((video) => (
+      <div key={video.publicId} className="col-12 col-md-6 col-lg-4 mb-3">
+        <div className="border rounded overflow-hidden position-relative">
+          <video
+            controls
+            className="w-100"
+            style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
+            preload="metadata"
+            playsInline
+            poster={`${video.url.replace(/\.mov$/, '.jpg')}`} // Add poster from Cloudinary
+          >
+            {/* Primary source - try with Cloudinary transformation */}
+            <source 
+              src={`${video.url.replace(/\.mov$/, '.mp4')}`} 
+              type="video/mp4" 
+            />
+            {/* Fallback to original MOV with correct MIME type */}
+            <source 
+              src={video.url} 
+              type="video/quicktime" 
+            />
+            Your browser does not support HTML5 video.
+          </video>
+          <button
+            className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+            onClick={() => handleDeleteVideo(video.publicId)}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Deleting..." : "Delete"}
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
 
                             {/* About Me */}
                             <div className="mt-3">

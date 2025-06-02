@@ -35,6 +35,7 @@ import OnlineUsers from "../profile/OnlineUsers/OnlineUsers";
 import {  useRef } from "react";
 import axios from "axios"; // or your preferred HTTP client
 import OnlineStatusUpdater from "../profile/OnlineUsers/OnlineStatusUpdater";
+import { MdVideoLibrary } from 'react-icons/md';
 const ManageMedia = () => {
     const [profileDetails, setProfileDetails] = useState(null);
     // State for uploaded media
@@ -44,6 +45,54 @@ const ManageMedia = () => {
   const [success, setSuccess] = useState(null);
   const userId = localStorage.getItem("userId");
   const fileInputRef = useRef(null);
+   const [isSavingVideos, setIsSavingVideos] = useState(false);
+     const videoInputRef = useRef(null);
+       const [isLoadingVideo, setIsLoadingVideo] = useState(false);
+       const [isVideoUploaded, setIsVideoUploaded] = useState(false);
+
+
+
+
+
+   // Handle video file upload (no display)
+  const handleVideoChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.includes("video/")) {
+      setError("Please upload a valid video file");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Video file size should be less than 10MB");
+      return;
+    }
+
+    setIsLoadingVideo(true);
+    setError(null);
+
+    const formData = new FormData();
+    formData.append("video", file);
+
+    try {
+      await axios.post(
+        `https://kiqko-backend.onrender.com/api/users/${userId}/video`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+setIsVideoUploaded(true);
+      setSuccess("Video uploaded successfully!");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to upload video");
+    } finally {
+      setIsLoadingVideo(false);
+      if (videoInputRef.current) videoInputRef.current.value = "";
+    }
+  };
 
   // Fetch user media on component mount
   useEffect(() => {
@@ -237,6 +286,28 @@ const ManageMedia = () => {
 
         fetchProfileDetails()
   }, []);
+
+
+  // Save videos (no need to pass video IDs since they're not displayed)
+  const handleSaveVideos = async () => {
+    if (!userId) {
+      setError("User not authenticated");
+      return;
+    }
+
+    setIsSavingVideos(true);
+    try {
+    
+
+      setSuccess("Videos saved successfully!");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to save videos");
+    } finally {
+      setIsSavingVideos(false);
+    }
+  };
+
   return (
     <CommonLayout>
       <section className="all-top-shape">
@@ -525,6 +596,72 @@ const ManageMedia = () => {
             )}
           </Col>
         </Row>
+        <Row className="mt-5">
+                      <Col md={12}>
+                        <h5 className="text-start mb-3">Upload Videos</h5>
+                        <div className="video-upload-container">
+                          <ul className="list-unstyled d-flex flex-wrap gap-2">
+                            <li className="border-0">
+                              <div
+                                className="add-video-media d-flex align-items-center justify-content-center border border-dashed rounded"
+                                style={{
+                                  width: "200px",
+                                  height: "120px",
+                                  cursor: isLoadingVideo ? "not-allowed" : "pointer",
+                                  position: "relative",
+                                }}
+                              >
+                                <input
+                                  type="file"
+                                  ref={videoInputRef}
+                                  onChange={handleVideoChange}
+                                  accept="video/*"
+                                  disabled={isLoadingVideo}
+                                  style={{
+                                    opacity: 0,
+                                    position: "absolute",
+                                    width: "100%",
+                                    height: "100%",
+                                    cursor: isLoadingVideo ? "not-allowed" : "pointer",
+                                  }}
+                                />
+                                {!isLoadingVideo && (
+                                  <>
+                                    <MdVideoLibrary size={32} color="#6f42c1" />
+                                    <span className="ms-2">Add Video</span>
+                                  </>
+                                )}
+                                {isLoadingVideo && (
+                                  <div className="spinner-border text-primary" role="status" />
+                                )}
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </Col>
+                    </Row>
+
+                    <Row className="mt-3">
+                      <Col md={12} className="text-center">
+                        {error && <div className="alert alert-danger mt-3">{error}</div>}
+                        {success && <div className="alert alert-success mt-3">{success}</div>}
+                        <Button
+  variant="primary"
+  onClick={handleSaveVideos}
+  disabled={!isVideoUploaded || isLoadingVideo || isSavingVideos}
+>
+  {isSavingVideos ? (
+    <>
+      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+      Saving Videos...
+    </>
+  ) : (
+    "Save Videos"
+  )}
+</Button>
+
+                      </Col>
+                    </Row>
       </div>
     </Col>
 

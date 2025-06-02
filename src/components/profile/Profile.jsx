@@ -106,6 +106,47 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  const userId = localStorage.getItem("userId");
+
+  const [userVideos, setUserVideos] = useState([]);
+const [isDeleting, setIsDeleting] = useState(false);
+
+useEffect(() => {
+  const fetchVideos = async () => {
+    try {
+      const res = await axios.get(`https://kiqko-backend.onrender.com/api/users/${userId}/getVideos`);
+      console.log("Fetched videos:", res.data.videos); // Log the video data
+      setUserVideos(res.data.videos);
+    } catch (err) {
+      console.error("Failed to fetch videos", err);
+    }
+  };
+  fetchVideos();
+}, [userId]);
+
+const handleDeleteVideo = async (publicId) => {
+  if (!window.confirm("Are you sure you want to delete this video?")) return;
+
+  try {
+    setIsDeleting(true);
+    const response = await axios.delete(
+      `https://kiqko-backend.onrender.com/api/users/${userId}/video/${encodeURIComponent(publicId)}`
+    );
+    
+    if (response.status === 200) {
+      setUserVideos((prev) => prev.filter((video) => video.publicId !== publicId));
+      // Optional: Show success message
+      alert('Video deleted successfully');
+    }
+  } catch (err) {
+    console.error("Delete failed:", err);
+    alert(`Delete failed: ${err.response?.data?.message || err.message}`);
+  } finally {
+    setIsDeleting(false);
+  }
+};
+
+
   
 
   //    useEffect(() => {
@@ -223,7 +264,7 @@ const Profile = () => {
     fetchData();
     fetchProfileDetails();
   }, []);
-  const userId = localStorage.getItem("userId");
+ 
   useEffect(() => {
     const fetchUserMedia = async () => {
       if (!userId) {
@@ -1006,25 +1047,47 @@ const Profile = () => {
 
 )}
 
-{/* Video Section */}
 <div className="mt-5">
   <h3 className="text-start h3-all-title">
-    Video<span className="details-count ps-2">1</span>
+    Videos
+    <span className="details-count ps-2">{userVideos?.length ?? 0}</span>
   </h3>
   <div className="row mt-3">
-    <div className="col-12 col-md-6 col-lg-4">
-      <div className="border rounded overflow-hidden">
-        <img
-          src={profilevid}
-          alt="profilevid"
-          className="img-fluid w-100"
-          style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
-        />
+    {(userVideos ?? []).map((video) => (
+      <div key={video.publicId} className="col-12 col-md-6 col-lg-4 mb-3">
+        <div className="border rounded overflow-hidden position-relative">
+          <video
+            controls
+            className="w-100"
+            style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
+            preload="metadata"
+            playsInline
+            poster={`${video.url.replace(/\.mov$/, '.jpg')}`} // Add poster from Cloudinary
+          >
+            {/* Primary source - try with Cloudinary transformation */}
+            <source 
+              src={`${video.url.replace(/\.mov$/, '.mp4')}`} 
+              type="video/mp4" 
+            />
+            {/* Fallback to original MOV with correct MIME type */}
+            <source 
+              src={video.url} 
+              type="video/quicktime" 
+            />
+            Your browser does not support HTML5 video.
+          </video>
+          <button
+            className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+            onClick={() => handleDeleteVideo(video.publicId)}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Deleting..." : "Delete"}
+          </button>
+        </div>
       </div>
-    </div>
+    ))}
   </div>
 </div>
-
 
                             {/* About Me */}
                             <div className="mt-3">
