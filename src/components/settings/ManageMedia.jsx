@@ -463,7 +463,7 @@ setIsVideoUploaded(true);
                   </div>
                 </Col>
       <Col className="text-center pr-0-custom-res" md={9}>
-      <div className="profile-main-part-area-inner bg-all-pages">
+      <div className="profile-main-part-area-inner bg-all-pages mar-top-responsive">
         <Col md={12} className="all-title-top mb-4">
           <h4>Media Gallery</h4>
           <p className="all-top-title text-center mt-4 mpt-0 font-segoeui">
