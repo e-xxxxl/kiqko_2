@@ -60,11 +60,11 @@ const NavHeader = () => {
                             <span className="nav-icon"><img src={golive} alt="go live" /></span>
                             <span className="nav-text">Go Live</span>
                         </NavLink>
-                        <NavLink to="/" className="nav-link-item" activeClassName="active">
+                        <NavLink to="/manage-media" className="nav-link-item" activeClassName="active">
                             <span className="nav-icon"><img src={postvodeo} alt="post video" /></span>
                             <span className="nav-text">Post video</span>
                         </NavLink>
-                        <NavLink to="/" className="nav-link-item" activeClassName="active">
+                        <NavLink to="/manage-media" className="nav-link-item" activeClassName="active">
                             <span className="nav-icon"><img src={uploadimage} alt="upload" /></span>
                             <span className="nav-text">Upload Image</span>
                         </NavLink>
