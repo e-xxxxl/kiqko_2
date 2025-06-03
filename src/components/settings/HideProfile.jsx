@@ -4,7 +4,7 @@ import shape from "../../assets/images/shape2.png";
 import Col from "react-bootstrap/esm/Col";
 import Row from "react-bootstrap/esm/Row";
 import Container from "react-bootstrap/esm/Container";
-import { Button, Dropdown } from "react-bootstrap";
+import { Button, Dropdown, Spinner } from "react-bootstrap";
 import { NavLink } from "react-router-dom";
 
 import settingView from "../../assets/images/myProfile.png";

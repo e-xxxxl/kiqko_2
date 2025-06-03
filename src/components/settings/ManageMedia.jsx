@@ -520,7 +520,7 @@ setIsVideoUploaded(true);
                     }}
                   />
                   {!isLoading && (
-                    <MdOutlineArrowForward size={32} color="#6f42c1" />
+                    <div/>
                   )}
                   {isLoading && (
                     <div className="spinner-border text-primary" role="status" />
