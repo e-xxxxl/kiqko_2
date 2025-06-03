@@ -124,7 +124,7 @@ const MyLikes = () => {
 
 
 <Col md={9}>
-  <div className="profile-main-part-area-inner bg-all-pages">
+  <div className="profile-main-part-area-inner bg-all-pages mar-top-responsive">
     <Col md={12} className="all-title-top mb-4 text-center">
       <h4>My Likes</h4>
     </Col>
