@@ -106,7 +106,7 @@ const Logout = () => {
                                     </div>
                                 </Col>
                                 <Col md={9}>
-                                    <div className="profile-main-part-area-inner bg-all-pages mb-0-see">
+                                    <div className="profile-main-part-area-inner bg-all-pages mb-0-see mar-top-responsive">
                                         <Col md={12} className="all-title-top mb-4 text-center">
                                             <h4>Logout</h4>
                                         </Col>

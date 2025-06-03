@@ -191,7 +191,7 @@ const HideProfile = () => {
                   </div>
                 </Col>
                 <Col md={9}>
-                  <div className="profile-main-part-area-inner bg-all-pages mb-0-see min-height-all">
+                  <div className="profile-main-part-area-inner bg-all-pages mb-0-see min-height-all mar-top-responsive">
                     <Col md={12} className="all-title-top mb-4 text-center">
                       <h4>Hide Profile</h4>
                     </Col>
