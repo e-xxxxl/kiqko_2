@@ -38,10 +38,11 @@ const SimilarUsersSection = () => {
     fetchSimilarUsers();
   }, [userId]);
 
-  if (loading) {
-    return <div className="text-center py-4">Loading similar users...</div>;
-  }
-  
+ if (loading) return (
+    <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="spinner-border text-purple" style={{ width: '3rem', height: '3rem', borderWidth: '0.2rem', borderColor: '#9c27b0', borderRightColor: 'transparent' }}></div>
+    </div>
+);
   if (error) {
     return <div className="text-center py-4 text-danger">Error: {error}</div>;
   }

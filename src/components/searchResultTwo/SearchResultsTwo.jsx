@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CommonLayout from "../../layouts/Common";
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/esm/Row';
@@ -32,8 +32,49 @@ import liveicon from '../../assets/images/liveicon.png';
 import yourm from '../../assets/images/yourm.png';
 import blockedUsers from '../../assets/images/blockedUsers.png';
 import serr from '../../assets/images/serr.png';
+import OnlineUsers from '../profile/OnlineUsers/OnlineUsers';
+import axios from 'axios';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { ProgressBar } from 'react-bootstrap';
 
 const SearchResultsTwo = () => {
+   const [matches, setMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const history = useHistory();
+
+  useEffect(() => {
+    const fetchMatches = async () => {
+      setLoading(true);
+      const userId = localStorage.getItem('userId');
+
+      if (!userId) {
+        alert('Please log in to view matches.');
+        history.push('/login');
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          `https://kiqko-backend.onrender.com/api/users/search-matches/${userId}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        setMatches(response.data.matches);
+      } catch (error) {
+        console.error('Error fetching matches:', error);
+        alert('Error fetching matches. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMatches();
+  }, [history]);
+
     return (
         <CommonLayout>
         <section className="all-top-shape"> 
@@ -49,17 +90,8 @@ const SearchResultsTwo = () => {
             <Col md={3}>
                 <div className="left-panel-allpages mar-top-left">
                    <div className="top-user-id text-center">
-                       <div className="online-user-all">
-                       <h5 className="border-h5">Users Online Now</h5>
-                       <div className="online-user-status border-right-online">
-                           <h6>Women</h6>
-                           <h4>1234</h4>
-                       </div>
-                       <div className="online-user-status">
-                           <h6>men</h6>
-                           <h4>1565</h4>
-                       </div>
-                       </div>
+                      <OnlineUsers
+                      />
                       
                       
                    </div>
@@ -103,293 +135,77 @@ const SearchResultsTwo = () => {
                     
                 </div>
             </Col>
-                <Col md={9}>
-                    <div className="profile-main-part-area-inner bg-all-pages mar-top-responsive">
-                    <Col md={12} className="all-title-top mb-4 text-center">
-                            <h4>Search Results</h4>
-                        </Col>
+          <Col md={9}>
+      <div className="profile-main-part-area-inner bg-all-pages mar-top-responsive">
+        <Col md={12} className="all-title-top mb-4 text-center">
+          <h4>Search Results</h4>
+        </Col>
 
-                     
-
-                     
-
-                        <Row>
-                        <Col md={12} className="mt-4">
-                            <ul className="search-user-list search-user-list2 mt-0">
-                                <li>
-                                <img className="user-search-profile" src={fev1} alt="fev1" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-
-                                    
-                                </li>
-
-                                <li>
-                                <img className="user-search-profile" src={photo2} alt="photo2" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                </li>
-
-                               
-
-                                <li>
-                                <img className="user-search-profile" src={photo7} alt="photo7" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                 
-                                </li>
-                                <li>
-                                <img className="user-search-profile" src={fev1} alt="fev1" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li>
-                                <img className="user-search-profile" src={photo2} alt="photo2" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li className="full-width">
-                                    <Row>
-                                    <Col md={4} className="add-bannerall">
-                                    <img src={adda} alt="adda"/>
-                                    </Col>
-                                    <Col md={4} className="add-bannerall">
-                                    <img src={adda} alt="addb"/>
-                                    </Col>
-                                    <Col md={4} className="add-bannerall">
-                                    <img src={adda} alt="addc"/>
-                                    </Col>
-                                    </Row>
-                                </li>
-
-                                <li>
-                                <img className="user-search-profile" src={photo3} alt="photo3" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                <img className="user-search-profile" src={photo6} alt="photo5" />
-                                    <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-
-                                       
-                                    </div>
-                                </li>
-
-                               
-                                <li>
-                                <img className="user-search-profile" src={photo7} alt="photo7" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-
-                                       
-                                    </div>
-                                </li>
-                                <li>
-                                <img className="user-search-profile" src={fev1} alt="fev1" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li>
-                                <img className="user-search-profile" src={photo2} alt="photo2" />
-                     
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li>
-                                <img className="user-search-profile" src={photo3} alt="photo3" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                <img className="user-search-profile" src={photo6} alt="photo5" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li>
-                                <img className="user-search-profile" src={fev1} alt="fev1" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li>
-                                <img className="user-search-profile" src={photo2} alt="photo2" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                </li>
-
-                               
-
-                                <li>
-                                <img className="user-search-profile" src={photo7} alt="photo7" />
-                                <div className="user-search-details">
-                                        <div className="user-details-row">
-                                        <h5><NavLink exact to="/">Jeanall</NavLink></h5>
-                                        <span>38</span>
-                                        </div>
-                                        <div className="user-details-row">
-                                        <h6>Los Angeles, CA</h6>
-                                        <Button className="" variant="success">
-                                        </Button>
-                                        </div>
-                                    </div>
-                                </li>
-                             
-                               
-                               
-                            </ul>
-                        </Col>
-                        </Row>
-
-                        <Row>
-                            <Col md={12} className="pagination-list text-center">
-                            <Pagination>
-  
-  <Pagination.Prev className="pagi-list-next-pre" />
-  <Pagination.Item active>{1}</Pagination.Item>
-  
-
-  <Pagination.Item>{2}</Pagination.Item>
-  <Pagination.Item>{3}</Pagination.Item>
-  <Pagination.Item>{4}</Pagination.Item>
-  <Pagination.Item>{5}</Pagination.Item>
-  <Pagination.Item>{6}</Pagination.Item>
-  <Pagination.Next  className="pagi-list-next-pre"/>
-  
-</Pagination>
-                            </Col>
-                        </Row>
+        {loading ? (
+          <div>Loading matches...</div>
+        ) : matches.length === 0 ? (
+          <div>No matches found with at least two criteria in common.</div>
+        ) : (
+          <Row>
+            <Col md={12} className="mt-4">
+              <ul className="search-user-list search-user-list2 mt-0">
+                {matches.map((match) => (
+                  <li key={match._id}>
+                    <img
+                      className="user-search-profile"
+                      src={match.profile?.profilephoto || '/default-profile.jpg'}
+                      alt="profile"
+                    />
+                    <div className="user-search-details">
+                      <div className="user-details-row">
+                        <h5>
+                          <NavLink to={`/profile/${match._id}`}>
+                            {match.username}
+                          </NavLink>
+                        </h5>
+                        <span>{match.profile?.age}</span>
+                      </div>
+                      <div className="user-details-row">
+                        <h6>
+                          {match.location?.city
+                            ? `${match.location.city}, ${match.location.state || ''}`
+                            : 'Location not specified'}
+                        </h6>
+                        <ProgressBar
+                          now={match.matchPercentage}
+                          label={`${match.matchPercentage}% Match`}
+                          variant="success"
+                          className="mt-2"
+                          style={{ width: '200px' }}
+                        />
+                        {/* <Button variant="success" className="ml-2">
+                          Connect
+                        </Button> */}
+                      </div>
                     </div>
-                </Col>
+                  </li>
+                ))}
+              </ul>
+            </Col>
+          </Row>
+        )}
+
+        <Row>
+          <Col md={12} className="pagination-list text-center">
+            <Pagination>
+              <Pagination.Prev className="pagi-list-next-pre" />
+              <Pagination.Item active>{1}</Pagination.Item>
+              <Pagination.Item>{2}</Pagination.Item>
+              <Pagination.Item>{3}</Pagination.Item>
+              <Pagination.Item>{4}</Pagination.Item>
+              <Pagination.Item>{5}</Pagination.Item>
+              <Pagination.Item>{6}</Pagination.Item>
+              <Pagination.Next className="pagi-list-next-pre" />
+            </Pagination>
+          </Col>
+        </Row>
+      </div>
+    </Col>
             </Row>
             </Container>
             </div>

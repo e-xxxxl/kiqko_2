@@ -436,6 +436,12 @@ const handleDeleteVideo = async (publicId) => {
     utils.nextImg(profileImgList, setImgObj, setImgIndex, imgIndex);
   }
   // Profile Image View End
+
+  if (isLoading) return (
+    <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="spinner-border text-purple" style={{ width: '3rem', height: '3rem', borderWidth: '0.2rem', borderColor: '#9c27b0', borderRightColor: 'transparent' }}></div>
+    </div>
+);
   return (
     <CommonLayout>
       <ImgViewer />
@@ -819,7 +825,7 @@ const handleDeleteVideo = async (publicId) => {
                           )}
                         </div>
                       </div>
-                      <div className="all-user-btn">
+                      {/* <div className="all-user-btn">
                         <button className="btn mes-btn">
                           <img src={icon1profile} alt="icon1profile" />
                           <span>Send Message</span>{" "}
@@ -845,7 +851,7 @@ const handleDeleteVideo = async (publicId) => {
                             <span>Video Call</span>{" "}
                           </button>{" "}
                         </NavLink>
-                      </div>
+                      </div> */}
                     </div>
                     <Row className="flex-direction-custom">
                       <Col

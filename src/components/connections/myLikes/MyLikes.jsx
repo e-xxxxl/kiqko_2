@@ -30,6 +30,7 @@ import yourm from '../../../assets/images/yourm.png';
 import blockedUsers from '../../../assets/images/blockedUsers.png';
 import serr from '../../../assets/images/serr.png';
 import axios from 'axios';
+import OnlineUsers from '../../profile/OnlineUsers/OnlineUsers';
 const MyLikes = () => {
     const [likedUsers, setLikedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +59,11 @@ const MyLikes = () => {
     // Implement unlike/like functionality here if needed
   };
 
-  if (loading) return <div>Loading likes...</div>;
+ if (loading) return (
+    <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="spinner-border text-purple" style={{ width: '3rem', height: '3rem', borderWidth: '0.2rem', borderColor: '#9c27b0', borderRightColor: 'transparent' }}></div>
+    </div>
+);
 
     return (
         <CommonLayout>
@@ -73,17 +78,7 @@ const MyLikes = () => {
             <Col md={3}>
                 <div className="left-panel-allpages mar-top-left">
                    <div className="top-user-id text-center">
-                       <div className="online-user-all">
-                       <h5 className="border-h5">Users Online Now</h5>
-                       <div className="online-user-status border-right-online">
-                           <h6>Women</h6>
-                           <h4>1234</h4>
-                       </div>
-                       <div className="online-user-status">
-                           <h6>men</h6>
-                           <h4>1565</h4>
-                       </div>
-                       </div>
+                       <OnlineUsers/>
                       
                       
                    </div>

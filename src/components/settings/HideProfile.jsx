@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CommonLayout from "../../layouts/Common";
 import shape from "../../assets/images/shape2.png";
 import Col from "react-bootstrap/esm/Col";
@@ -23,7 +23,65 @@ import liveicon from "../../assets/images/liveicon.png";
 import yourm from "../../assets/images/yourm.png";
 import blockedUsers from "../../assets/images/blockedUsers.png";
 import serr from "../../assets/images/serr.png";
+import OnlineUsers from "../profile/OnlineUsers/OnlineUsers";
+import OnlineStatusUpdater from "../profile/OnlineUsers/OnlineStatusUpdater";
+import axios from "axios";
 const HideProfile = () => {
+   const [isHidden, setIsHidden] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const userId = localStorage.getItem('userId');
+
+  useEffect(() => {
+    const fetchProfileStatus = async () => {
+      try {
+        const response = await axios.get(`https://kiqko-backend.onrender.com/api/users/${userId}/profile-status`, {
+         
+        });
+        setIsHidden(response.data.isHidden);
+      } catch (err) {
+        console.error('Error fetching profile status:', err);
+      }
+    };
+
+    if (userId) {
+      fetchProfileStatus();
+    }
+  }, [userId]);
+
+  const handleHideProfile = async () => {
+    try {
+      setLoading(true);
+      await axios.put(
+        `https://kiqko-backend.onrender.com/api/users/${userId}/hide-profile`,
+        { isHidden: true }
+      );
+      setIsHidden(true);
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to hide profilee');
+      console.error('Hide profile error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUnhideProfile = async () => {
+    try {
+      setLoading(true);
+      await axios.put(
+        `https://kiqko-backend.onrender.com/api/users/${userId}/hide-profile`,
+        { isHidden: false }
+      );
+      setIsHidden(false);
+      setError(null);
+    } catch (err) {
+      setError('Failed to unhide profile');
+      console.error('Unhide profile error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <CommonLayout>
       <section className="all-top-shape">
@@ -37,17 +95,7 @@ const HideProfile = () => {
                 <Col md={3}>
                   <div className="left-panel-allpages mar-top-left">
                     <div className="top-user-id text-center">
-                      <div className="online-user-all">
-                        <h5 className="border-h5">Users Online Now</h5>
-                        <div className="online-user-status border-right-online">
-                          <h6>Women</h6>
-                          <h4>1234</h4>
-                        </div>
-                        <div className="online-user-status">
-                          <h6>men</h6>
-                          <h4>1565</h4>
-                        </div>
-                      </div>
+                     <OnlineUsers/>
                     </div>
 
                     <div className="user-type-left">
@@ -191,47 +239,60 @@ const HideProfile = () => {
                   </div>
                 </Col>
                 <Col md={9}>
-                  <div className="profile-main-part-area-inner bg-all-pages mb-0-see min-height-all mar-top-responsive">
-                    <Col md={12} className="all-title-top mb-4 text-center">
-                      <h4>Hide Profile</h4>
-                    </Col>
+      <div className="profile-main-part-area-inner bg-all-pages mb-0-see min-height-all mar-top-responsive">
+        <Col md={12} className="all-title-top mb-4 text-center">
+          <h4>{isHidden ? 'Profile is Hidden' : 'Hide Profile'}</h4>
+        </Col>
 
-                    <div className="all-seting-area-pass">
-                      <Row>
-                        <Col md={12}>
-                          <p className="p-up-loc text-center mt-4 mb-2">
-                            Do you want to hide your profile?
-                          </p>
-                          <p className="p-up-loc text-center">
-                            {" "}
-                            Hiding your profile keeps you from being noticed by
-                            other users.
-                          </p>
-                        </Col>
-                      </Row>
+        <div className="all-seting-area-pass">
+          <Row>
+            <Col md={12}>
+              <p className="p-up-loc text-center mt-4 mb-2">
+                {isHidden
+                  ? 'Your profile is currently hidden.'
+                  : 'Do you want to hide your profile?'}
+              </p>
+              <p className="p-up-loc text-center">
+                Hiding your profile keeps you from being noticed by other users.
+              </p>
+            </Col>
+          </Row>
 
-                      <Row>
-                        <Col md={6} className="text-center up-field">
-                          <Button
-                            className="settings-btn mt-4 font-segoeui"
-                            variant="primary"
-                          >
-                            Hide My Profile
-                          </Button>
-                        </Col>
-                        <Col md={6} className="text-center pl-hidebtn">
-                          <Button
-                            className="settings-btn mt-4 font-segoeui"
-                            variant="primary"
-                          >
-                            Unhide My Profile
-                          </Button>
-                        </Col>
-                      </Row>
-                    </div>
-                  </div>
-                </Col>
+          {error && (
+            <Row>
+              <Col md={12} className="text-center">
+                <Alert variant="danger">{error}</Alert>
+              </Col>
+            </Row>
+          )}
+
+          <Row>
+            <Col md={6} className="text-center up-field">
+              <Button
+                className="settings-btn mt-4 font-segoeui"
+                variant="primary"
+                disabled={loading || isHidden}
+                onClick={handleHideProfile}
+              >
+                {loading && !isHidden ? <Spinner size="sm" animation="border" /> : 'Hide My Profile'}
+              </Button>
+            </Col>
+            <Col md={6} className="text-center pl-hidebtn">
+              <Button
+                className="settings-btn mt-4 font-segoeui"
+                variant="primary"
+                disabled={loading || !isHidden}
+                onClick={handleUnhideProfile}
+              >
+                {loading && isHidden ? <Spinner size="sm" animation="border" /> : 'Unhide My Profile'}
+              </Button>
+            </Col>
+          </Row>
+        </div>
+      </div>
+    </Col>
               </Row>
+               <OnlineStatusUpdater userId={localStorage.getItem("userId")} />
             </Container>
           </div>
         </div>

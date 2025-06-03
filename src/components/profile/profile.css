@@ -195,6 +195,7 @@ button.btn.mes-btn:hover {
 }
 .all-user-btn {
   padding-top:78px;
+  margin-top: -260px;
     width: 25%;
     float: right; text-align:center;
 }

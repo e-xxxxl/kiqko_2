@@ -31,6 +31,7 @@ import liveicon from '../../../assets/images/liveicon.png';
 import yourm from '../../../assets/images/yourm.png';
 import blockedUsers from '../../../assets/images/blockedUsers.png';
 import serr from '../../../assets/images/serr.png';
+import OnlineUsers from '../../profile/OnlineUsers/OnlineUsers';
 const YourMatches = () => {
     return (
         <CommonLayout>
@@ -45,17 +46,7 @@ const YourMatches = () => {
             <Col md={3}>
                 <div className="left-panel-allpages mar-top-left">
                    <div className="top-user-id text-center">
-                       <div className="online-user-all">
-                       <h5 className="border-h5">Users Online Now</h5>
-                       <div className="online-user-status border-right-online">
-                           <h6>Women</h6>
-                           <h4>1234</h4>
-                       </div>
-                       <div className="online-user-status">
-                           <h6>men</h6>
-                           <h4>1565</h4>
-                       </div>
-                       </div>
+                      <OnlineUsers/>
                       
                       
                    </div>

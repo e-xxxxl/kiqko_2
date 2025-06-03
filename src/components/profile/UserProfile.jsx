@@ -1053,26 +1053,7 @@ useEffect(() => {
                         <div className="text-start position-relative">
                           <div className="d-flex justify-content-between align-items-start mb-2">
                             <h2 className="h5 mb-0">Headline:</h2>
-                            <NavLink
-                              to="/headline"
-                              className="btn btn-sm d-flex align-items-center rounded-pill text-white"
-                              style={{
-                                backgroundColor: "#9B72FE",
-                                opacity: 0.9,
-                              }}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-pencil-fill me-1"
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M12.854.146a.5.5 0 0 1 .638.057l2.5 2.5a.5.5 0 0 1-.057.638l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2L3 10.207V13h2.793L14 4.793 11.207 2z" />
-                              </svg>
-                              Edit Profile Info
-                            </NavLink>
+                            
                           </div>
                           <p className="text-muted">
                             {profileDetails?.headline || "Not specified"}
@@ -1296,7 +1277,7 @@ useEffect(() => {
                               </h3>
                               <p className="text-start p-details-profile">
                                 {profileDetails?.about ||
-                                  "Not specified. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet."}
+                                  "Not specified. "}
                               </p>
                             </div>
 
@@ -1308,12 +1289,16 @@ useEffect(() => {
                                 <ul className="ul-looking-for">
                                   <li>
                                     <img src={gender} alt="gender" />
-                                    <span>Man</span>
+                                    <span>{profileDetails.gender === "Woman"
+                                  ? "Man"
+                                  : profileDetails.gender === "Man"
+                                  ? "Woman"
+                                  : "Not specified"}</span>
                                   </li>
-                                  <li>
+                                  {/* <li>
                                     <img src={ages} alt="ages" />
-                                    <span>24-34</span>
-                                  </li>
+                                    <span>{profileDetails.age}</span>
+                                  </li> */}
                                   <li>
                                     <img src={race} alt="race" />
                                     <span>
