@@ -20,7 +20,7 @@ const Disclaimer = ({ isShowDisclaimer, handleDisclaimer }) => {
                     <div className="modal-all-padding">
                         <Row>
                             <Col lg={12}>
-                                <h5 className="notice-h4">Notice:</h5>
+                                <h5 className="notice-h4">{t('Notice:')}</h5> 
                                 <p className="notice-p">
                                     You understand that you are solely responsible for your interaction with other members. Furthermore, you understand and agree that the company currently does not conduct criminal background checks on its
                                     members. The company also does not inquire into the backgrounds of all of its members or attemps to verify the statements of its members. The company makes no representations or warranties as to the conduct of

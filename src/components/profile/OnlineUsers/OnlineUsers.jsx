@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-
+import { useTranslation } from "react-i18next";
 const OnlineUsers = () => {
+    const { t } = useTranslation();
     const [onlineStats, setOnlineStats] = useState({
     women: 0,
     men: 0,
@@ -45,7 +46,7 @@ const OnlineUsers = () => {
     
    <div className="top-user-id text-center">
   <div className="online-user-all">
-    <h5 className="border-h5">Users Online Now</h5>
+    <h5 className="border-h5">{t('Users Online Now')}</h5>
 
     {onlineStats.loading ? (
       <p>Loading...</p>

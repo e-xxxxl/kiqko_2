@@ -94,8 +94,10 @@ import SimilarUsersSection from "./SimilarUsersSection/SimilarUsersSection";
 import OnlineUsers from "./OnlineUsers/OnlineUsers";
 import OnlineStatusUpdater from "./OnlineUsers/OnlineStatusUpdater";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
 
 const Profile = () => {
+  const { t } = useTranslation();
   const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
   const [isShowBlockUser, setIsBlockUser] = useState(false);
   const [user, setUser] = useState(null);
@@ -453,7 +455,7 @@ const handleDeleteVideo = async (publicId) => {
                         <li>
                           <NavLink exact to="/profile" activeClassName="active">
                             <img src={homea} alt="homea" />
-                            Home
+                           {t('Home')}
                           </NavLink>
                         </li>
                         <li>
@@ -463,7 +465,7 @@ const handleDeleteVideo = async (publicId) => {
                             activeClassName="active"
                           >
                             <img src={serr} alt="liveicon" />
-                            Search Results
+                             {t('Search Results')}
                           </NavLink>
                         </li>
                         <li>
@@ -473,7 +475,7 @@ const handleDeleteVideo = async (publicId) => {
                             activeClassName="active"
                           >
                             <img src={liveicon} alt="liveicon" />
-                            Live Users
+                            {t('Live Users')}
                           </NavLink>
                         </li>
 
@@ -484,7 +486,7 @@ const handleDeleteVideo = async (publicId) => {
                             activeClassName="active"
                           >
                             <img src={viewedMe} alt="viewedMe" />
-                            Who Viewed Me
+                            {t('Who Viewed Me')}
                           </NavLink>
                         </li>
                         <li>
@@ -494,7 +496,7 @@ const handleDeleteVideo = async (publicId) => {
                             activeClassName="active"
                           >
                             <img src={myLikes} alt="myLikes" />
-                            Who Likes Me
+                             {t('Who Likes Me')}
                           </NavLink>
                         </li>
                         <li>
@@ -504,7 +506,7 @@ const handleDeleteVideo = async (publicId) => {
                             activeClassName="active"
                           >
                             <img src={likesMe} alt="likesMe" />
-                            My Likes
+                            {t('My Likes')}
                           </NavLink>
                         </li>
                         <li>
@@ -514,7 +516,7 @@ const handleDeleteVideo = async (publicId) => {
                             activeClassName="active"
                           >
                             <img src={yourm} alt="likesMe" />
-                            Your Matches
+                           {t('Your Matches')}
                           </NavLink>
                         </li>
                         <li>
@@ -524,14 +526,14 @@ const handleDeleteVideo = async (publicId) => {
                             activeClassName="active"
                           >
                             <img src={blockedUsers} alt="blockedUsers" />
-                            Blocked Users
+                            {t('Blocked Users')}
                           </NavLink>
                         </li>
                         <li>
                           <NavLink exact to="/profile" activeClassName="active">
                             {" "}
                             <img src={settingView} alt="settingView" />
-                            View Profile
+                           {t('View Profile')}
                           </NavLink>
                         </li>
                         <li>
@@ -542,7 +544,7 @@ const handleDeleteVideo = async (publicId) => {
                           >
                             {" "}
                             <img src={settingEdit} alt="settingEdit" />
-                            Edit Profile{" "}
+                             {t('Edit Profile')}{" "}
                           </NavLink>
                         </li>
                         <li>
@@ -552,37 +554,37 @@ const handleDeleteVideo = async (publicId) => {
                             activeClassName="active"
                           >
                             <img src={manageMedia} alt="manageMedia" />
-                            Manage Media
+                            {t('Manage Media')}
                           </NavLink>
                         </li>
                         <li>
                           <NavLink exact to="/reset-password">
                             <img src={settingReset} alt="settingReset" />
-                            Reset Password
+                            {t('Reset Password')}
                           </NavLink>
                         </li>
                         <li>
                           <NavLink exact to="/update-location">
                             <img src={settingUpload} alt="settingUpload" />
-                            Update Location
+                           {t('Update Location')}
                           </NavLink>
                         </li>
                         <li>
                           <NavLink exact to="/hide-profile">
                             <img src={settingHide} alt="settingHide" />
-                            Hide Profile
+                            {t('Hide Profile')}
                           </NavLink>
                         </li>
                         <li>
                           <NavLink exact to="/delete-account">
                             <img src={settingDelete} alt="settingDelete" />
-                            Delete Account
+                           {t('Delete Account')}
                           </NavLink>
                         </li>
                         <li>
                           <NavLink exact to="/logout">
                             <img src={settingLogout} alt="settingLogout" />
-                            Logout
+                            {t('Logout')}
                           </NavLink>
                         </li>
                       </ul>

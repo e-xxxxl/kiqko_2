@@ -1,13 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/esm/Row';
 import Container from 'react-bootstrap/esm/Container';
 import { DropdownButton, Nav } from 'react-bootstrap';
 import './Footer.css';
 import { Dropdown } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 
 
 const Footer = () => {
+   const { i18n } = useTranslation();
+
+  const languages = {
+    en: 'English',
+    fr: 'French',
+    zh: 'Chinese',
+    de: 'German',
+    th: 'Thailand'
+  };
+
+  const getInitialLanguage = () => {
+    const savedLang = localStorage.getItem('appLanguage') || 'en';
+    i18n.changeLanguage(savedLang);
+    return languages[savedLang] || 'LANGUAGE';
+  };
+
+  const [selectedLanguage, setSelectedLanguage] = useState(getInitialLanguage);
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+    localStorage.setItem('appLanguage', lng);
+    setSelectedLanguage(languages[lng]);
+  };
     return (
         <div className="footer-area">
             <Container>
@@ -41,15 +65,19 @@ const Footer = () => {
                         </Nav>
                     </Col>
 
-                    <Col md={2}>
-                        <DropdownButton className="drop-down-custom" id="dropdown-basic-button" title="LANGUAGE">
-                            <Dropdown.Item>English</Dropdown.Item>
-                            <Dropdown.Item>French</Dropdown.Item>
-                            <Dropdown.Item>Chinese</Dropdown.Item>
-                            <Dropdown.Item>German</Dropdown.Item>
-                            <Dropdown.Item>Thailand</Dropdown.Item>
-                        </DropdownButton>
-                    </Col>
+              <Col md={2}>
+      <DropdownButton
+        className="drop-down-custom"
+        id="dropdown-basic-button"
+        title={selectedLanguage}
+      >
+        {Object.entries(languages).map(([lng, label]) => (
+          <Dropdown.Item key={lng} onClick={() => changeLanguage(lng)}>
+            {label}
+          </Dropdown.Item>
+        ))}
+      </DropdownButton>
+    </Col>
 
                 </Row>
             </Container>
