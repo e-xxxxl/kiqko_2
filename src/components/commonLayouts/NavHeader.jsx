@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
@@ -17,6 +17,61 @@ import notification from '../../assets/images/notification.png';
 import logoi from '../../assets/images/logo-inner.png';
 
 const NavHeader = () => {
+    const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('home');
+  const [user, setUser] = useState(null);
+  const [profileDetails, setProfileDetails] = useState(null);
+  const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+
+  useEffect(() => {
+    
+    const fetchProfileDetails = async () => {
+      const userId = localStorage.getItem('userId');
+      try {
+        const detailsRes = await fetch(`https://kiqko-backend.onrender.com/api/users/profilee/${userId}`);
+        const detailsData = await detailsRes.json();
+        if (detailsRes.ok) {
+          setProfileDetails(detailsData);
+        } else {
+          console.error('Error fetching profile:', detailsData.message);
+        }
+      } catch (err) {
+        console.error('Error:', err);
+      }
+    };
+
+    const fetchData = async () => {
+       const userId = localStorage.getItem('userId');
+         try {
+            // Fetch basic user data
+            const userRes = await fetch(`https://kiqko-backend.onrender.com/api/users/profile/${userId}`);
+            const userData = await userRes.json();
+            console.log(userData);
+
+
+            if (userRes.ok) {
+               setUser(userData);
+
+               //  // Fetch additional profile details
+               //  const detailsRes = await fetch(`https://kiqko-backend.onrender.com/api/users/${userId}`);
+               //  const detailsData = await detailsRes.json();
+
+               //  if (detailsRes.ok) {
+               //    setProfileDetails(detailsData);
+               //  }
+            } else {
+               console.error(userData.message);
+            }
+         } catch (err) {
+            console.error('Error fetching data:', err);
+         } finally {
+            setIsLoading(false);
+         }
+      }
+    fetchProfileDetails(), fetchData();
+  }, []);
+
     return (
         <Navbar expand="lg" className="customHeader" collapseOnSelect>
             <Container fluid> {/* Use fluid for full width */}
@@ -83,7 +138,7 @@ const NavHeader = () => {
                         <Dropdown align="end" className="useravatar-dropdown-desktop">
                             <Dropdown.Toggle id="dropdown-user-desktop" className="user-toggle">
                                 <div className="user-avatar-desktop">
-                                    <img src={useravatar} alt="user avatar" />
+                                    <img src={profileDetails?.profilephoto || useravatar} alt="user avatar" />
                                 </div>
                             </Dropdown.Toggle>
                             <Dropdown.Menu className="dropdown-menu-custom">
