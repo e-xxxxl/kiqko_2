@@ -15,7 +15,7 @@ const OnlineUsers = () => {
         const response = await fetch('https://kiqko-backend.onrender.com/api/users/online-count');
         
         if (!response.ok) {
-          throw new Error('Failed to fetch online users');
+          throw new Error('No Internet Connection');
         }
         
         const data = await response.json();
