@@ -33,55 +33,71 @@ const HideProfile = () => {
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
-    const fetchProfileStatus = async () => {
-      try {
-        const response = await axios.get(`https://kiqko-backend.onrender.com/api/users/${userId}/profile-status`, {
-         
-        });
-        setIsHidden(response.data.isHidden);
-      } catch (err) {
-        console.error('Error fetching profile status:', err);
+  const fetchProfileStatus = async () => {
+    try {
+      const response = await axios.get(
+        `https://kiqko-backend.onrender.com/api/users/${userId}/profile-status`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        }
+      );
+      setIsHidden(response.data.isHidden);
+    } catch (err) {
+      console.error('Error fetching profile status:', err);
+    }
+  };
+
+  if (userId) {
+    fetchProfileStatus();
+  }
+}, [userId]);
+
+const handleHideProfile = async () => {
+  try {
+    setLoading(true);
+    await axios.put(
+      `https://kiqko-backend.onrender.com/api/users/${userId}/hide-profile`,
+      { isHidden: true },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        }
       }
-    };
+    );
+    setIsHidden(true);
+    setError(null);
+  } catch (err) {
+    setError(err.response?.data?.message || 'Failed to hide profile');
+    console.error('Hide profile error:', err);
+  } finally {
+    setLoading(false);
+  }
+};
 
-    if (userId) {
-      fetchProfileStatus();
-    }
-  }, [userId]);
+const handleUnhideProfile = async () => {
+  try {
+    setLoading(true);
+    await axios.put(
+      `https://kiqko-backend.onrender.com/api/users/${userId}/hide-profile`,
+      { isHidden: false },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+    setIsHidden(false);
+    setError(null);
+  } catch (err) {
+    setError('Failed to unhide profile');
+    console.error('Unhide profile error:', err);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleHideProfile = async () => {
-    try {
-      setLoading(true);
-      await axios.put(
-        `https://kiqko-backend.onrender.com/api/users/${userId}/hide-profile`,
-        { isHidden: true }
-      );
-      setIsHidden(true);
-      setError(null);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to hide profilee');
-      console.error('Hide profile error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUnhideProfile = async () => {
-    try {
-      setLoading(true);
-      await axios.put(
-        `https://kiqko-backend.onrender.com/api/users/${userId}/hide-profile`,
-        { isHidden: false }
-      );
-      setIsHidden(false);
-      setError(null);
-    } catch (err) {
-      setError('Failed to unhide profile');
-      console.error('Unhide profile error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
   return (
     <CommonLayout>
       <section className="all-top-shape">
