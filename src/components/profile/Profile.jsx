@@ -95,12 +95,14 @@ import OnlineUsers from "./OnlineUsers/OnlineUsers";
 import OnlineStatusUpdater from "./OnlineUsers/OnlineStatusUpdater";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-
+import moment from 'moment';
+import Swal from "sweetalert2";
 const Profile = () => {
   const { t } = useTranslation();
   const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
   const [isShowBlockUser, setIsBlockUser] = useState(false);
   const [user, setUser] = useState(null);
+  const [user1, setUser1] = useState(null);
   const [profileDetails, setProfileDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
@@ -112,6 +114,49 @@ const Profile = () => {
 
   const [userVideos, setUserVideos] = useState([]);
 const [isDeleting, setIsDeleting] = useState(false);
+
+
+
+
+useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`https://kiqko-backend.onrender.com/api/users/user/${userId}`);
+        console.log('API Response:', response.data); // Log raw API response
+        console.log('userId used:', userId); // Log userId
+        console.log('Formatted createdAt:', moment(response.data.createdAt).format('MMMM D, YYYY')); // Log formatted date
+        setUser1(response.data);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        setError('Failed to load user data');
+      }
+    };
+
+    if (userId) {
+      fetchUser();
+    } else {
+      setError('No user ID found');
+    }
+  }, [userId]);
+
+  const formatLastOnline = (lastActive) => {
+    if (!lastActive) return 'Last online unknown';
+    const now = moment();
+    const lastActiveDate = moment(lastActive);
+    const duration = moment.duration(now.diff(lastActiveDate));
+
+    const days = Math.floor(duration.asDays());
+    const hours = Math.floor(duration.asHours() % 24);
+
+    if (days > 0) {
+      return `Last online ${days} Day${days > 1 ? 's' : ''} ${hours} Hour${hours > 1 ? 's' : ''}`;
+    } else if (hours > 0) {
+      return `Last online ${hours} Hour${hours > 1 ? 's' : ''}`;
+    } else {
+      return 'Last online just now';
+    }
+  };
+
 
 useEffect(() => {
   const fetchVideos = async () => {
@@ -138,11 +183,23 @@ const handleDeleteVideo = async (publicId) => {
     if (response.status === 200) {
       setUserVideos((prev) => prev.filter((video) => video.publicId !== publicId));
       // Optional: Show success message
-      alert('Video deleted successfully');
+      
+      Swal.fire({
+              icon: 'success',
+              title: 'Video Deleted',
+              text: 'The video has been deleted successfully.',
+              confirmButtonText: 'OK'
+            });
+      
     }
   } catch (err) {
     console.error("Delete failed:", err);
-    alert(`Delete failed: ${err.response?.data?.message || err.message}`);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: `Delete failed: ${err.response?.data?.message || err.message}`,
+      confirmButtonText: 'OK'
+    });
   } finally {
     setIsDeleting(false);
   }
@@ -345,97 +402,97 @@ const handleDeleteVideo = async (publicId) => {
   //   if (!user) return <p>Loading...</p>;
 
   // Gallary Image View Start
-  const gallaryImgList = [
-    { imgUrl: profile, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile2, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile3, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile4, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile5, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile6, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile7, caption: "BeBold 2022 BeBless" },
-    { imgUrl: profile8, caption: "BeBold 2022 BeBless" },
-    // { imgUrl: img8, caption: 'BeBold 2022 BeBless' }
-  ];
-  // Gallary Image View End
-  // Profile Image View Start
-  const [Modal, open, close] = useModal("root", {
-    preventScroll: true,
-    closeOnOverlayClick: false,
-  });
-  const [imgObj, setImgObj] = useState({});
-  const [imgIndex, setImgIndex] = useState(0);
-  const [isDisabled, setIsDisabled] = useState(false);
-  const profileImgList = [
-    { imgUrl: profile, caption: "BeBold 2022 BeBless" },
-    // { imgUrl: img3, caption: 'Profile Picture -02' }
-  ];
-  function viewProfileImg() {
-    setImgObj(profileImgList[0]);
-    setImgIndex(0);
-    if (profileImgList.length <= 1) {
-      setIsDisabled(true);
-    }
-    open();
-  }
-  const ImgViewer = () => (
-    <Modal>
-      <div className="popup-modal-viewer">
-        <div className="user-modal-top">
-          <span>
-            {" "}
-            <img src={imgObj.imgUrl} alt="Images..." />{" "}
-          </span>
-          <div className="user-modal-top-details">
-            <h5>Sola</h5>
-            <p>Long Beach, CA-60</p>
-          </div>
-          <button className="btn btn_closega" onClick={close}>
-            <MdOutlineClose className="arrow-sign" />
-          </button>
-        </div>
-        <div className="main-view-image">
-          <img src={imgObj.imgUrl} alt="Images..." />
-        </div>
-        <div className="user-caption">{imgObj.caption}</div>
-        {/* <div style={{ marginBottom: '10px' }} className='customizableDiv'>This is a customizable div
-   </div>
-   */}
-        <div className="caption_title">
-          <div className="send-message-user2">
-            <p>
-              <Form.Control
-                className="form-control"
-                type="text"
-                placeholder="Send her a message"
-              />
-              <button className="btn">Send Message</button>
-            </p>
-          </div>
-        </div>
-        <button
-          className="btn btn-next-pre left-posp"
-          onClick={previous}
-          disabled={isDisabled}
-        >
-          <MdOutlineArrowBackIosNew />
-        </button>
-        <button
-          className="btn btn-next-pre right-posp"
-          onClick={next}
-          disabled={isDisabled}
-        >
-          <MdOutlineArrowForwardIos />
-        </button>
-      </div>
-    </Modal>
-  );
-  function previous() {
-    utils.prevImg(profileImgList, setImgObj, setImgIndex, imgIndex);
-  }
-  function next() {
-    utils.nextImg(profileImgList, setImgObj, setImgIndex, imgIndex);
-  }
-  // Profile Image View End
+  // const gallaryImgList = [
+  //   { imgUrl: profile, caption: "BeBold 2022 BeBless" },
+  //   { imgUrl: profile2, caption: "BeBold 2022 BeBless" },
+  //   { imgUrl: profile3, caption: "BeBold 2022 BeBless" },
+  //   { imgUrl: profile4, caption: "BeBold 2022 BeBless" },
+  //   { imgUrl: profile5, caption: "BeBold 2022 BeBless" },
+  //   { imgUrl: profile6, caption: "BeBold 2022 BeBless" },
+  //   { imgUrl: profile7, caption: "BeBold 2022 BeBless" },
+  //   { imgUrl: profile8, caption: "BeBold 2022 BeBless" },
+  //   // { imgUrl: img8, caption: 'BeBold 2022 BeBless' }
+  // ];
+  // // Gallary Image View End
+  // // Profile Image View Start
+  // const [Modal, open, close] = useModal("root", {
+  //   preventScroll: true,
+  //   closeOnOverlayClick: false,
+  // });
+  // const [imgObj, setImgObj] = useState({});
+  // const [imgIndex, setImgIndex] = useState(0);
+  // const [isDisabled, setIsDisabled] = useState(false);
+  // const profileImgList = [
+  //   { imgUrl: profile, caption: "BeBold 2022 BeBless" },
+  //   // { imgUrl: img3, caption: 'Profile Picture -02' }
+  // ];
+  // function viewProfileImg() {
+  //   setImgObj(profileImgList[0]);
+  //   setImgIndex(0);
+  //   if (profileImgList.length <= 1) {
+  //     setIsDisabled(true);
+  //   }
+  //   open();
+  // }
+  // const ImgViewer = () => (
+  //   <Modal>
+  //     <div className="popup-modal-viewer">
+  //       <div className="user-modal-top">
+  //         <span>
+  //           {" "}
+  //           <img src={imgObj.imgUrl} alt="Images..." />{" "}
+  //         </span>
+  //         <div className="user-modal-top-details">
+  //           <h5>Sola</h5>
+  //           <p>Long Beach, CA-60</p>
+  //         </div>
+  //         <button className="btn btn_closega" onClick={close}>
+  //           <MdOutlineClose className="arrow-sign" />
+  //         </button>
+  //       </div>
+  //       <div className="main-view-image">
+  //         <img src={imgObj.imgUrl} alt="Images..." />
+  //       </div>
+  //       <div className="user-caption">{imgObj.caption}</div>
+  //       {/* <div style={{ marginBottom: '10px' }} className='customizableDiv'>This is a customizable div
+  //  </div>
+  //  */}
+  //       <div className="caption_title">
+  //         <div className="send-message-user2">
+  //           <p>
+  //             <Form.Control
+  //               className="form-control"
+  //               type="text"
+  //               placeholder="Send her a message"
+  //             />
+  //             <button className="btn">Send Message</button>
+  //           </p>
+  //         </div>
+  //       </div>
+  //       <button
+  //         className="btn btn-next-pre left-posp"
+  //         onClick={previous}
+  //         disabled={isDisabled}
+  //       >
+  //         <MdOutlineArrowBackIosNew />
+  //       </button>
+  //       <button
+  //         className="btn btn-next-pre right-posp"
+  //         onClick={next}
+  //         disabled={isDisabled}
+  //       >
+  //         <MdOutlineArrowForwardIos />
+  //       </button>
+  //     </div>
+  //   </Modal>
+  // );
+  // function previous() {
+  //   utils.prevImg(profileImgList, setImgObj, setImgIndex, imgIndex);
+  // }
+  // function next() {
+  //   utils.nextImg(profileImgList, setImgObj, setImgIndex, imgIndex);
+  // }
+  // // Profile Image View End
 
   if (isLoading) return (
     <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -444,7 +501,7 @@ const handleDeleteVideo = async (publicId) => {
 );
   return (
     <CommonLayout>
-      <ImgViewer />
+      {/* <ImgViewer /> */}
       <section className="all-top-shape">
         <img src={shape} alt="shape" />
       </section>
@@ -607,19 +664,20 @@ const handleDeleteVideo = async (publicId) => {
                   <div className="profile-main-part-area-inner mt-profile">
                     <div className="profile-details-area">
                       <div className="date-profile-top">
-                        <p className="member-p">Member since May 29, 2021</p>
+                        <p className="member-p"> Member since {moment(user1.createdAt).format('MMMM D, YYYY')}</p>
                         <div className="last-online">
                           {" "}
                           <img src={calendar} alt="calendar" />
-                          Last online 1 Day 14 Hours
+                           {formatLastOnline(user1.lastActive)}
                         </div>
                       </div>
                       <div className="profile-pic-user">
                         <div className="profile-pic-avater">
                           {" "}
                           <img
-                            onClick={viewProfileImg}
-                            src={profileDetails?.profilephoto || profile}
+                            // onClick={viewProfileImg}
+                            src={profileDetails?.profilephoto||
+                      'https://cdn-icons-png.flaticon.com/512/847/847969.png'}
                             alt="profile"
                             className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
                           />
@@ -1162,7 +1220,7 @@ const handleDeleteVideo = async (publicId) => {
                                 </ul>
                               </Col>
                             </Row>
-                            <h3 className="text-start h3-all-title mt-3 mb-3">
+                            {/* <h3 className="text-start h3-all-title mt-3 mb-3">
                               Say Hello to {user?.username}
                             </h3>
                             <div className="search-user-profile">
@@ -1178,7 +1236,7 @@ const handleDeleteVideo = async (publicId) => {
                                   </span>
                                 </Form.Group>
                               </Form>
-                            </div>
+                            </div> */}
                           </div>
                         </div>
                       </Col>

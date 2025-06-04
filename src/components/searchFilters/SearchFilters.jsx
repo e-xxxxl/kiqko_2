@@ -26,6 +26,7 @@ import serr from "../../assets/images/serr.png";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
+import Swal from "sweetalert2";
 const SearchFilters = (props) => {
      const [loading, setLoading] = useState(false);
   const history = useHistory();
@@ -101,7 +102,15 @@ const handleCheckboxChange = (field, value) => {
   const userId = localStorage.getItem("userId");
 
   if (!userId) {
-    alert("User not logged in. Please log in to save search filters.");
+    
+    Swal.fire({
+              icon: 'error',
+              title: 'User Not Logged In',
+              text: 'Please log in to save search filters.',
+              confirmButtonText: 'OK'
+            });
+      
+    history.push("/login"); // Redirect to login page
     setLoading(false);
     return;
   }
@@ -127,13 +136,27 @@ const handleCheckboxChange = (field, value) => {
     );
 
     if (response.status === 200) {
-      alert("Search filters saved successfully!");
+      
+      Swal.fire({
+              icon: 'success',
+              title: 'Search Filters Saved',
+              text: 'Your search filters have been saved successfully.',
+              confirmButtonText: 'OK'
+            });
+      
       history.push("/search-results"); // Navigate to search results
     }
   } catch (error) {
     console.error("Error saving search filters:", error);
     const errorMessage = error.response?.data?.message || "An error occurred while saving search filters. Please try again later.";
-    alert(errorMessage);
+    
+    Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: errorMessage,
+              confirmButtonText: 'OK'
+            });
+    
   } finally {
     setLoading(false);
   }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CommonLayout from "../../../layouts/Common";
 import Col from 'react-bootstrap/esm/Col';
 import Row from 'react-bootstrap/esm/Row';
@@ -33,6 +33,50 @@ import blockedUsers from '../../../assets/images/blockedUsers.png';
 import serr from '../../../assets/images/serr.png';
 import OnlineUsers from '../../profile/OnlineUsers/OnlineUsers';
 const YourMatches = () => {
+     const [similarUsers, setSimilarUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const userId = localStorage.getItem('userId');
+
+  useEffect(() => {
+    const fetchSimilarUsers = async () => {
+      try {
+        if (!userId) {
+          throw new Error('User ID not found');
+        }
+
+        const response = await fetch(`https://kiqko-backend.onrender.com/api/users/similar-users/${userId}`);
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to fetch users');
+        }
+
+        const data = await response.json();
+        console.log('Fetched users:', data);
+        setSimilarUsers(data);
+        
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSimilarUsers();
+  }, [userId]);
+
+  if (loading) return (
+    <div className="d-flex justify-content-center align-items-center min-vh-100">
+      <div className="spinner-border text-purple" style={{ width: '3rem', height: '3rem', borderWidth: '0.2rem', borderColor: '#9c27b0', borderRightColor: 'transparent' }}></div>
+    </div>
+  );
+
+  if (error) {
+    return <div className="text-center py-4 text-danger">Error: {error}</div>;
+  }
+
     return (
         <CommonLayout>
         <section className="all-top-shape"> 
@@ -84,76 +128,41 @@ const YourMatches = () => {
                 </div>
             </Col>
             <Col md={9}>
-                <div className="profile-main-part-area-inner bg-all-pages mar-top-responsive">
-                    <Col md={12} className="all-title-top mb-4 text-center">
-                        <h4>Your Matches</h4>
-                    </Col>
-                    <Col className="photo-list-all all-margin-connection all-user-pic width-cons" md={12}>
-                                        <ul>
-                                        <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={myphoto} alt="myphoto" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={fev1} alt="fev1" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo2} alt="photo2" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo3} alt="photo3" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo4} alt="photo4" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo5} alt="photo5" />
-                                                </div>
-                                            </li>
-        
-        
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo6} alt="photo6" />
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div className="photo-list">
-                                                    <span className="close-photo"><MdClear /></span>
-                                                    <img src={photo7} alt="photo7" />
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </Col>
+      <div className="profile-main-part-area-inner bg-all-pages mar-top-responsive">
+        <Col md={12} className="all-title-top mb-4 text-center">
+          <h4>Your Matches</h4>
+        </Col>
+        <Col className="photo-list-all all-margin-connection all-user-pic width-cons" md={12}>
+          <ul>
+            {/* Your profile photo */}
+           
+            
+            {/* Dynamically render similar users */}
+            {similarUsers.map((user, index) => (
+              <li key={user._id || index}>
+                  <NavLink to={`/userprofile/${user._id}`}>
+                <div className="photo-list">
+                  <span className="close-photo"><MdClear /></span>
+                  <img 
+                    src={
+                      user.profilephoto?.trim() || 
+                      user.profile?.profilephoto?.trim() ||
+                      'https://cdn-icons-png.flaticon.com/512/847/847969.png'
+                    }
+                    alt={user.username || `user-${index}`} 
+                    onError={(e) => {
+                      e.target.onerror = null; 
+                      e.target.src = 'default-profile-image.jpg'
+                    }}
+                  />
                 </div>
-            </Col>
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </Col>
+      </div>
+    </Col>
             </Row>
             </Container>
             </div>

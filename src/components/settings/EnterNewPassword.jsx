@@ -28,6 +28,7 @@ import serr from '../../assets/images/serr.png';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import OnlineUsers from '../profile/OnlineUsers/OnlineUsers';
 import OnlineStatusUpdater from '../profile/OnlineUsers/OnlineStatusUpdater';
+import Swal from 'sweetalert2';
 const EnterNewPassword = () => {
     const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -40,13 +41,25 @@ const EnterNewPassword = () => {
     e.preventDefault();
 
     if (!userId) {
-      alert("User ID not found. Please log in again.");
+      Swal.fire({
+              icon: 'error',
+              title: 'User Not Logged In',
+              text: 'Please log in to continue.',
+              confirmButtonText: 'OK'
+            });
+      history.push("/login");
       return;
     }
 
     // Basic validation
     if (newPassword !== confirmPassword) {
-      alert("New passwords do not match");
+   
+      Swal.fire({
+              icon: 'error',
+              title: 'New Passwords Do Not Match',
+              text: 'Please make sure both passwords are the same.',
+              confirmButtonText: 'OK'
+            });
       return;
     }
 
@@ -82,7 +95,13 @@ const EnterNewPassword = () => {
       }
 
       // Show success message
-      alert("Password reset successfully!");
+    
+      Swal.fire({
+              icon: 'success',
+              title: 'Password Reset Successful',
+              text: 'Your password has been reset successfully.',
+              confirmButtonText: 'OK'
+            });
 
       // Optionally redirect to profile page
       history.push("/profile");
@@ -92,7 +111,12 @@ const EnterNewPassword = () => {
       const errorMessage = err.message.includes("<!DOCTYPE")
         ? "Server error occurred"
         : err.message;
-      alert(errorMessage);
+      Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: errorMessage,
+              confirmButtonText: 'OK'
+            });
     } finally {
       setIsResetting(false);
     }

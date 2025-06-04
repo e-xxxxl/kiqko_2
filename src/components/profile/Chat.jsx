@@ -97,7 +97,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
   import io from 'socket.io-client';
   import Picker from 'emoji-picker-react';
-  import { Send, Paperclip, Smile, X, Image, FileText, Check, CheckCheck, MoreHorizontal } from 'lucide-react';
+  import { Send, Paperclip, Smile, X, Image, FileText, Check, CheckCheck, MoreHorizontal, Inbox } from 'lucide-react';
 import { Tab, Tabs } from "react-bootstrap";
 import Sent from "../mailbox/Sent";
 import Saved from "../mailbox/Saved";
@@ -349,6 +349,7 @@ const Chat = () => {
     return `Last seen: ${d.toLocaleString()}`;
   };
 
+  
   // // Placeholder components for Sent and Saved tabs
   // const Sent = () => <div>Sent Messages (Under Construction)</div>;
   // const Saved = () => <div>Saved Messages (Under Construction)</div>;
@@ -422,7 +423,7 @@ const Chat = () => {
 <Col md={9}>
     <div className="profile-main-part-area-inner bg-all-pages plr-16 mrb-mail">
       <Col md={12} className="all-title-top mb-4 text-center">
-        <h4>Mailbox</h4>
+        <h4 className="text-gradient-primary fw-semibold">Mailbox</h4>
       </Col>
       <div className="page-wrapper-all">
         <Row className="m-0">
@@ -431,19 +432,20 @@ const Chat = () => {
               <Tabs defaultActiveKey="Messages" id="uncontrolled-tab-example" className="mb-2">
                 <Tab eventKey="Messages" title="Chat">
                   {isLoading ? (
-                    <div className="d-flex justify-content-center align-items-center" style={{ height: '75vh' }}>
-                      <div className="spinner-border text-primary" role="status">
+                    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '70vh' }}>
+                      <div className="spinner-grow text-primary" role="status" style={{ width: '2.5rem', height: '2.5rem' }}>
                         <span className="visually-hidden">Loading...</span>
                       </div>
                     </div>
                   ) : (
                     <div
-                      className="d-flex flex-column h-100 mx-auto bg-white border rounded-3xl overflow-hidden"
+                      className="d-flex flex-column h-100 mx-auto bg-white border rounded-4 overflow-hidden"
                       style={{
                         maxWidth: '100%',
-                        boxShadow: '0 10px 30px -10px rgba(0, 0, 0, 0.1)',
-                        borderColor: '#eee',
-                        height: '75vh',
+                        boxShadow: '0 5px 20px rgba(0, 0, 0, 0.08)',
+                        borderColor: 'rgba(0,0,0,0.05)',
+                        minHeight: '70vh',
+                        maxHeight: '80vh'
                       }}
                     >
                       {/* HEADER */}
@@ -452,14 +454,14 @@ const Chat = () => {
                         style={{
                           background: 'linear-gradient(135deg, #8A63FF 0%, #B18AFF 100%)',
                           color: 'white',
-                          boxShadow: '0 2px 15px -5px rgba(0, 0, 0, 0.1)',
+                          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
                         }}
                       >
                         <div className="position-relative">
                           <img
                             src={profileDetails?.profilephoto || 'default-profile.png'}
                             alt="profile"
-                            className="rounded-circle border border-2 border-white shadow-sm"
+                            className="rounded-circle border border-3 border-white shadow-sm"
                             style={{
                               width: '42px',
                               height: '42px',
@@ -469,13 +471,13 @@ const Chat = () => {
                           <div
                             className="position-absolute bottom-0 end-0 bg-success rounded-circle border border-2 border-white pulse-animation"
                             style={{
-                              width: '14px',
-                              height: '14px',
+                              width: '12px',
+                              height: '12px',
                             }}
                           ></div>
                         </div>
                         <div className="flex-grow-1">
-                          <h2 className="h5 mb-0 fw-semibold">{user?.username || 'Unknown User'}</h2>
+                          <h2 className="h6 mb-0 fw-semibold">{user?.username || 'Unknown User'}</h2>
                           <p className="small mb-0 fw-medium opacity-90">
                             {typingStatus ? (
                               <span className="d-flex align-items-center gap-1 text-white">
@@ -492,13 +494,14 @@ const Chat = () => {
                           </p>
                         </div>
                         <button
-                          className="btn p-2 rounded-circle"
+                          className="btn p-2 rounded-circle hover-scale"
                           style={{
-                            background: 'rgba(255, 255, 255, 0.1)',
+                            background: 'rgba(255, 255, 255, 0.15)',
                             border: 'none',
+                            transition: 'transform 0.2s ease',
                           }}
                         >
-                          <MoreHorizontal size={20} />
+                          <MoreHorizontal size={18} />
                         </button>
                       </div>
 
@@ -507,36 +510,37 @@ const Chat = () => {
                         ref={chatRef}
                         className="flex-grow-1 overflow-auto p-3 custom-scrollbar"
                         style={{
-                          background:
-                            'radial-gradient(circle at 50% 0%, rgba(247, 244, 255, 0.8) 0%, rgba(255, 255, 255, 1) 100%)',
-                          maxHeight: 'calc(75vh - 120px)',
+                          background: '#f9f9ff',
+                          minHeight: 'calc(70vh - 120px)'
                         }}
                       >
                         {messages.length === 0 ? (
-                          <div className="text-center text-muted mt-5">
-                            No messages yet. Start the conversation!
+                          <div className="text-center text-muted mt-5 d-flex flex-column align-items-center justify-content-center h-100">
+                            <Inbox size={48} className="opacity-50 mb-3" />
+                            <span className="fw-medium">No messages yet</span>
+                            <small className="text-muted">Start the conversation!</small>
                           </div>
                         ) : (
                           messages.map((msg) => (
                             <div
                               key={msg._id}
-                              className={`d-flex ${msg.sender === currentUserId ? 'justify-content-end' : 'justify-content-start'} mb-2`}
+                              className={`d-flex ${msg.sender === currentUserId ? 'justify-content-end' : 'justify-content-start'} mb-3`}
                             >
                               <div
                                 className={`position-relative p-3 ${msg.sender === currentUserId ? 'text-white chat-bubble-sent' : 'bg-white text-dark chat-bubble-received'}`}
                                 style={{
-                                  maxWidth: '70%',
+                                  maxWidth: '85%',
                                   wordBreak: 'break-word',
                                 }}
                               >
                                 {msg.text && <p className="mb-0">{msg.text}</p>}
                                 {msg.attachment && (
-                                  <div className="mt-2 overflow-hidden rounded-2xl">
+                                  <div className="mt-2 overflow-hidden rounded-3">
                                     <img
                                       src={msg.attachment}
                                       alt="attachment"
                                       className="img-fluid rounded"
-                                      style={{ maxHeight: '200px' }}
+                                      style={{ maxHeight: '220px', maxWidth: '100%' }}
                                     />
                                   </div>
                                 )}
@@ -557,44 +561,71 @@ const Chat = () => {
                         )}
                       </div>
 
-                      {/* EMOJI PICKER */}
-                      {showEmojiPicker && (
-                        <div className="position-absolute bottom-100 start-0 mb-2">
-                          <EmojiPicker onEmojiClick={onEmojiClick} width={300} height={350} />
-                        </div>
-                      )}
-
                       {/* INPUT AREA */}
-                      <div className="border-top p-3 bg-white position-relative" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
+                      <div className="border-top p-3 bg-white position-relative" style={{ borderColor: 'rgba(0,0,0,0.03)' }}>
+                        {/* EMOJI PICKER POSITIONED ABOVE INPUT */}
+                        {showEmojiPicker && (
+                          <div 
+                            className="position-absolute bottom-100 start-0 mb-2"
+                            style={{
+                              zIndex: 1000,
+                              width: '100%',
+                              maxWidth: '350px'
+                            }}
+                          >
+                            <EmojiPicker 
+                              onEmojiClick={onEmojiClick} 
+                              width="100%"
+                              height="350px"
+                              style={{ 
+                                boxShadow: '0 5px 20px rgba(0,0,0,0.1)',
+                                border: '1px solid rgba(0,0,0,0.05)'
+                              }}
+                            />
+                          </div>
+                        )}
+
                         {attachment && (
-                          <div className="mb-2">
+                          <div className="mb-2 d-flex align-items-center bg-light rounded p-2">
                             <img
                               src={attachment.data}
                               alt="attachment preview"
                               className="rounded"
-                              style={{ maxHeight: '100px' }}
+                              style={{ 
+                                maxHeight: '100px',
+                                maxWidth: '150px'
+                              }}
                             />
                             <button
                               onClick={() => setAttachment(null)}
-                              className="btn btn-sm btn-danger ms-2"
+                              className="btn btn-sm btn-danger ms-2 rounded-pill px-3"
                             >
                               Remove
                             </button>
                           </div>
                         )}
-                        <div className="d-flex align-items-center gap-2">
+                        
+                        <div className="d-flex align-items-center gap-2 position-relative">
                           <div className="d-flex">
                             <button
                               onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                              className="btn p-2 rounded-circle text-muted"
-                              style={{ border: 'none' }}
+                              className="btn p-2 rounded-circle text-muted hover-scale"
+                              style={{ 
+                                border: 'none', 
+                                transition: 'transform 0.2s ease',
+                                background: showEmojiPicker ? 'rgba(138, 99, 255, 0.1)' : 'transparent'
+                              }}
                             >
                               <Smile size={20} />
                             </button>
                             <label
                               htmlFor="file-upload"
-                              className="btn p-2 rounded-circle text-muted"
-                              style={{ border: 'none', cursor: 'pointer' }}
+                              className="btn p-2 rounded-circle text-muted hover-scale"
+                              style={{ 
+                                border: 'none', 
+                                cursor: 'pointer', 
+                                transition: 'transform 0.2s ease'
+                              }}
                             >
                               <Paperclip size={20} />
                               <input
@@ -609,22 +640,28 @@ const Chat = () => {
                           <div className="flex-grow-1 position-relative">
                             <input
                               type="text"
-                              className="form-control rounded-pill border-0 ps-3 pe-3 shadow-sm"
+                              className="form-control border-0 ps-3 pe-3 shadow-sm focus-ring"
                               value={input}
                               onChange={(e) => setInput(e.target.value)}
                               placeholder="Type a message..."
                               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                              style={{ height: '40px', background: 'rgba(0,0,0,0.03)' }}
+                              style={{ 
+                                height: '42px', 
+                                background: 'rgba(0,0,0,0.02)',
+                                transition: 'all 0.2s ease'
+                              }}
                             />
                           </div>
                           <button
                             onClick={handleSend}
                             disabled={!input.trim() && !attachment}
-                            className="btn p-2 rounded-circle text-white"
+                            className="btn p-2  text-white hover-scale"
                             style={{
                               background: 'linear-gradient(135deg, #8A63FF 0%, #B18AFF 100%)',
-                              width: '40px',
-                              height: '40px',
+                              width: '42px',
+                              height: '42px',
+                              transition: 'transform 0.2s ease, opacity 0.2s ease',
+                              opacity: (!input.trim() && !attachment) ? 0.7 : 1
                             }}
                           >
                             <Send size={18} />
@@ -653,30 +690,31 @@ const Chat = () => {
     <style jsx>{`
       .chat-bubble-sent {
         background: linear-gradient(135deg, #8A63FF 0%, #B18AFF 100%);
-        border-radius: 18px 18px 4px 18px;
+        border-radius: 18px 4px 18px 18px;
         box-shadow: 0 2px 8px rgba(138, 99, 255, 0.2);
       }
       
       .chat-bubble-received {
         background: white;
-        border-radius: 18px 18px 18px 4px;
+        border-radius: 4px 18px 18px 18px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 1px solid rgba(0,0,0,0.03);
       }
       
       .pulse-animation {
-        animation: pulse 2s infinite;
+        animation: pulse 1.5s infinite ease-in-out;
       }
       
       @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.2); opacity: 0.8; }
+        100% { transform: scale(1); opacity: 1; }
       }
       
       .typing-indicator {
         display: flex;
         align-items: center;
-        gap: 3px;
+        gap: 4px;
       }
       
       .typing-indicator .dot {
@@ -684,19 +722,19 @@ const Chat = () => {
         height: 6px;
         background: white;
         border-radius: 50%;
-        opacity: 0.8;
+        opacity: 0.7;
       }
       
       .typing-indicator .dot:nth-child(1) {
-        animation: bounce 1.2s infinite ease-in-out;
+        animation: bounce 1.4s infinite ease-in-out;
       }
       
       .typing-indicator .dot:nth-child(2) {
-        animation: bounce 1.2s infinite ease-in-out 0.15s;
+        animation: bounce 1.4s infinite ease-in-out 0.2s;
       }
       
       .typing-indicator .dot:nth-child(3) {
-        animation: bounce 1.2s infinite ease-in-out 0.3s;
+        animation: bounce 1.4s infinite ease-in-out 0.4s;
       }
       
       @keyframes bounce {
@@ -709,16 +747,48 @@ const Chat = () => {
       }
       
       .custom-scrollbar::-webkit-scrollbar-track {
-        background: rgba(0,0,0,0.05);
+        background: rgba(0,0,0,0.03);
+        border-radius: 10px;
       }
       
       .custom-scrollbar::-webkit-scrollbar-thumb {
         background: rgba(138, 99, 255, 0.3);
         border-radius: 10px;
       }
+      
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(138, 99, 255, 0.5);
+      }
+      
+      .hover-scale:hover {
+        transform: scale(1.1);
+      }
+      
+      .focus-ring:focus {
+        box-shadow: 0 0 0 0.25rem rgba(138, 99, 255, 0.15) !important;
+        border-color: rgba(138, 99, 255, 0.3) !important;
+        outline: none;
+      }
+      
+      .text-gradient-primary {
+        background: linear-gradient(135deg, #8A63FF 0%, #B18AFF 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      @media (max-width: 768px) {
+        .chat-bubble-sent,
+        .chat-bubble-received {
+          max-width: 90% !important;
+        }
+        
+        .profile-main-part-area-inner {
+          padding-left: 8px !important;
+          padding-right: 8px !important;
+        }
+      }
     `}</style>
   </Col>
-
             </Row>
             </Container>
             </div>

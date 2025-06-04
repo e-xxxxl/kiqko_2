@@ -11,6 +11,7 @@ import apps from '../../../assets/images/apps.png';
 import appg from '../../../assets/images/appg.png';
 import { Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Covid19 = () => {
     const [vaccinationStatus, setVaccinationStatus] = useState('');
@@ -20,7 +21,13 @@ const Covid19 = () => {
         e.preventDefault();
         
         if (!vaccinationStatus) {
-            alert('Please select your vaccination status');
+          Swal.fire({
+              icon: 'error',
+              title: 'Empty Selection',
+              text: 'Please select your vaccination status before proceeding.',
+              confirmButtonText: 'OK'
+            });
+     
             return;
         }
 

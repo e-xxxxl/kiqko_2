@@ -13,6 +13,7 @@ import { NavLink } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const Dealbreaker = () => {
   const [dealbreakers, setDealbreakers] = useState(['', '', '']);
@@ -29,7 +30,13 @@ const Dealbreaker = () => {
     e.preventDefault();
     
     if (!dealbreakers.every(breaker => breaker.trim() !== '')) {
-      alert('Please fill in all dealbreaker fields');
+     Swal.fire({
+              icon: 'error',
+              title: 'Empty Dealbreakers',
+              text: 'Please write something in your dealbreakers before proceeding.',
+              confirmButtonText: 'OK'
+            });
+      
       return;
     }
 

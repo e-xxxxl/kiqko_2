@@ -14,6 +14,7 @@ import appg from '../../../assets/images/appg.png';
 import { Button, Dropdown } from 'react-bootstrap';
 import './verify.css'
 import { NavLink } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const VerifyEmail = () => {
   const location = useLocation();
@@ -39,19 +40,42 @@ const VerifyEmail = () => {
 
       const data = await response.json();
       if (data.success) {
-        alert('Verification code resent!');
+       Swal.fire({
+              icon: 'success',
+              title: 'Code Resent',
+              text: 'A new verification code has been sent to your email.',
+              confirmButtonText: 'OK'
+            });
+     
       } else {
-        alert('Error resending code.');
+        Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: data.message || 'Failed to resend code. Please try again later.',
+              confirmButtonText: 'OK'
+            });
+      
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to resend code.');
+      Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to resend code. Please check your internet connection.',
+              confirmButtonText: 'OK'
+            });
     }
   };
 
 const handleVerify = async (e) => {
   e.preventDefault();
-  if (!otp) return alert('Please enter the verification code');
+  if (!otp) return Swal.fire({
+              icon: 'error',
+              title: 'Empty OTP',
+              text: 'Please enter the verification code.',
+              confirmButtonText: 'OK'
+            });
+      
 
   setVerifying(true);
   try {
@@ -63,14 +87,23 @@ const handleVerify = async (e) => {
 
     const data = await response.json();
     if (data.success) {
-      alert('Email verified successfully!');
       history.push('/email-verified'); // redirect after success
     } else {
-      alert(data.message || 'Invalid or expired code');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: data.message || 'Invalid or expired code',
+        confirmButtonText: 'OK'
+      });
     }
   } catch (err) {
     console.error(err);
-    alert('Verification failed');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Verification failed',
+      confirmButtonText: 'OK'
+    });
   } finally {
     setVerifying(false);
   }

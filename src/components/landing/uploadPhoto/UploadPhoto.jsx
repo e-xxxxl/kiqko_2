@@ -12,6 +12,7 @@ import Form from 'react-bootstrap/Form';
 import { NavLink } from 'react-router-dom';
 import './UploadPhoto.css';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import Swal from 'sweetalert2';
 
 
 
@@ -39,7 +40,13 @@ const UploadPhoto = (props) => {
 
   const handleSubmit = async () => {
     if (!file) {
-      alert('Please select a photo to upload');
+     Swal.fire({
+              icon: 'error',
+              title: 'No Photo Selected',
+              text: 'Please select a photo before proceeding.',
+              confirmButtonText: 'OK'
+            });
+      
       return;
     }
 
@@ -75,7 +82,13 @@ const UploadPhoto = (props) => {
       }
     } catch (error) {
       console.error('Error:', error);
-      alert(error.message || 'An error occurred. Please try again.');
+Swal.fire({
+              icon: 'error',
+              title: 'Upload Failed',
+              text: error.message || 'Something went wrong. Please try again.',
+              confirmButtonText: 'OK'
+            });
+      
     } finally {
       setIsLoading(false);
     }

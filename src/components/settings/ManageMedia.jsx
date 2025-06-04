@@ -231,7 +231,7 @@ setIsVideoUploaded(true);
         await axios.delete(
           `https://kiqko-backend.onrender.com/api/users/${userId}/media/${mediaId}`,
          
-        );
+        );  
 
         setMedia((prev) => prev.filter((item) => item._id !== mediaId));
         setSuccess("Media deleted successfully!");

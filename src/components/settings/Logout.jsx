@@ -28,6 +28,7 @@ import serr from '../../assets/images/serr.png';
 import './Setting.css';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import OnlineUsers from '../profile/OnlineUsers/OnlineUsers';
+import Swal from 'sweetalert2';
 
 
 const Logout = () => {
@@ -48,7 +49,14 @@ const Logout = () => {
             window.location.reload(); // Optional: if you want to fully reset the app state
         } catch (err) {
             console.error('Error during logout:', err);
-            alert('An error occurred during logout');
+           
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'An error occurred during logout',
+              confirmButtonText: 'OK'
+            });
+     
         } finally {
             setIsLoggingOut(false);
         }

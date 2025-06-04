@@ -14,6 +14,7 @@ import { Form } from 'react-bootstrap';
 import './About.css';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const AboutYou = () => {
     const [essay, setEssay] = useState('');
@@ -24,8 +25,13 @@ const AboutYou = () => {
     e.preventDefault();
     
     if (essay.trim() === '') {
-      alert('Please write something about yourself');
-      return;
+      Swal.fire({
+              icon: 'error',
+              title: 'Empty Essay',
+              text: 'Please write something in your essay before proceeding.',
+              confirmButtonText: 'OK'
+            });
+      
     }
 
     if (userId) {

@@ -27,6 +27,7 @@ import serr from '../../assets/images/serr.png';
 // import './Setting.css';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import OnlineUsers from '../profile/OnlineUsers/OnlineUsers';
+import Swal from 'sweetalert2';
 
 
 
@@ -39,7 +40,13 @@ const DeleteAccount = () => {
 
     const handleDeleteAccount = async () => {
         if (!userId) {
-            alert('User ID not found');
+           
+            Swal.fire({
+              icon: 'error',
+              title: 'No User ID',
+              text: 'You need to be logged in to delete your account.',
+              confirmButtonText: 'OK'
+            });
             return;
         }
 
@@ -80,7 +87,13 @@ const DeleteAccount = () => {
             const errorMessage = err.message.includes('<!DOCTYPE')
                 ? 'Server error occurred'
                 : err.message;
-            alert(errorMessage);
+          
+            Swal.fire({
+              icon: 'error',
+              title: 'Error Deleting Account',
+              text: errorMessage,
+              confirmButtonText: 'OK'
+            });
         } finally {
             setIsDeleting(false);
             setShowModal(false);

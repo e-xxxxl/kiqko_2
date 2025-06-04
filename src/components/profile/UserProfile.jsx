@@ -345,11 +345,14 @@ import SimilarUsersSection from "./SimilarUsersSection/SimilarUsersSection";
 import OnlineUsers from "./OnlineUsers/OnlineUsers";
 import OnlineStatusUpdater from "./OnlineUsers/OnlineStatusUpdater";
 import axios from "axios";
+import moment from 'moment';
+import Swal from 'sweetalert2';
 
 const UserProfile = () => {
   const currentUserId = localStorage.getItem('userId');
   const { userId } = useParams();
   const [user, setUser] = useState(null);
+  const [user1, setUser1] = useState(null);
   const [profileDetails, setProfileDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -367,6 +370,51 @@ const UserProfile = () => {
    const [blockStatus, setBlockStatus] = useState(false);
    const [isShowBlockUser, setIsShowBlockUser] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+
+
+  
+  
+  
+useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/users/user/${userId}`);
+        console.log('API Response:', response.data); // Log raw API response
+        console.log('userId used:', userId); // Log userId
+        console.log('Formatted createdAt:', moment(response.data.createdAt).format('MMMM D, YYYY')); // Log formatted date
+        setUser1(response.data);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        setError('Failed to load user data');
+      }
+    };
+
+    if (userId) {
+      fetchUser();
+    } else {
+      setError('No user ID found');
+    }
+  }, [userId]);
+
+  const formatLastOnline = (lastActive) => {
+    if (!lastActive) return 'Last online unknown';
+    const now = moment();
+    const lastActiveDate = moment(lastActive);
+    const duration = moment.duration(now.diff(lastActiveDate));
+
+    const days = Math.floor(duration.asDays());
+    const hours = Math.floor(duration.asHours() % 24);
+
+    if (days > 0) {
+      return `Last online ${days} Day${days > 1 ? 's' : ''} ${hours} Hour${hours > 1 ? 's' : ''}`;
+    } else if (hours > 0) {
+      return `Last online ${hours} Hour${hours > 1 ? 's' : ''}`;
+    } else {
+      return 'Last online just now';
+    }
+  };
+
   
   useEffect(() => {
     const fetchVideos = async () => {
@@ -466,86 +514,79 @@ useEffect(() => {
 });
 
 
+useEffect(() => {
+    const fetchUserMedia = async () => {
+      if (!userId) {
+        setError("User not authenticated");
+        setIsLoading(false);
+        return;
+      }
 
-     useEffect(() => {
-      const fetchUserMedia = async () => {
-        if (!userId) {
-          setError("User not authenticated");
-          setIsLoading(false);
-          return;
+      try {
+        setIsLoading(true);
+        const response = await axios.get(
+          `https://kiqko-backend.onrender.com/api/users/${userId}/media`,
+         
+        );
+
+        console.log("API Response:", response.data); // Debug log
+
+        // Check response structure
+        if (response.data && Array.isArray(response.data)) {
+          // If the API returns an array directly
+          const normalizedMedia = response.data.map((item) => ({
+            _id: item._id || item.id,
+            url: item.url,
+          }));
+          setMedia(normalizedMedia);
+        } else if (response.data && Array.isArray(response.data.media)) {
+          // If the API returns an object with media array
+          const normalizedMedia = response.data.media.map((item) => ({
+            _id: item._id || item.id,
+            url: item.url,
+          }));
+          setMedia(normalizedMedia);
+        } else if (
+          response.data &&
+          response.data.profile &&
+          Array.isArray(response.data.profile.media)
+        ) {
+          // If the API returns a nested structure
+          const normalizedMedia = response.data.profile.media.map((item) => ({
+            _id: item._id || item.id,
+            url: item.url,
+          }));
+          setMedia(normalizedMedia);
+        } else {
+          // Fallback for empty state
+          setMedia([]);
         }
-  
-        try {
-          setIsLoading(true);
-          const response = await axios.get(
-            `https://kiqko-backend.onrender.com/api/users/${userId}/media`,
-            
-          );
-  
-          console.log("API Response:", response.data); // Debug log
-  
-          // Check response structure
-          if (response.data && Array.isArray(response.data)) {
-            // If the API returns an array directly
-            const normalizedMedia = response.data.map((item) => ({
-              _id: item._id || item.id,
-              url: item.url,
-            }));
-            setMedia(normalizedMedia);
-          } else if (response.data && Array.isArray(response.data.media)) {
-            // If the API returns an object with media array
-            const normalizedMedia = response.data.media.map((item) => ({
-              _id: item._id || item.id,
-              url: item.url,
-            }));
-            setMedia(normalizedMedia);
-          } else if (
-            response.data &&
-            response.data.profile &&
-            Array.isArray(response.data.profile.media)
-          ) {
-            // If the API returns a nested structure
-            const normalizedMedia = response.data.profile.media.map((item) => ({
-              _id: item._id || item.id,
-              url: item.url,
-            }));
-            setMedia(normalizedMedia);
-          } else {
-            // Fallback for empty state
-            setMedia([]);
-          }
-  
-          setError(null);
-        } catch (err) {
-          console.error("Failed to fetch media:", err);
-          setError("Failed to load media. Please refresh the page.");
-          setMedia([]); // Reset to empty array on error
-        } finally {
-          setIsLoading(false);
-        }
-      };
-  
-      fetchUserMedia();
-    }, [userId]);
 
-
-
-    
-    
-   const openModal = (index) => {
-      setCurrentPhotoIndex(index);
-      setIsModalOpen(true);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to fetch media:", err);
+        setError("Failed to load media. Please refresh the page.");
+        setMedia([]); // Reset to empty array on error
+      } finally {
+        setIsLoading(false);
+      }
     };
+
+    fetchUserMedia();
+  }, [userId]);
   
-    const closeModal = () => setIsModalOpen(false);
-  
-    const goToPrev = () =>
-      setCurrentPhotoIndex((prev) => (prev > 0 ? prev - 1 : media.length - 1));
-  
-    const goToNext = () =>
-      setCurrentPhotoIndex((prev) => (prev < media.length - 1 ? prev + 1 : 0));
-  
-  
+ const openModal = (index) => {
+    setCurrentPhotoIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => setIsModalOpen(false);
+
+  const goToPrev = () =>
+    setCurrentPhotoIndex((prev) => (prev > 0 ? prev - 1 : media.length - 1));
+
+  const goToNext = () =>
+    setCurrentPhotoIndex((prev) => (prev < media.length - 1 ? prev + 1 : 0));
 
  
     const [imgObj, setImgObj] = useState({});
@@ -641,10 +682,23 @@ useEffect(() => {
       const res = await axios.post('https://kiqko-backend.onrender.com/api/users/' + userId + '/like', {
         userId: currentUserId,
       });
-      alert(res.data.message);
+     
+      Swal.fire({
+              icon: 'like',
+              title: 'Liked Successfully',
+              text: res.data.message || 'You liked this profile!',
+              confirmButtonText: 'OK'
+            });
+      
     } catch (err) {
       console.error('Like error:', err.response?.data || err.message);
-      alert(err.response?.data?.message || 'Error');
+      
+      Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: err.response?.data?.message || 'Failed to like this profile.',
+              confirmButtonText: 'OK'
+            });
     }
   };
 
@@ -836,11 +890,11 @@ useEffect(() => {
                   <div className="profile-main-part-area-inner mt-profile">
                     <div className="profile-details-area">
                       <div className="date-profile-top">
-                        <p className="member-p">Member since {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                        <p className="member-p"> Member since {moment(user1.createdAt).format('MMMM D, YYYY')}</p>
                         <div className="last-online">
                           {" "}
                           <img src={calendar} alt="calendar" />
-                          Last online 1 Day 14 Hours
+                           {formatLastOnline(user1.lastActive)}
                         </div>
                       </div>
                       <div className="profile-pic-user">
@@ -848,7 +902,8 @@ useEffect(() => {
                           {" "}
                           <img
                             onClick={viewProfileImg}
-                            src={profileDetails?.profilephoto || profile}
+                            src={profileDetails?.profilephoto ||
+                      'https://cdn-icons-png.flaticon.com/512/847/847969.png'}
                             alt="profile"
                             className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
                           />
@@ -1112,120 +1167,120 @@ useEffect(() => {
                         <div className="middile-part-profile">
                           <div className="profile-detaild-middle pt-0">
                                            {/* Photos Section */}
-                            <div className="mt-5">
-                              <h3 className="text-start h3-all-title">
-                                My Photos
-                                <span className="details-count ps-2">{media.length}</span>
-                              </h3>
-                      
-                              <div className="row g-3 mt-3">
-                                {media.map((item, index) => (
-                                  <div
-                                    key={item._id}
-                                    className="col-6 col-md-4 col-lg-3 position-relative"
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() => openModal(index)}
-                                  >
-                                    <div className="position-relative overflow-hidden border rounded">
-                                      {/* Hover Overlay */}
-                                      <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25 d-flex justify-content-center align-items-center opacity-0 hover-opacity-100 transition">
-                                        <button
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                           
-                                          }}
-                                          className="btn btn-light btn-sm rounded-circle"
-                                          disabled={isLoading}
-                                          aria-label="Delete photo"
-                                        >
-                                          <MdClear className="text-danger" />
-                                        </button>
-                                      </div>
-                      
-                                      {/* Image */}
-                                      <img
-                                        src={item.url}
-                                        alt={`media-${item._id}`}
-                                        className="img-fluid w-100 object-fit-cover"
-                                        style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
-                                        onError={(e) => {
-                                          e.target.onerror = null;
-                                          e.target.src = "https://via.placeholder.com/300";
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                      
-                            {/* Modal for Enlarged Photo View */}
-                            {isModalOpen && (
-                              <div
-                                className="modal fade show d-block"
-                                tabIndex="-1"
-                                style={{ backgroundColor: "rgba(0, 0, 0, 0.9)" }}
-                                onClick={closeModal}
-                              >
-                                <div
-                                  className="modal-dialog modal-dialog-centered modal-xl"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <div className="modal-content bg-transparent border-0">
-                                    {/* Close Button */}
-                                    <button
-                                      type="button"
-                                      className="btn-close btn-close-white position-absolute top-0 end-0 m-3"
-                                      aria-label="Close"
-                                      onClick={closeModal}
-                                    ></button>
-                      
-                                    {/* Arrows */}
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        goToPrev();
-                                      }}
-                                      className="btn btn-dark position-absolute top-50 start-0 translate-middle-y"
-                                      aria-label="Prev"
-                                    >
-                                      <MdChevronLeft size={32} />
-                                    </button>
-                      
-                                    {/* Image */}
-                                    <img
-                                      src={media[currentPhotoIndex]?.url}
-                                      alt={`Gallery ${currentPhotoIndex + 1}`}
-                                      className="img-fluid rounded mx-auto d-block"
-                                      style={{ maxHeight: "85vh", objectFit: "contain" }}
-                                      onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = "https://via.placeholder.com/800?text=Not+Available";
-                                      }}
-                                    />
-                      
-                                    {/* Next */}
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        goToNext();
-                                      }}
-                                      className="btn btn-dark position-absolute top-50 end-0 translate-middle-y"
-                                      aria-label="Next"
-                                    >
-                                      <MdChevronRight size={32} />
-                                    </button>
-                      
-                                    {/* Counter */}
-                                    <div className="text-white position-absolute bottom-0 start-50 translate-middle-x mb-3 bg-dark px-3 py-1 rounded-pill small">
-                                      {currentPhotoIndex + 1} / {media.length}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                      
-                      )}
-                      
+                                 {/* Photos Section */}
+                       <div className="mt-5">
+                         <h3 className="text-start h3-all-title">
+                           My Photos
+                           <span className="details-count ps-2">{media.length}</span>
+                         </h3>
+                 
+                         <div className="row g-3 mt-3">
+                           {media.map((item, index) => (
+                             <div
+                               key={item._id}
+                               className="col-6 col-md-4 col-lg-3 position-relative"
+                               style={{ cursor: "pointer" }}
+                               onClick={() => openModal(index)}
+                             >
+                               <div className="position-relative overflow-hidden border rounded">
+                                 {/* Hover Overlay */}
+                                 <div className="position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-25 d-flex justify-content-center align-items-center opacity-0 hover-opacity-100 transition">
+                                   <button
+                                     onClick={(e) => {
+                                       e.stopPropagation();
+                                      
+                                     }}
+                                     className="btn btn-light btn-sm rounded-circle"
+                                     disabled={isLoading}
+                                     aria-label="Delete photo"
+                                   >
+                                     <MdClear className="text-danger" />
+                                   </button>
+                                 </div>
+                 
+                                 {/* Image */}
+                                 <img
+                                   src={item.url}
+                                   alt={`media-${item._id}`}
+                                   className="img-fluid w-100 object-fit-cover"
+                                   style={{ aspectRatio: "1 / 1", objectFit: "cover" }}
+                                   onError={(e) => {
+                                     e.target.onerror = null;
+                                     e.target.src = "https://via.placeholder.com/300";
+                                   }}
+                                 />
+                               </div>
+                             </div>
+                           ))}
+                         </div>
+                       </div>
+                 
+                       {/* Modal for Enlarged Photo View */}
+                       {isModalOpen && (
+                         <div
+                           className="modal fade show d-block"
+                           tabIndex="-1"
+                           style={{ backgroundColor: "rgba(0, 0, 0, 0.9)" }}
+                           onClick={closeModal}
+                         >
+                           <div
+                             className="modal-dialog modal-dialog-centered modal-xl"
+                             onClick={(e) => e.stopPropagation()}
+                           >
+                             <div className="modal-content bg-transparent border-0">
+                               {/* Close Button */}
+                               <button
+                                 type="button"
+                                 className="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                                 aria-label="Close"
+                                 onClick={closeModal}
+                               ></button>
+                 
+                               {/* Arrows */}
+                               <button
+                                 onClick={(e) => {
+                                   e.stopPropagation();
+                                   goToPrev();
+                                 }}
+                                 className="btn btn-dark position-absolute top-50 start-0 translate-middle-y"
+                                 aria-label="Prev"
+                               >
+                                 <MdChevronLeft size={32} />
+                               </button>
+                 
+                               {/* Image */}
+                               <img
+                                 src={media[currentPhotoIndex]?.url}
+                                 alt={`Gallery ${currentPhotoIndex + 1}`}
+                                 className="img-fluid rounded mx-auto d-block"
+                                 style={{ maxHeight: "85vh", objectFit: "contain" }}
+                                 onError={(e) => {
+                                   e.target.onerror = null;
+                                   e.target.src = "https://via.placeholder.com/800?text=Not+Available";
+                                 }}
+                               />
+                 
+                               {/* Next */}
+                               <button
+                                 onClick={(e) => {
+                                   e.stopPropagation();
+                                   goToNext();
+                                 }}
+                                 className="btn btn-dark position-absolute top-50 end-0 translate-middle-y"
+                                 aria-label="Next"
+                               >
+                                 <MdChevronRight size={32} />
+                               </button>
+                 
+                               {/* Counter */}
+                               <div className="text-white position-absolute bottom-0 start-50 translate-middle-x mb-3 bg-dark px-3 py-1 rounded-pill small">
+                                 {currentPhotoIndex + 1} / {media.length}
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                 
+                 )}
 
                             {/* Video Section */}
                             <div className="mt-5">

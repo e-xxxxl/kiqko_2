@@ -36,6 +36,7 @@ import OnlineUsers from '../profile/OnlineUsers/OnlineUsers';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import { ProgressBar } from 'react-bootstrap';
+import Swal from 'sweetalert2';
 
 const SearchResultsTwo = () => {
    const [matches, setMatches] = useState([]);
@@ -48,7 +49,14 @@ const SearchResultsTwo = () => {
       const userId = localStorage.getItem('userId');
 
       if (!userId) {
-        alert('Please log in to view matches.');
+       Swal.fire({
+              icon: 'info',
+              title: 'User Not Logged In',
+              text: 'Please log in to view matches.',
+              confirmButtonText: 'OK'
+            });
+      
+     
         history.push('/login');
         return;
       }
@@ -66,7 +74,14 @@ const SearchResultsTwo = () => {
         setMatches(response.data.matches);
       } catch (error) {
         console.error('Error fetching matches:', error);
-        alert('Error fetching matches. Please try again later.');
+        Swal.fire({
+              icon: 'error',
+              title: 'Error Fetching Matches',
+              text: 'There was an error fetching your matches. Please try again later.',
+              
+              confirmButtonText: 'OK'
+            });
+     
       } finally {
         setLoading(false);
       }
@@ -148,35 +163,38 @@ const SearchResultsTwo = () => {
         ) : (
           <Row>
             <Col md={12} className="mt-4">
-              <ul className="search-user-list search-user-list2 mt-0">
-                {matches.map((match) => (
-                  <li key={match._id}>
+              <ul className="search-user-list search-user-list2 mt-0 ">
+                {matches.map((user) => (
+                  <li key={user._id}>
+                    <NavLink to={`/userprofile/${user._id}`}>
                     <img
                       className="user-search-profile"
-                      src={match.profile?.profilephoto || '/default-profile.jpg'}
+                      src={user.profile?.profilephoto ||
+                      'https://cdn-icons-png.flaticon.com/512/847/847969.png'}
                       alt="profile"
                     />
+                    </NavLink>
                     <div className="user-search-details">
                       <div className="user-details-row">
                         <h5>
-                          <NavLink to={`/profile/${match._id}`}>
-                            {match.username}
+                          <NavLink to={`/userprofile/${user._id}`}>
+                            {user.username}
                           </NavLink>
                         </h5>
-                        <span>{match.profile?.age}</span>
+                        <span>{user.profile?.age}</span>
                       </div>
                       <div className="user-details-row">
                         <h6>
-                          {match.location?.city
-                            ? `${match.location.city}, ${match.location.state || ''}`
+                          {user.location?.city
+                            ? `${user.location.city}, ${user.location.state || ''}`
                             : 'Location not specified'}
                         </h6>
                         <ProgressBar
-                          now={match.matchPercentage}
-                          label={`${match.matchPercentage}% Match`}
+                          now={user.matchPercentage}
+                          label={`${user.matchPercentage}% Match`}
                           variant="success"
                           className="mt-2"
-                          style={{ width: '200px' }}
+                          style={{ width: '150px' }}
                         />
                         {/* <Button variant="success" className="ml-2">
                           Connect
