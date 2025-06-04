@@ -351,9 +351,9 @@ import Swal from 'sweetalert2';
 const UserProfile = () => {
   const currentUserId = localStorage.getItem('userId');
   const { userId } = useParams();
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState([]);
   const [user1, setUser1] = useState({});
-  const [profileDetails, setProfileDetails] = useState({});
+  const [profileDetails, setProfileDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState({});
   const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
