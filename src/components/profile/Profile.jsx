@@ -726,7 +726,7 @@ const handleDeleteVideo = async (publicId) => {
                             <span>No location set</span>
                           )}
 
-                          <Accordion
+                          {/* <Accordion
                             className="acc-wrapper-custom"
                             defaultActiveKey={["0"]}
                             alwaysOpen
@@ -783,7 +783,7 @@ const handleDeleteVideo = async (publicId) => {
                                 </div>
                               </Accordion.Body>
                             </Accordion.Item>
-                          </Accordion>
+                          </Accordion> */}
                           {/* 
                            <Dropdown className="dotted-drop">
                               <Dropdown.Toggle variant="success" id="dropdown-basic">

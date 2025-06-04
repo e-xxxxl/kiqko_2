@@ -351,11 +351,11 @@ import Swal from 'sweetalert2';
 const UserProfile = () => {
   const currentUserId = localStorage.getItem('userId');
   const { userId } = useParams();
-  const [user, setUser] = useState(null);
-  const [user1, setUser1] = useState(null);
-  const [profileDetails, setProfileDetails] = useState(null);
+  const [user, setUser] = useState({});
+  const [user1, setUser1] = useState({});
+  const [profileDetails, setProfileDetails] = useState({});
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState({});
   const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
   // const [isShowBlockUser, setIsBlockUser] = useState(false);
   const [message, setMessage] = useState('');
@@ -877,7 +877,7 @@ useEffect(() => {
                   <div className="profile-main-part-area-inner mt-profile">
                     <div className="profile-details-area">
                       <div className="date-profile-top">
-                        <p className="member-p"> Member since {moment(user1.createdAt).format('MMMM D, YYYY')}</p>
+                        <p className="member-p">{user1?.createdAt ? `Member since ${moment(user1.createdAt).format('MMMM D, YYYY')}` : ''}</p>
                         <div className="last-online">
                           {" "}
                           <img src={calendar} alt="calendar" />
