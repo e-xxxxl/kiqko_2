@@ -379,7 +379,7 @@ const UserProfile = () => {
 useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/users/user/${userId}`);
+        const response = await axios.get(`https://kiqko-backend.onrender.com/api/users/user/${userId}`);
         console.log('API Response:', response.data); // Log raw API response
         console.log('userId used:', userId); // Log userId
         console.log('Formatted createdAt:', moment(response.data.createdAt).format('MMMM D, YYYY')); // Log formatted date
