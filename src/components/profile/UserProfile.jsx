@@ -418,45 +418,49 @@ console.log('User ID from URL:', userId);
 
   
   
-  
-useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axios.get(`https://kiqko-backend.onrender.com/api/users/user/${userId}`);
-        console.log('API Response:', response.data); // Log raw API response
-        console.log('userId used:', userId); // Log userId
-        console.log('Formatted createdAt:', moment(response.data.createdAt).format('MMMM D, YYYY')); // Log formatted date
-        setUser1(response.data);
-      } catch (error) {
-        console.error('Error fetching user:', error);
-        setError('Failed to load user data');
+      
+    useEffect(() => {
+      setIsLoading(true);
+        const fetchUser = async () => {
+          try {
+            
+            const response = await axios.get(`https://kiqko-backend.onrender.com/api/users/user/${userId}`);
+            console.log('API Response:', response.data); // Log raw API response
+            console.log('userId used:', userId); // Log userId
+            console.log('Formatted createdAt:', moment(response.data.createdAt).format('MMMM D, YYYY')); // Log formatted date
+            setUser1(response.data);
+          } catch (error) {
+            console.error('Error fetching user:', error);
+            setError('Failed to load user data');
+          }finally {
+        setIsLoading(false);
       }
-    };
+        };
 
-    if (userId) {
-      fetchUser();
-    } else {
-      setError('No user ID found');
-    }
-  }, [userId]);
+        if (userId) {
+          fetchUser();
+        } else {
+          setError('No user ID found');
+        }
+      }, [userId]);
 
-  const formatLastOnline = (lastActive) => {
-    if (!lastActive) return 'Last online unknown';
-    const now = moment();
-    const lastActiveDate = moment(lastActive);
-    const duration = moment.duration(now.diff(lastActiveDate));
+      const formatLastOnline = (lastActive) => {
+        if (!lastActive) return 'Last online unknown';
+        const now = moment();
+        const lastActiveDate = moment(lastActive);
+        const duration = moment.duration(now.diff(lastActiveDate));
 
-    const days = Math.floor(duration.asDays());
-    const hours = Math.floor(duration.asHours() % 24);
+        const days = Math.floor(duration.asDays());
+        const hours = Math.floor(duration.asHours() % 24);
 
-    if (days > 0) {
-      return `Last online ${days} Day${days > 1 ? 's' : ''} ${hours} Hour${hours > 1 ? 's' : ''}`;
-    } else if (hours > 0) {
-      return `Last online ${hours} Hour${hours > 1 ? 's' : ''}`;
-    } else {
-      return 'Last online just now';
-    }
-  };
+        if (days > 0) {
+          return `Last online ${days} Day${days > 1 ? 's' : ''} ${hours} Hour${hours > 1 ? 's' : ''}`;
+        } else if (hours > 0) {
+          return `Last online ${hours} Hour${hours > 1 ? 's' : ''}`;
+        } else {
+          return 'Last online just now';
+        }
+      };
 
   
   useEffect(() => {
@@ -685,11 +689,11 @@ useEffect(() => {
     }
   };
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+  if (isLoading) return (
+    <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="spinner-border text-purple" style={{ width: '3rem', height: '3rem', borderWidth: '0.2rem', borderColor: '#9c27b0', borderRightColor: 'transparent' }}></div>
     </div>
-  );
+);
 
   if (error) return (
     <div className="text-center py-8 text-red-500">
@@ -703,7 +707,7 @@ useEffect(() => {
     </div>
   );
 
-  if (!user) return <div className="text-center py-8">User not found</div>;
+  
 
 
 
@@ -910,7 +914,7 @@ useEffect(() => {
                       <div className="profile-user-details text-start">
                         <h1>
                           {user?.username}
-                          {user.isVerified && (
+                          {user?.isImgVerified && (
                             <span className="icon-profile">
                               <img src={proficon} alt="proficon" />
                               <span className="span-tooltip-profile">

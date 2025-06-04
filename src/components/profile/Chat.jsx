@@ -7,7 +7,7 @@ import Form from "react-bootstrap/Form";
 // import { NavLink } from 'react-router-dom';
 //import Button from 'react-bootstrap/Button';
 import { NavLink } from "react-router-dom";
-import "./profile.css";
+import "./chat.css";
 import shape from "../../assets/images/shape2.png";
 import proficon from "../../assets/images/prof-icon.jpg";
 import vaccineIcon from "../../assets/images/vaccineIcon.png";
@@ -370,17 +370,7 @@ const Chat = () => {
             <Col md={3}>
                 <div className="left-panel-allpages mar-top-left">
                    <div className="top-user-id text-center">
-                       <div className="online-user-all">
-                       <h5 className="border-h5">Users Online Now</h5>
-                       <div className="online-user-status border-right-online">
-                           <h6>Women</h6>
-                           <h4>1234</h4>
-                       </div>
-                       <div className="online-user-status">
-                           <h6>men</h6>
-                           <h4>1565</h4>
-                       </div>
-                       </div>
+                       <OnlineUsers/>
                       
                       
                    </div>
@@ -561,113 +551,94 @@ const Chat = () => {
                         )}
                       </div>
 
-                      {/* INPUT AREA */}
-                      <div className="border-top p-3 bg-white position-relative" style={{ borderColor: 'rgba(0,0,0,0.03)' }}>
-                        {/* EMOJI PICKER POSITIONED ABOVE INPUT */}
-                        {showEmojiPicker && (
-                          <div 
-                            className="position-absolute bottom-100 start-0 mb-2"
-                            style={{
-                              zIndex: 1000,
-                              width: '100%',
-                              maxWidth: '350px'
-                            }}
-                          >
-                            <EmojiPicker 
-                              onEmojiClick={onEmojiClick} 
-                              width="100%"
-                              height="350px"
-                              style={{ 
-                                boxShadow: '0 5px 20px rgba(0,0,0,0.1)',
-                                border: '1px solid rgba(0,0,0,0.05)'
-                              }}
-                            />
-                          </div>
-                        )}
+                      <div className="chat-input-container">
+        {/* Emoji Picker */}
+        {showEmojiPicker && (
+          <div className="emoji-picker-wrapper">
+            <EmojiPicker
+              onEmojiClick={onEmojiClick}
+              width="100%"
+              height="350px"
+              style={{
+                boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                border: '1px solid rgba(0,0,0,0.05)',
+                borderRadius: '8px',
+              }}
+            />
+          </div>
+        )}
 
-                        {attachment && (
-                          <div className="mb-2 d-flex align-items-center bg-light rounded p-2">
-                            <img
-                              src={attachment.data}
-                              alt="attachment preview"
-                              className="rounded"
-                              style={{ 
-                                maxHeight: '100px',
-                                maxWidth: '150px'
-                              }}
-                            />
-                            <button
-                              onClick={() => setAttachment(null)}
-                              className="btn btn-sm btn-danger ms-2 rounded-pill px-3"
-                            >
-                              Remove
-                            </button>
-                          </div>
-                        )}
-                        
-                        <div className="d-flex align-items-center gap-2 position-relative">
-                          <div className="d-flex">
-                            <button
-                              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                              className="btn p-2 rounded-circle text-muted hover-scale"
-                              style={{ 
-                                border: 'none', 
-                                transition: 'transform 0.2s ease',
-                                background: showEmojiPicker ? 'rgba(138, 99, 255, 0.1)' : 'transparent'
-                              }}
-                            >
-                              <Smile size={20} />
-                            </button>
-                            <label
-                              htmlFor="file-upload"
-                              className="btn p-2 rounded-circle text-muted hover-scale"
-                              style={{ 
-                                border: 'none', 
-                                cursor: 'pointer', 
-                                transition: 'transform 0.2s ease'
-                              }}
-                            >
-                              <Paperclip size={20} />
-                              <input
-                                id="file-upload"
-                                type="file"
-                                onChange={handleFileChange}
-                                style={{ display: 'none' }}
-                                accept="image/*"
-                              />
-                            </label>
-                          </div>
-                          <div className="flex-grow-1 position-relative">
-                            <input
-                              type="text"
-                              className="form-control border-0 ps-3 pe-3 shadow-sm focus-ring"
-                              value={input}
-                              onChange={(e) => setInput(e.target.value)}
-                              placeholder="Type a message..."
-                              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                              style={{ 
-                                height: '42px', 
-                                background: 'rgba(0,0,0,0.02)',
-                                transition: 'all 0.2s ease'
-                              }}
-                            />
-                          </div>
-                          <button
-                            onClick={handleSend}
-                            disabled={!input.trim() && !attachment}
-                            className="btn p-2  text-white hover-scale"
-                            style={{
-                              background: 'linear-gradient(135deg, #8A63FF 0%, #B18AFF 100%)',
-                              width: '42px',
-                              height: '42px',
-                              transition: 'transform 0.2s ease, opacity 0.2s ease',
-                              opacity: (!input.trim() && !attachment) ? 0.7 : 1
-                            }}
-                          >
-                            <Send size={18} />
-                          </button>
-                        </div>
-                      </div>
+        {/* Attachment Preview */}
+        {attachment && (
+          <div className="attachment-container">
+            <img
+              src={attachment.data}
+              alt="Attachment preview"
+              className="attachment-preview"
+            />
+            <button
+              onClick={() => setAttachment(null)}
+              className="btn btn-sm btn-danger remove-attachment-btn"
+              aria-label="Remove attachment"
+            >
+              Remove
+            </button>
+          </div>
+        )}
+
+        {/* Input and Action Buttons */}
+        <div className="input-group">
+          <div className="action-buttons">
+            <button
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="action-btn"
+              aria-label="Toggle emoji picker"
+              title="Add emoji"
+            >
+              <Smile size={22} />
+            </button>
+            <label
+              htmlFor="file-upload"
+              className="action-btn"
+              aria-label="Upload file"
+              title="Attach file"
+            >
+              <Paperclip size={22} />
+              <input
+                id="file-upload"
+                type="file"
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+                accept="image/*"
+                aria-hidden="true"
+              />
+            </label>
+          </div>
+          <textarea
+            className="chat-input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type a message..."
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            aria-label="Message input"
+            rows={1}
+          />
+          <button
+            onClick={handleSend}
+            disabled={!input.trim() && !attachment}
+            className="send-btn"
+            aria-label="Send message"
+            title="Send message"
+          >
+            <Send size={20} />
+          </button>
+        </div>
+      </div>
                     </div>
                   )}
                 </Tab>
