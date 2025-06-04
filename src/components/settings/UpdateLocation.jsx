@@ -26,6 +26,7 @@ import yourm from '../../assets/images/yourm.png';
 import blockedUsers from '../../assets/images/blockedUsers.png';
 import serr from '../../assets/images/serr.png';
 import OnlineUsers from '../profile/OnlineUsers/OnlineUsers';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const UpdateLocation = () => {
 
@@ -36,6 +37,7 @@ const UpdateLocation = () => {
   });
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
     // Get userId from localStorage when component mounts
@@ -86,6 +88,7 @@ const UpdateLocation = () => {
 
       const result = await response.json();
       console.log('Location updated successfully:', result);
+      history.push('/profile'); // Redirect to profile page after successful update
       // Add success notification here
     } catch (error) {
       console.error('Error updating location:', error);

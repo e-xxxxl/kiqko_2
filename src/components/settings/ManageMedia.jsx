@@ -646,7 +646,8 @@ setIsVideoUploaded(true);
                         {error && <div className="alert alert-danger mt-3">{error}</div>}
                         {success && <div className="alert alert-success mt-3">{success}</div>}
                         <Button
-  variant="primary"
+  className="all-btn-round text-left font-segoeui"
+                variant="primary"
   onClick={handleSaveVideos}
   disabled={!isVideoUploaded || isLoadingVideo || isSavingVideos}
 >

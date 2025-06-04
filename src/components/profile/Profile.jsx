@@ -1038,73 +1038,123 @@ const handleDeleteVideo = async (publicId) => {
         </div>
       </div>
 
-      {/* Modal for Enlarged Photo View */}
-      {isModalOpen && (
-        <div
-          className="modal fade show d-block"
-          tabIndex="-1"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.9)" }}
-          onClick={closeModal}
-        >
-          <div
-            className="modal-dialog modal-dialog-centered modal-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-content bg-transparent border-0">
-              {/* Close Button */}
-              <button
-                type="button"
-                className="btn-close btn-close-white position-absolute top-0 end-0 m-3"
-                aria-label="Close"
-                onClick={closeModal}
-              ></button>
-
-              {/* Arrows */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToPrev();
-                }}
-                className="btn btn-dark position-absolute top-50 start-0 translate-middle-y"
-                aria-label="Prev"
-              >
-                <MdChevronLeft size={32} />
-              </button>
-
-              {/* Image */}
-              <img
-                src={media[currentPhotoIndex]?.url}
-                alt={`Gallery ${currentPhotoIndex + 1}`}
-                className="img-fluid rounded mx-auto d-block"
-                style={{ maxHeight: "85vh", objectFit: "contain" }}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "https://via.placeholder.com/800?text=Not+Available";
-                }}
-              />
-
-              {/* Next */}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  goToNext();
-                }}
-                className="btn btn-dark position-absolute top-50 end-0 translate-middle-y"
-                aria-label="Next"
-              >
-                <MdChevronRight size={32} />
-              </button>
-
-              {/* Counter */}
-              <div className="text-white position-absolute bottom-0 start-50 translate-middle-x mb-3 bg-dark px-3 py-1 rounded-pill small">
-                {currentPhotoIndex + 1} / {media.length}
-              </div>
-            </div>
-          </div>
-        </div>
-
-)}
-
+                            {isModalOpen && (
+       <div
+         className="modal fade show d-block"
+         style={{
+           position: "fixed",
+           top: 0,
+           left: 0,
+           width: "100vw",
+           height: "100vh",
+           backgroundColor: "rgba(0, 0, 0, 0.97)",
+           zIndex: 1050,
+           overflow: "hidden",
+         }}
+         onClick={closeModal}
+         role="dialog"
+         aria-modal="true"
+       >
+         {/* Close Button (Top Right) */}
+         <button
+           onClick={closeModal}
+           className="btn-close btn-close-white position-absolute"
+           style={{
+             top: "24px",
+             right: "24px",
+             zIndex: 1060,
+             fontSize: "1.5rem",
+             opacity: 0.9,
+           }}
+           aria-label="Close modal"
+         />
+     
+         {/* Previous Button (Left) */}
+         <button
+           onClick={(e) => {
+             e.stopPropagation();
+             goToPrev();
+           }}
+           className="btn btn-dark position-absolute d-flex align-items-center justify-content-center"
+           style={{
+             top: "50%",
+             left: "24px",
+             transform: "translateY(-50%)",
+             width: "48px",
+             height: "48px",
+             borderRadius: "50%",
+             zIndex: 1060,
+             opacity: 0.8,
+           }}
+           aria-label="Previous photo"
+         >
+           <MdChevronLeft size={28} />
+         </button>
+     
+         {/* Image Container (Centered, Responsive) */}
+         <div
+           className="d-flex align-items-center justify-content-center w-100 h-100 p-4"
+           style={{ maxWidth: "90vw", margin: "0 auto" }}
+         >
+           <img
+             src={media[currentPhotoIndex]?.url}
+             alt={`Photo ${currentPhotoIndex + 1} of ${media.length}`}
+             className="img-fluid"
+             style={{
+               maxHeight: "85vh",
+               maxWidth: "100%",
+               objectFit: "contain",
+               cursor: "zoom-out",
+             }}
+             onError={(e) => {
+               e.target.onerror = null;
+               e.target.src = "https://via.placeholder.com/1200?text=Image+Not+Available";
+             }}
+             onClick={closeModal}
+           />
+         </div>
+     
+         {/* Next Button (Right) */}
+         <button
+           onClick={(e) => {
+             e.stopPropagation();
+             goToNext();
+           }}
+           className="btn btn-dark position-absolute d-flex align-items-center justify-content-center"
+           style={{
+             top: "50%",
+             right: "24px",
+             transform: "translateY(-50%)",
+             width: "48px",
+             height: "48px",
+             borderRadius: "50%",
+             zIndex: 1060,
+             opacity: 0.8,
+           }}
+           aria-label="Next photo"
+         >
+           <MdChevronRight size={28} />
+         </button>
+     
+         {/* Photo Counter (Bottom Center) */}
+         <div
+           className="text-white position-absolute d-flex align-items-center justify-content-center"
+           style={{
+             bottom: "24px",
+             left: "50%",
+             transform: "translateX(-50%)",
+             backgroundColor: "rgba(0, 0, 0, 0.7)",
+             padding: "4px 16px",
+             borderRadius: "20px",
+             fontSize: "0.95rem",
+             zIndex: 1060,
+           }}
+         >
+           {currentPhotoIndex + 1} / {media.length}
+         </div>
+       </div>
+     )}
+     
 <div className="mt-5">
   <h3 className="text-start h3-all-title">
     Videos

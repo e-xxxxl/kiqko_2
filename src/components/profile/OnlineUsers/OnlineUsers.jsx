@@ -29,7 +29,7 @@ const OnlineUsers = () => {
         setOnlineStats(prev => ({
           ...prev,
           loading: false,
-          error: err.message
+          error: 'No Internet Connection'
         }));
       }
     };
