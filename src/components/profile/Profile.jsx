@@ -663,14 +663,6 @@ const handleDeleteVideo = async (publicId) => {
                 <Col className="text-center" md={9}>
                   <div className="profile-main-part-area-inner mt-profile">
                     <div className="profile-details-area">
-                      <div className="date-profile-top">
-                        <p className="member-p"> Member since {moment(user1.createdAt).format('MMMM D, YYYY')}</p>
-                        <div className="last-online">
-                          {" "}
-                          <img src={calendar} alt="calendar" />
-                           {formatLastOnline(user1.lastActive)}
-                        </div>
-                      </div>
                       <div className="profile-pic-user">
                         <div className="profile-pic-avater">
                           {" "}
