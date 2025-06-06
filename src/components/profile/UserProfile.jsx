@@ -351,26 +351,45 @@ import Swal from 'sweetalert2';
 const UserProfile = () => {
   const currentUserId = localStorage.getItem('userId');
   const { userId } = useParams();
-  const [user, setUser] = useState([]);
-  const [user1, setUser1] = useState({});
-  const [profileDetails, setProfileDetails] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState({});
-  const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
-  // const [isShowBlockUser, setIsBlockUser] = useState(false);
-  const [message, setMessage] = useState('');
-  const [media, setMedia] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
- const [userLocation, setUserLocation] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(true);
 
-   const [userVideos, setUserVideos] = useState([]);
-   const [blockStatus, setBlockStatus] = useState(false);
-   const [isShowBlockUser, setIsShowBlockUser] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  
+//   const [user, setUser] = useState([]);
+//   const [user1, setUser1] = useState({});
+//   const [profileDetails, setProfileDetails] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState({});
+//   const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
+//   // const [isShowBlockUser, setIsBlockUser] = useState(false);
+//   const [message, setMessage] = useState('');
+//   const [media, setMedia] = useState([]);
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+//  const [userLocation, setUserLocation] = useState(null);
 
+   const [isLoading, setIsLoading] = useState(true);
+
+//    const [userVideos, setUserVideos] = useState([]);
+//    const [blockStatus, setBlockStatus] = useState(false);
+//    const [isShowBlockUser, setIsShowBlockUser] = useState(false);
+//   const [isDeleting, setIsDeleting] = useState(false);
+
+// State declarations with appropriate initial values
+const [user, setUser] = useState(null); // Changed from array to null for single user object
+const [user1, setUser1] = useState(null); // Changed from empty object to null for consistency
+const [profileDetails, setProfileDetails] = useState(null); // Changed from array to null for single profile object
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState(null); // Changed from empty object to null for consistency
+const [isShowHideFormSearch, setIsShowHideFormSearch] = useState(false);
+const [message, setMessage] = useState('');
+const [media, setMedia] = useState([]);
+const [isModalOpen, setIsModalOpen] = useState(false);
+const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+const [userLocation, setUserLocation] = useState(null);
+const [userVideos, setUserVideos] = useState([]);
+const [blockStatus, setBlockStatus] = useState(false);
+const [isShowBlockUser, setIsShowBlockUser] = useState(false);
+const [isDeleting, setIsDeleting] = useState(false);
 console.log('User ID from URL:', userId);
 
 
@@ -879,10 +898,9 @@ useEffect(() => {
                       <div className="date-profile-top">
                         <p className="member-p">{user1?.createdAt ? `Member since ${moment(user1.createdAt).format('MMMM D, YYYY')}` : ''}</p>
                         <div className="last-online">
-                          {" "}
-                          <img src={calendar} alt="calendar" />
-                           {formatLastOnline(user1.lastActive)}
-                        </div>
+  <img src={calendar} alt="calendar" />
+  {user1?.lastActive ? formatLastOnline(user1.lastActive) : 'Last online not available'}
+</div>
                       </div>
                       <div className="profile-pic-user">
                         <div className="profile-pic-avater">
@@ -1387,11 +1405,13 @@ useEffect(() => {
                                 <ul className="ul-looking-for">
                                   <li>
                                     <img src={gender} alt="gender" />
-                                    <span>{profileDetails.gender === "Woman"
-                                  ? "Man"
-                                  : profileDetails.gender === "Man"
-                                  ? "Woman"
-                                  : "Not specified"}</span>
+                                   <span>
+      {profileDetails?.gender === "Woman"
+        ? "Man"
+        : profileDetails?.gender === "Man"
+        ? "Woman"
+        : "Not specified"}
+    </span>
                                   </li>
                                   {/* <li>
                                     <img src={ages} alt="ages" />

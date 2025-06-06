@@ -60,7 +60,7 @@ const Disclaimer = () => {
                                             </Button>
                                         </Col>
                                         <Col md={6} className="text-center btn-modal-round mt-3">
-                                            <NavLink exact to={isChecked ? "/covid" : "#"} onClick={e => !isChecked && e.preventDefault()}>
+                                            <NavLink exact to={isChecked ? "/sign-up" : "#"} onClick={e => !isChecked && e.preventDefault()}>
                                                 <Button
                                                     className="full-width btn-all-landing margin-all-modal-btn btn"
                                                     variant="link"

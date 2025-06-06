@@ -18,6 +18,10 @@ body {
   font-family:corbelb;
   src: url(../src/assets/font/corbelb.ttf);
 }
+@font-face {
+  font-family:corbeli;
+  src: url(../src/assets/font/corbeli.ttf);
+}
 
 @font-face {
   font-family:encino;

@@ -14,7 +14,7 @@ import postvodeo from '../../assets/images/postvodeo.png';
 import uploadimage from '../../assets/images/uploadimage.png';
 import chat from '../../assets/images/chat.png';
 import notification from '../../assets/images/notification.png';
-import logoi from '../../assets/images/logo-inner.png';
+import logoi from '../../assets/images/kiqko-logo.png';
 
 const NavHeader = () => {
     const [mobileOpen, setMobileOpen] = useState(false);
@@ -78,6 +78,7 @@ const NavHeader = () => {
                 {/* Logo - Always on the left */}
                 <Navbar.Brand as={NavLink} to="/">
                     <img src={logoi} alt="logo" className="logo-img" />
+                    <span className='kiqtext'>KIQKO</span>
                 </Navbar.Brand>
 
                 {/* Wrapper for Toggler and Mobile User Avatar, aligned to the right on small screens */}

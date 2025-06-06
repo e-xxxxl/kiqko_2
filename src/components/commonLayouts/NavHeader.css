@@ -9,9 +9,12 @@
     top: 0;
     z-index: 1000;
 }
-
+.kiqtext{
+    font-family: corbeli;
+    font-size: 30px;
+}
 .logo-img {
-    height: 40px; /* Adjust as needed */
+    height: 50px; /* Adjust as needed */
     width: auto;
 }
 
